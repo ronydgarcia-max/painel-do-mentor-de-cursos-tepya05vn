@@ -125,6 +125,7 @@ A execução deve seguir rigorosamente a sequência de 1 a 8:
     sleep 3
     docker restart "${API_C}"
     ```
+
 - **Critério de Sucesso:** Os 4 containers com status `Up` (sem reinicializações em loop ou crash).
 - **Como Verificar:**
   ```bash

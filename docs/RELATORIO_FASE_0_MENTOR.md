@@ -3,6 +3,9 @@
 Este documento registra a análise técnica completa, estruturada e exaustiva da **Fase 0** e o **Plano de Reescrita Controlada da Fase 1**, conforme as diretrizes estritas do projeto **Cursos API (Conexão Batista)**.
 
 > **Regra do Projeto:** Nenhuma alteração de código é aplicada na VPS sem análise prévia entregue e autorização explícita do mantenedor. O GoSkip não possui acesso direto à VPS (`69.62.124.240`). A homologação real em produção é manual.
+>
+> **Repositório Oficial:** `github.com/ronydgarcia-max/cursos-api` | **Branch de Trabalho:** `correcao-fluxo-cursos` | **Commit Base Estável:** `47aa7b1`  
+> **Serviços EasyPanel:** Cursos-API, PocketBase, PostgreSQL, Redis.
 
 ---
 
@@ -17,6 +20,130 @@ Este documento registra a análise técnica completa, estruturada e exaustiva da
 2. **Diagnóstico Principal:**
    - O painel legado em HTML/JS possui rotas funcionais para cadastro de cursos e etapas, porém contém vulnerabilidades de segurança (ex: mock codificado fixo da Aula 27 no `stream.js`, ausência de autorização no endpoint `/stream/:aulaId` para o mentor inspecionar seus próprios vídeos, falta de limpeza atômica em falhas de upload local, e duplicação de autenticação).
    - O frontend React moderno permite transformar o painel do mentor e o player em uma experiência ágil, responsiva, com navegação lateral por módulos/etapas, barra de progresso, suporte unificado a fontes de vídeo (Local VPS, YouTube, Cloudinary, OneDrive) e conformidade estrita com as regras de permissão.
+
+---
+
+## SEÇÃO ESPECIAL 1: SITUAÇÃO DOS COMMITS DO WORKSPACE
+
+Em atendimento aos 7 pontos de auditoria formulados pelo operador da VPS a respeito dos commits `34df2d6` e `ecf1cc0`:
+
+1. **Onde foram criados:** Os commits `34df2d6` e `ecf1cc0` foram criados estritamente dentro do workspace efêmero de prévia do GoSkip.
+2. **Relação com o repositório oficial:** Eles **NÃO pertencem** e **NÃO foram criados** no repositório oficial `github.com/ronydgarcia-max/cursos-api`.
+3. **Relação com a branch de trabalho:** Eles **NÃO pertencem** à branch de trabalho `correcao-fluxo-cursos`.
+4. **Envio ao GitHub:** Eles **NÃO foram enviados (push)** ao GitHub e não constam em nenhum branch remoto do repositório.
+5. **Impacto em produção:** Eles **NÃO alteram** e **NÃO impactam** o ambiente de produção da VPS em nenhuma circunstância.
+6. **Conteúdo exclusivo:** Eles contêm única e exclusivamente arquivos de documentação técnica e prototipagem do workspace (notadamente `docs/RELATORIO_FASE_0_MENTOR.md`, documentos operacionais e o componente de visualização em `src/pages/Index.tsx`).
+7. **Destino e isolamento:** Ficam mantidos no workspace do GoSkip exclusivamente como material de referência, alinhamento técnico e conferência visual. **NÃO serão publicados nem mesclados na VPS.**
+
+> **Conclusão:** Commits de relatório e protótipo do GoSkip permanecem 100% segregados do código-fonte de produção e jamais serão misturados à branch `correcao-fluxo-cursos` sem autorização expressa do operador.
+
+---
+
+## SEÇÃO ESPECIAL 2: SEGURANÇA DOS RELATÓRIOS E SANITIZAÇÃO DE SECRETS
+
+### 1. Auditoria de Token Exposto no Histórico
+
+- Foi identificado que um relatório preliminar anterior continha um token de deploy de webhook do EasyPanel.
+- **Classificação:** `EXPOSTO - ROTACIONAR`.
+- **Ação Imediata no Workspace:** Qualquer ocorrência ou menção a valores de credenciais foi substituída pelo marcador padrão `[TOKEN_REMOVIDO_E_ROTACIONADO]`. O valor real foi completamente expurgado e **não é reproduzido em nenhum arquivo**.
+- **Solicitação Formal ao Operador:** Foi registrada a solicitação formal de rotação imediata do token de deploy / API no dashboard do EasyPanel na VPS.
+
+### 2. Política Geral de Sanitização
+
+Nenhum arquivo deste workspace (documentos, scripts ou protótipos) armazena senhas, API keys, cookies, headers Authorization, chaves privadas, strings de conexão ou valores reais de segredos. São mantidos apenas:
+
+- Nome da variável de ambiente;
+- Serviço do EasyPanel onde é utilizada;
+- Finalidade técnica;
+- Exemplo fictício e seguro quando necessário.
+
+### 3. Lista de Secrets Removidos / Mascarados
+
+| Variável / Secret          | Serviço EasyPanel       | Finalidade Técnica                                  | Estado / Valor Sanitizado                               |
+| -------------------------- | ----------------------- | --------------------------------------------------- | ------------------------------------------------------- |
+| `EASYPANEL_DEPLOY_TOKEN`   | EasyPanel Webhooks      | Gatilho de deploy automático via webhook            | `[TOKEN_REMOVIDO_E_ROTACIONADO]` (EXPOSTO - ROTACIONAR) |
+| `JWT_SECRET`               | Cursos-API              | Assinatura e validação dos tokens JWT dos usuários  | Nome mantido; valor real omitido                        |
+| `MENTOR_JWT_SECRET`        | Cursos-API / SSO        | Validação de tokens de login SSO do mentor          | Nome mantido; valor real omitido                        |
+| `CURSOS_API_BRIDGE_SECRET` | Cursos-API              | Proteção de comunicação interna via bridge          | Nome mantido; valor real omitido                        |
+| `POSTGRES_PASSWORD`        | PostgreSQL / Cursos-API | Senha do banco relacional PostgreSQL                | Nome mantido; valor real omitido                        |
+| `DATABASE_URL`             | Cursos-API              | String de conexão com o banco de dados              | `postgresql://cursos_user:***@postgres:5432/cursos_db`  |
+| `REDIS_PASSWORD`           | Redis / Cursos-API      | Autenticação no Redis para cache e rate-limit       | Nome mantido; valor real omitido                        |
+| `REDIS_URL`                | Cursos-API              | String de conexão do Redis                          | `redis://:***@redis:6379`                               |
+| `CLOUDINARY_API_SECRET`    | Cursos-API              | Chave de autenticação na API do Cloudinary          | Nome mantido; valor real omitido                        |
+| `MS_GRAPH_CLIENT_SECRET`   | Cursos-API              | Segredo de aplicativo Azure para streaming OneDrive | Nome mantido; valor real omitido                        |
+| `GROQ_API_KEY`             | Cursos-API              | Chave de API para moderação de conteúdo por IA      | Nome mantido; valor real omitido                        |
+
+---
+
+## SEÇÃO ESPECIAL 3: VERSÕES, DEPENDÊNCIAS E MIGRATIONS
+
+### 1. Tabela do Estado Conhecido de Ambiente e Runtime
+
+| Componente               | Estado Conhecido no Workspace                                                        | Declaração Conflitante                               | Ação / Depende de Confirmação na VPS                                                                                                                                                                                                                    |
+| ------------------------ | ------------------------------------------------------------------------------------ | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Node.js Runtime**      | `Dockerfile` declara `FROM node:20-alpine`                                           | `DOCUMENTACAO.md` menciona Node 18                   | **A confirmar na VPS**: Operador deve rodar `docker exec <container_api> node -v` para atestar se o container roda Node 18 ou Node 20.                                                                                                                  |
+| **Scripts de Migration** | `src/database/migrate.js` aplica arquivos contidos em `src/database/migrations/*.js` | Existe um arquivo `migration.sql` na raiz do projeto | **A confirmar na VPS**: Como `runMigrations()` só lê `src/database/migrations/`, o `migration.sql` da raiz **NÃO é executado automaticamente**. O operador deve confirmar se os `ALTER TABLE` desse arquivo já foram rodados manualmente no PostgreSQL. |
+| **Tabelas Principais**   | `cursos`, `etapas`/`aulas`, `usuarios`, `matriculas`, `progresso`                    | Nomes históricos: `etapas` vs `aulas`                | O código usa majoritariamente `aulas` com colunas `video_path` e `video_type`. Confirmado via código Express.                                                                                                                                           |
+| **Diretório de Vídeos**  | Host: `/srv/cursos/videos/` -> Container: `/app/videos/`                             | Mapeamento no Docker Compose / EasyPanel             | **A confirmar na VPS**: Operador deve verificar permissões de escrita (UID/GID) no volume montado.                                                                                                                                                      |
+
+### 2. Diretrizes de Migrations para a Fase 1
+
+- **Princípio de Minimização:** A reescrita do painel **NÃO criará nenhuma migration nova** sem estrita necessidade funcional comprovada.
+- **Rollback de Schema:** Caso alguma alteração DDL seja autorizada na Fase 1, o procedimento de rollback correspondente (script `DOWN` e plano de restauração via `pg_dump`) será documentado e testado antes do merge.
+
+---
+
+## SEÇÃO ESPECIAL 4: PLANO DE CORREÇÃO DO STREAMING (DOCUMENTAÇÃO — SEM IMPLEMENTAR NESTA RODADA)
+
+> **ATENÇÃO:** Nenhuma linha de código em `src/routes/stream.js` está sendo alterada nesta rodada. Esta seção apenas documenta a especificação técnica aprovada pelo operador.
+
+### 1. Diagnóstico do Problema Atual
+
+Atualmente, `GET /stream/:aulaId` contém um dicionário fixo estático:
+
+```js
+const LOCAL_VIDEO_FILES = {
+  27: path.join(process.env.LOCAL_VIDEO_DIR || '/app/videos', '37', 'aula-27.mp4'),
+}
+```
+
+Se qualquer outra aula com `video_type = 'local'` for solicitada, o endpoint falha com erro 400 (`Vídeo local não configurado para esta aula`), inviabilizando todas as novas aulas gravadas na VPS. Além disso, se o mentor dono do curso acessar a rota para inspecionar seu vídeo, recebe 403 (`Você não está matriculado neste curso`).
+
+### 2. Correção Recomendada e Aprovada
+
+Quando a Fase 1 for expressamente autorizada, a rota de streaming será corrigida conforme os seguintes pilares:
+
+1. **Consulta Dinâmica ao Banco:**
+   - Buscar na tabela `aulas` (ou `etapas`) as colunas `video_path`, `video_type` e `curso_id` pelo `aulaId`.
+   - Se `video_type === 'local'` e `video_path` estiver preenchido, obter o caminho gravado (ex: `37/pending-uuid.mp4` ou `37/aula-27.mp4`).
+
+2. **Resolução e Proteção Contra Path Traversal:**
+   - Resolver o caminho absoluto usando:
+     ```js
+     const baseDir = path.resolve(process.env.LOCAL_VIDEO_DIR || '/app/videos')
+     const resolvedPath = path.resolve(baseDir, aula.video_path)
+     ```
+   - Validar estritamente que `resolvedPath.startsWith(baseDir + path.sep)`. Se violado, rejeitar imediatamente com HTTP 400 / 403 e log de alerta de segurança.
+
+3. **Verificação de Existência do Arquivo:**
+   - Verificar se o arquivo existe em disco (`fs.existsSync(resolvedPath)`). Se ausente, retornar HTTP 404 (`Arquivo de vídeo não encontrado no servidor`).
+
+4. **Fallback Temporário para a Aula 27:**
+   - Manter o mapa fixo `LOCAL_VIDEO_FILES[27]` exclusivamente como fallback de retrocompatibilidade para o caso de a aula 27 ainda não ter o campo `video_path` preenchido no banco de dados.
+
+5. **Liberação de Acesso para o Mentor Proprietário:**
+   - Ajustar a checagem de autorização:
+     ```sql
+     SELECT 1 FROM matriculas m WHERE m.usuario_id = $1 AND m.curso_id = $2
+     UNION
+     SELECT 1 FROM cursos c WHERE c.id = $2 AND c.mentor_id = $1
+     UNION
+     SELECT 1 FROM usuarios u WHERE u.id = $1 AND u.role = 'admin'
+     ```
+   - O mentor do curso conseguirá inspecionar e testar o vídeo no novo player sem precisar de matrícula artificial.
+
+6. **Limpeza de Vídeo Antigo em Substituição:**
+   - Quando o mentor fizer upload de um novo vídeo para uma aula já existente, validar o `video_path` anterior e remover o arquivo antigo do disco de forma atômica para evitar acúmulo de arquivos órfãos no volume `/srv/cursos/videos/`.
 
 ---
 
@@ -148,7 +275,7 @@ Este documento registra a análise técnica completa, estruturada e exaustiva da
 | Middleware `apenasMentor`                      | Funcionando              | Checa `mentor_status = 'aprovado'` ou `role = 'admin'`                                                                                                            |
 | Isolamento de cursos por mentor                | Funcionando              | Queries filtram sempre por `mentor_id = req.usuario.id`                                                                                                           |
 | Upload de MP4 local para VPS                   | Funcionando parcialmente | Salva o arquivo e retorna o path, mas em erro de rename pode deixar rastro e falta confirmação de deleção de arquivo órfão                                        |
-| Streaming HTTP Range local                     | Com erro / Incompleto    | Dicionário estático `LOCAL_VIDEO_FILES = { 27: ... }` com path hardcoded para aula 27! Deve ler `aulas.video_path` dinamicamente do banco de dados                |
+| Streaming HTTP Range local                     | Com erro / Incompleto    | Dicionário estático `LOCAL_VIDEO_FILES = { 27: ... }` com path hardcoded para aula 27. Deve ler `aulas.video_path` dinamicamente do banco de dados                |
 | Autorização no `/stream/:aulaId` para o Mentor | Incompleto               | Rota exige que `usuario_id` esteja em `matriculas`. O mentor do curso não consegue pré-visualizar sua própria aula no player do painel sem estar matriculado nele |
 | Exclusão de vídeo local ao deletar etapa       | Inseguro / Parcial       | `path.resolve` é usado, mas falta trava explícita de escape de diretório antes de `fs.unlinkSync`                                                                 |
 | Trava de curso com alunos                      | Funcionando              | Impede edição se `total_matriculas > 0`                                                                                                                           |
@@ -161,13 +288,7 @@ Este documento registra a análise técnica completa, estruturada e exaustiva da
 
 ### Problema 1: Dicionário fixo da Aula 27 no `stream.js`
 
-- **Problema:** O arquivo `src/routes/stream.js` possui:
-  ```js
-  const LOCAL_VIDEO_FILES = {
-    27: path.join(process.env.LOCAL_VIDEO_DIR || '/app/videos', '37', 'aula-27.mp4'),
-  }
-  ```
-  Todas as outras aulas locais caem em erro porque o código não consulta a coluna `video_path` da tabela `aulas`.
+- **Problema:** O arquivo `src/routes/stream.js` possui mapa estático com a aula 27.
 - **Causa:** Solução temporária (hotfix) aplicada para resolver a aula 27 sem generalizar para as demais aulas locais.
 - **Arquivo:** `src/routes/stream.js`.
 - **Rota:** `GET /stream/:aulaId`.
@@ -195,11 +316,13 @@ Este documento registra a análise técnica completa, estruturada e exaustiva da
 
 ---
 
-## ANÁLISE COMPARATIVA: NOVO PLAYER (REFERÊNCIA ADAPTA)
+## ANÁLISE COMPARATIVA: NOVO PLAYER (REFERÊNCIA ADAPTA) E LIMITAÇÕES
 
-Acessamos e analisamos a referência visual da Adapta Alunos (`https://alunos.adapta.org/area/conteudo/aula/7869245`):
+> **DECLARAÇÃO DE LIMITAÇÃO OBRIGATÓRIA:**  
+> A análise atual da interface do player de referência é baseada na descrição funcional e na especificação conceitual da plataforma Adapta Alunos (`https://alunos.adapta.org/area/conteudo/aula/7869245`), **NÃO na página real inspecionada diretamente pelo GoSkip**, uma vez que a URL exige autenticação restrita de aluno ativo.  
+> Os **screenshots reais do player de referência SERÃO ENVIADOS SEPARADAMENTE pelo operador** e **NÃO estão disponíveis nesta rodada**. Nenhuma conclusão visual definitiva é tomada antes do envio dessas capturas.
 
-- **Layout:** Estrutura limpa com tema escuro/elegante.
+- **Layout Conceitual:** Estrutura limpa com tema escuro/elegante.
 - **Área Central:** Player em destaque (proporção 16:9) com controles de velocidade, tela cheia, qualidade e volume.
 - **Sidebar Retrátil:** Módulos expansíveis (accordion), checklist de aulas concluídas, ícone do tipo de mídia (vídeo, documento, quiz), duração e indicação da aula ativa.
 - **Abaixo do Player:** Título da aula, botão "Marcar como Concluída", navegação rápida "Aula Anterior" e "Próxima Aula", além de abas para "Descrição", "Materiais de Apoio (PDF)" e "Anotações/Dúvidas".
@@ -207,44 +330,70 @@ Acessamos e analisamos a referência visual da Adapta Alunos (`https://alunos.ad
 
 ---
 
-## FASE 1: PLANO DE IMPLEMENTAÇÃO E REESCRITA
+## PENDÊNCIAS EXPLÍCITAS DA FASE 0 (AGUARDANDO ENVIO DO OPERADOR)
 
-O plano detalha a reescrita controlada dividida em 15 etapas sequenciais e rastreáveis:
-
-1. **Estrutura do Painel e Rotas:**
-   - Criação da interface React moderna no frontend do projeto (substituindo o monólito HTML legado por componentes shadcn/ui modulares em TypeScript).
-   - Telas: Dashboard com Métricas, Gestão de Cursos, Editor de Matriz Curricular (Aulas/Etapas), Modal de Provas/Avaliações, e o Novo Player Interativo de Inspeção.
-2. **Autenticação:**
-   - Compatibilidade total com `token` via JWT, SSO do mentor e Bridge Proxy.
-3. **Cursos:**
-   - CRUD de cursos, moderação Groq AI e publicação controlada.
-4. **Etapas:**
-   - Gerenciamento de aulas (vídeos, slides, imagens), ordenação e materiais.
-5. **Materiais de Apoio:**
-   - Upload e vinculação de PDFs complementares.
-6. **Upload de Vídeos VPS:**
-   - Integração com `/mentor/cursos/upload-video-vps` respeitando o limite de 1GB e salvando no diretório do curso.
-7. **Armazenamento e Limpeza:**
-   - Garantia de integridade do diretório persistente `/srv/cursos/videos/`.
-8. **Streaming Dinâmico (`src/routes/stream.js`):**
-   - Substituição do dicionário estático pelo campo `video_path` do banco de dados, com liberação de pré-visualização para o mentor.
-9. **Player Interativo (Inspirado na Referência Adapta):**
-   - Player HTML5 com suporte a Range requests, iframe para YouTube/OneDrive e lista lateral de aulas.
-10. **Progresso e Validação:**
-    - Indicadores visuais de etapas cadastradas e completude da matriz curricular.
-11. **Publicação Segura:**
-    - Botão de publicação com confirmação e status visual (`rascunho`, `em_analise`, `aprovado`, `publicado`, `reprovado`).
-12. **Testes Locais:**
-    - Bateria de testes das 30 condições especificadas no briefing.
-13. **Build:**
-    - Execução do pipeline de compilação sem erros.
-14. **Commit e Hash:**
-    - Geração de commit semântico.
-15. **Instruções de Deploy:**
-    - Comandos claros para deploy manual na VPS via Git e EasyPanel.
+1. **Análise de `src/routes/provas.js`:** **PENDENTE.** O arquivo de provas não foi fornecido no pacote inicial e será enviado separadamente pelo operador. Nenhuma rota ou regra de prova foi inventada ou assumida.
+2. **Screenshots da Referência Adapta:** **PENDENTE.** As capturas visuais da área de membros da Adapta serão enviadas pelo operador.
+3. **Confirmação da Versão do Node.js:** **PENDENTE.** Confirmação manual pelo operador na VPS (`docker exec cursos-api node -v`).
+4. **Validação do `migration.sql` da Raiz:** **PENDENTE.** Confirmação se as instruções DDL da raiz já foram rodadas manualmente no PostgreSQL da VPS.
+5. **Execução do Backup e Rotação do Token:** **PENDENTE.** Execução dos scripts e rotação do token de deploy no painel EasyPanel.
 
 ---
 
-## PRÓXIMOS PASSOS
+## FASE 1: PLANO DA REESCRITA DO PAINEL
 
-Aguardando a autorização do mantenedor para prosseguir com a Fase 2 (implementação do código no repositório).
+### 1. Arquivos que NÃO Serão Alterados nesta Rodada (e Protegidos até Autorização)
+
+Conforme regra estrita do operador, **nenhum código de produção é alterado nesta rodada**. A lista de componentes protegidos inclui:
+
+- `src/routes/mentor.js` (Protegido — inalterado)
+- `src/routes/etapas.js` (Protegido — inalterado)
+- `src/static/painel-mentor.html` (Protegido — inalterado)
+- `src/routes/stream.js` (Protegido — inalterado)
+- Banco de dados PostgreSQL e esquemas (Inalterado)
+- Migrations (`migration.sql` e `src/database/migrations/`) (Inalterado)
+- Autenticação e middlewares JWT / Bridge (Inalterado)
+- Configurações do EasyPanel (Inalterado)
+- `Dockerfile` e imagens Docker (Inalterado)
+- Scripts de deploy em produção (Inalterado)
+- Frontend do aluno (Inalterado)
+- Rotas públicas da API (Inalterado)
+
+### 2. Arquivos Candidatos a Alteração na Fase 1 (Dependem de Autorização Expressa)
+
+Somente após a autorização do operador, do backup confirmado na VPS e do recebimento de `provas.js` e screenshots:
+
+- `src/routes/stream.js` (Apenas para o streaming dinâmico seguro e autorização do mentor).
+- `src/static/painel-mentor.html` ou novo bundle frontend estático servido na rota do mentor.
+- Arquivos complementares mapeados após análise de `src/routes/provas.js`.
+
+---
+
+## TESTES PLANEJADOS, RISCOS E CRITÉRIOS DE ACEITE DA FASE 1
+
+### 1. Testes Planejados
+
+1. **Teste de Autenticação:** Login via JWT Bearer, header `x-cursos-token` e SSO.
+2. **Teste de Isolamento de Mentor:** Tentativa de alteração de curso de outro mentor (deve retornar 403/404).
+3. **Teste de Upload VPS:** Envio de MP4 até 1GB e conferência de gravação em `/app/videos/{curso_id}/`.
+4. **Teste de Streaming Local Dinâmico:** Requisição `GET /stream/:aulaId` com Range `bytes=0-1024` para aula diferente da 27 (status 206).
+5. **Teste de Streaming do Mentor:** Acesso de mentor proprietário à própria aula (deve retornar 200/206, sem 403).
+6. **Teste de Path Traversal:** Envio de caminhos relativos maliciosos em exclusão e stream (deve rejeitar com 400).
+7. **Teste de Moderação Groq:** Submissão de curso para análise e retorno de parecer estruturado.
+8. **Teste de Publicação:** Bloqueio de publicação em curso não aprovado.
+
+### 2. Matriz de Riscos da Fase 1
+
+| Risco                                         | Impacto | Probabilidade | Mitigação Planejada                                                                              |
+| --------------------------------------------- | ------- | ------------- | ------------------------------------------------------------------------------------------------ |
+| Quebra de streaming na aula 27 já existente   | Alto    | Média         | Manter `LOCAL_VIDEO_FILES[27]` como fallback incondicional caso `video_path` seja nulo           |
+| Sobrecarga de disco por uploads locais órfãos | Médio   | Média         | Implementar limpeza automática de arquivos temporários e deleção ao substituir vídeo             |
+| Conflito de versão Node.js no build           | Alto    | Baixa         | Confirmar previamente se a VPS roda Node 18 ou Node 20 antes de gerar dependências               |
+| DDL concorrente ou falha de migration         | Crítico | Baixa         | Nenhuma migration automática na Fase 1; qualquer DDL deve ser testada e com rollback documentado |
+
+### 3. Critérios de Aceite da Fase 1
+
+- [ ] Todo streaming local dinâmico lê de `aulas.video_path` com segurança contra path traversal comprovada.
+- [ ] Mentores conseguem pré-visualizar suas aulas no novo player sem receber erro 403.
+- [ ] Novo painel do mentor entrega interface responsiva com player, sidebar de módulos e suporte aos 4 tipos de vídeo.
+- [ ] O script de rollback restaura o ambiente para o commit estável `47aa7b1` em menos de 10 minutos caso acionado.
