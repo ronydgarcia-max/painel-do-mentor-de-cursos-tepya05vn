@@ -2,9 +2,7 @@ import React, { useState } from 'react'
 import {
   BookOpen,
   Users,
-  TrendingUp,
   Clock,
-  Plus,
   Video,
   FileText,
   CheckCircle2,
@@ -12,13 +10,17 @@ import {
   Play,
   Layers,
   ShieldAlert,
-  Search,
   ExternalLink,
-  ChevronRight,
-  Upload,
   Sparkles,
   Server,
   FileCheck,
+  Download,
+  Terminal,
+  RotateCcw,
+  ListChecks,
+  Check,
+  Copy,
+  FolderGit2,
 } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -27,10 +29,20 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 
 export default function Index() {
-  const [activeTab, setActiveTab] = useState('resumo')
+  const [activeTab, setActiveTab] = useState('operacoes')
+  const [selectedDoc, setSelectedDoc] = useState<
+    'backup' | 'restore' | 'rollback' | 'inventario' | 'checklist'
+  >('backup')
+  const [copiedDoc, setCopiedDoc] = useState<string | null>(null)
   const [selectedVideoSource, setSelectedVideoSource] = useState<
     'vps' | 'youtube' | 'onedrive' | 'cloudinary'
   >('vps')
+
+  const handleCopyPath = (path: string) => {
+    navigator.clipboard.writeText(path)
+    setCopiedDoc(path)
+    setTimeout(() => setCopiedDoc(null), 2000)
+  }
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 p-4 md:p-8 font-sans">
@@ -145,6 +157,13 @@ export default function Index() {
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="bg-slate-900 border border-slate-800 p-1 w-full flex flex-wrap justify-start h-auto gap-1">
             <TabsTrigger
+              value="operacoes"
+              className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white font-semibold flex items-center gap-1.5"
+            >
+              <Terminal className="w-4 h-4" />
+              Operações VPS: Backup &amp; Rollback
+            </TabsTrigger>
+            <TabsTrigger
               value="resumo"
               className="data-[state=active]:bg-blue-600 data-[state=active]:text-white"
             >
@@ -169,6 +188,574 @@ export default function Index() {
               Plano da Fase 1 (Reescrita)
             </TabsTrigger>
           </TabsList>
+
+          {/* Aba Operações: Backup & Rollback (Fase 0) */}
+          <TabsContent value="operacoes" className="space-y-6 mt-6">
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+              {/* Menu de Arquivos Operacionais */}
+              <Card className="bg-slate-900 border-slate-800 lg:col-span-1 h-fit">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm font-semibold text-white flex items-center gap-2">
+                    <FolderGit2 className="w-4 h-4 text-emerald-400" />
+                    Artefatos Operacionais
+                  </CardTitle>
+                  <CardDescription className="text-xs text-slate-400">
+                    Arquivos para o operador copiar e executar na VPS:
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-2 p-3">
+                  <button
+                    onClick={() => setSelectedDoc('backup')}
+                    className={`w-full text-left p-2.5 rounded-lg text-xs transition-colors border ${
+                      selectedDoc === 'backup'
+                        ? 'bg-emerald-950/60 border-emerald-500/50 text-emerald-300 font-medium'
+                        : 'bg-slate-950/50 border-slate-800 text-slate-300 hover:bg-slate-800'
+                    }`}
+                  >
+                    <div className="font-mono flex items-center gap-1.5">
+                      <Terminal className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                      backup-cursos-vps.sh
+                    </div>
+                    <p className="text-[11px] text-slate-400 mt-1">
+                      13 itens de backup e integridade
+                    </p>
+                  </button>
+
+                  <button
+                    onClick={() => setSelectedDoc('restore')}
+                    className={`w-full text-left p-2.5 rounded-lg text-xs transition-colors border ${
+                      selectedDoc === 'restore'
+                        ? 'bg-emerald-950/60 border-emerald-500/50 text-emerald-300 font-medium'
+                        : 'bg-slate-950/50 border-slate-800 text-slate-300 hover:bg-slate-800'
+                    }`}
+                  >
+                    <div className="font-mono flex items-center gap-1.5">
+                      <RotateCcw className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+                      restaurar-cursos-vps.sh
+                    </div>
+                    <p className="text-[11px] text-slate-400 mt-1">
+                      Restauração guiada e --dry-run
+                    </p>
+                  </button>
+
+                  <button
+                    onClick={() => setSelectedDoc('rollback')}
+                    className={`w-full text-left p-2.5 rounded-lg text-xs transition-colors border ${
+                      selectedDoc === 'rollback'
+                        ? 'bg-emerald-950/60 border-emerald-500/50 text-emerald-300 font-medium'
+                        : 'bg-slate-950/50 border-slate-800 text-slate-300 hover:bg-slate-800'
+                    }`}
+                  >
+                    <div className="font-mono flex items-center gap-1.5">
+                      <FileText className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                      PLANO_ROLLBACK.md
+                    </div>
+                    <p className="text-[11px] text-slate-400 mt-1">8 etapas + 8 homologações</p>
+                  </button>
+
+                  <button
+                    onClick={() => setSelectedDoc('inventario')}
+                    className={`w-full text-left p-2.5 rounded-lg text-xs transition-colors border ${
+                      selectedDoc === 'inventario'
+                        ? 'bg-emerald-950/60 border-emerald-500/50 text-emerald-300 font-medium'
+                        : 'bg-slate-950/50 border-slate-800 text-slate-300 hover:bg-slate-800'
+                    }`}
+                  >
+                    <div className="font-mono flex items-center gap-1.5">
+                      <Server className="w-3.5 h-3.5 text-purple-400 shrink-0" />
+                      INVENTARIO_EASYPANEL.md
+                    </div>
+                    <p className="text-[11px] text-slate-400 mt-1">Mapeamento dos 4 serviços</p>
+                  </button>
+
+                  <button
+                    onClick={() => setSelectedDoc('checklist')}
+                    className={`w-full text-left p-2.5 rounded-lg text-xs transition-colors border ${
+                      selectedDoc === 'checklist'
+                        ? 'bg-emerald-950/60 border-emerald-500/50 text-emerald-300 font-medium'
+                        : 'bg-slate-950/50 border-slate-800 text-slate-300 hover:bg-slate-800'
+                    }`}
+                  >
+                    <div className="font-mono flex items-center gap-1.5">
+                      <ListChecks className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                      CHECKLIST_PRE_FASE1.md
+                    </div>
+                    <p className="text-[11px] text-slate-400 mt-1">Condições para autorização</p>
+                  </button>
+                </CardContent>
+              </Card>
+
+              {/* Detalhe do Artefato Selecionado */}
+              <div className="lg:col-span-3 space-y-4">
+                {selectedDoc === 'backup' && (
+                  <Card className="bg-slate-900 border-slate-800">
+                    <CardHeader className="border-b border-slate-800 pb-4">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div>
+                          <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 mb-2">
+                            Script Bash Idempotente
+                          </Badge>
+                          <CardTitle className="text-lg text-white font-mono flex items-center gap-2">
+                            <Terminal className="w-5 h-5 text-emerald-400" />
+                            docs/operacoes/backup-cursos-vps.sh
+                          </CardTitle>
+                          <CardDescription className="text-slate-400 text-xs mt-1">
+                            Cria snapshot integral em{' '}
+                            <code className="text-emerald-300">
+                              /srv/backups/cursos/&lt;timestamp&gt;/
+                            </code>{' '}
+                            no Host VPS
+                          </CardDescription>
+                        </div>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleCopyPath('docs/operacoes/backup-cursos-vps.sh')}
+                          className="border-slate-700 bg-slate-950 text-xs shrink-0"
+                        >
+                          {copiedDoc === 'docs/operacoes/backup-cursos-vps.sh' ? (
+                            <>
+                              <Check className="w-3.5 h-3.5 mr-1 text-emerald-400" />
+                              Caminho Copiado!
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="w-3.5 h-3.5 mr-1 text-slate-400" />
+                              Copiar Caminho
+                            </>
+                          )}
+                        </Button>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="space-y-4 pt-4 text-xs">
+                      <div className="p-3 bg-slate-950 rounded border border-slate-800 space-y-2">
+                        <p className="font-semibold text-emerald-400">
+                          Instrução de Execução na VPS (como root):
+                        </p>
+                        <pre className="p-2.5 bg-black/60 rounded text-slate-200 font-mono text-[11px] overflow-x-auto">
+                          {`chmod +x docs/operacoes/backup-cursos-vps.sh
+./docs/operacoes/backup-cursos-vps.sh`}
+                        </pre>
+                      </div>
+
+                      <div className="space-y-2">
+                        <h4 className="font-semibold text-white">
+                          13 Itens Automatizados no Backup:
+                        </h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                          {[
+                            '1. Bundle Git (git bundle create --all) + Working Tree tar.gz',
+                            '2. Hash estável e Git Tag (backup/pre-fase1-<timestamp>)',
+                            '3. Dump completo PostgreSQL (-Fc via docker exec)',
+                            '4. Schema-only e migrações (src/database/migrations/)',
+                            '5. Snapshot PocketBase (pb_data via docker cp/volume)',
+                            '6. Tar dos vídeos (/srv/cursos/videos/ com --warning=no-file-changed)',
+                            '7. Metadados de volumes Docker (docker volume inspect)',
+                            '8. Configurações EasyPanel (portas, volumes, networks em JSON)',
+                            '9. Envs com SEGREDOS MASCARADOS (***REDACTED***)',
+                            '10. Mapeamento de redes Docker (docker network inspect)',
+                            '11. Snapshot do Redis (BGSAVE + dump.rdb)',
+                            '12. Manifesto completo (backup-manifest.txt com SHA-256)',
+                            '13. Teste de integridade automático (git bundle verify, pg_restore --list)',
+                          ].map((item, i) => (
+                            <div
+                              key={i}
+                              className="p-2 rounded bg-slate-950/60 border border-slate-800 text-slate-300 flex items-start gap-2"
+                            >
+                              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
+                              <span>{item}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {selectedDoc === 'restore' && (
+                  <Card className="bg-slate-900 border-slate-800">
+                    <CardHeader className="border-b border-slate-800 pb-4">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div>
+                          <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30 mb-2">
+                            Restauração Guiada Interativa
+                          </Badge>
+                          <CardTitle className="text-lg text-white font-mono flex items-center gap-2">
+                            <RotateCcw className="w-5 h-5 text-blue-400" />
+                            docs/operacoes/restaurar-cursos-vps.sh
+                          </CardTitle>
+                          <CardDescription className="text-slate-400 text-xs mt-1">
+                            Restauração controlada passo a passo com suporte a validação segura{' '}
+                            <code className="text-blue-300">--dry-run</code>
+                          </CardDescription>
+                        </div>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleCopyPath('docs/operacoes/restaurar-cursos-vps.sh')}
+                          className="border-slate-700 bg-slate-950 text-xs shrink-0"
+                        >
+                          {copiedDoc === 'docs/operacoes/restaurar-cursos-vps.sh' ? (
+                            <>
+                              <Check className="w-3.5 h-3.5 mr-1 text-emerald-400" />
+                              Caminho Copiado!
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="w-3.5 h-3.5 mr-1 text-slate-400" />
+                              Copiar Caminho
+                            </>
+                          )}
+                        </Button>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="space-y-4 pt-4 text-xs">
+                      <div className="p-3 bg-slate-950 rounded border border-slate-800 space-y-2">
+                        <p className="font-semibold text-blue-400">
+                          1. Simulação Prévia (Sem alterações no sistema):
+                        </p>
+                        <pre className="p-2.5 bg-black/60 rounded text-slate-200 font-mono text-[11px] overflow-x-auto">
+                          {`./docs/operacoes/restaurar-cursos-vps.sh /srv/backups/cursos/<timestamp> --dry-run`}
+                        </pre>
+                        <p className="font-semibold text-emerald-400 mt-2">
+                          2. Restauração Efetiva (com confirmação passo a passo):
+                        </p>
+                        <pre className="p-2.5 bg-black/60 rounded text-slate-200 font-mono text-[11px] overflow-x-auto">
+                          {`./docs/operacoes/restaurar-cursos-vps.sh /srv/backups/cursos/<timestamp>`}
+                        </pre>
+                      </div>
+
+                      <div className="space-y-2">
+                        <h4 className="font-semibold text-white">Etapas Executadas pelo Script:</h4>
+                        <div className="space-y-1.5">
+                          <div className="p-2 rounded bg-slate-950/60 border border-slate-800 text-slate-300">
+                            <strong>1. Validação de Checksums:</strong> Executa{' '}
+                            <code className="text-blue-300">sha256sum -c</code> contra o manifesto
+                            antes de qualquer intervenção.
+                          </div>
+                          <div className="p-2 rounded bg-slate-950/60 border border-slate-800 text-slate-300">
+                            <strong>2. Restauração Git:</strong> Checkout da tag anotada ou commit
+                            estável gravado em <code className="text-blue-300">git-state.env</code>.
+                          </div>
+                          <div className="p-2 rounded bg-slate-950/60 border border-slate-800 text-slate-300">
+                            <strong>3. Restauração PostgreSQL:</strong> Executa{' '}
+                            <code className="text-blue-300">pg_restore --clean --if-exists</code>{' '}
+                            sem conflitos de schema.
+                          </div>
+                          <div className="p-2 rounded bg-slate-950/60 border border-slate-800 text-slate-300">
+                            <strong>4. Restauração PocketBase &amp; Vídeos:</strong> Descompacta os
+                            tarballs nos diretórios persistentes do host.
+                          </div>
+                          <div className="p-2 rounded bg-slate-950/60 border border-slate-800 text-slate-300">
+                            <strong>5. Reinicialização Ordenada:</strong> Reinicia Redis,
+                            PostgreSQL, PocketBase e Cursos-API na ordem segura.
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {selectedDoc === 'rollback' && (
+                  <Card className="bg-slate-900 border-slate-800">
+                    <CardHeader className="border-b border-slate-800 pb-4">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div>
+                          <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/30 mb-2">
+                            Procedimento de Contingência
+                          </Badge>
+                          <CardTitle className="text-lg text-white font-mono flex items-center gap-2">
+                            <FileText className="w-5 h-5 text-amber-400" />
+                            docs/operacoes/PLANO_ROLLBACK.md
+                          </CardTitle>
+                          <CardDescription className="text-slate-400 text-xs mt-1">
+                            Premissa mandatória: artefatos residem em{' '}
+                            <code className="text-amber-300">/srv/backups/</code> no Host (fora do
+                            container)
+                          </CardDescription>
+                        </div>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleCopyPath('docs/operacoes/PLANO_ROLLBACK.md')}
+                          className="border-slate-700 bg-slate-950 text-xs shrink-0"
+                        >
+                          {copiedDoc === 'docs/operacoes/PLANO_ROLLBACK.md' ? (
+                            <>
+                              <Check className="w-3.5 h-3.5 mr-1 text-emerald-400" />
+                              Caminho Copiado!
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="w-3.5 h-3.5 mr-1 text-slate-400" />
+                              Copiar Caminho
+                            </>
+                          )}
+                        </Button>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="space-y-4 pt-4 text-xs">
+                      <div className="space-y-2">
+                        <h4 className="font-semibold text-amber-300">
+                          As 8 Etapas na Ordem Exata:
+                        </h4>
+                        <ol className="list-decimal list-inside space-y-1.5 text-slate-300 bg-slate-950 p-3 rounded border border-slate-800">
+                          <li>
+                            <strong className="text-white">Restaurar o commit anterior:</strong>{' '}
+                            Checkout da tag Git ou commit base 47aa7b1.
+                          </li>
+                          <li>
+                            <strong className="text-white">Restaurar o banco:</strong> pg_restore
+                            --clean do postgres-full.dump caso haja migration incompatível.
+                          </li>
+                          <li>
+                            <strong className="text-white">Restaurar os vídeos:</strong>{' '}
+                            Descompactação do tarball em /srv/cursos/videos/.
+                          </li>
+                          <li>
+                            <strong className="text-white">
+                              Recriar os serviços no EasyPanel:
+                            </strong>{' '}
+                            Reinicialização ou redeploy limpo dos containers.
+                          </li>
+                          <li>
+                            <strong className="text-white">Validar a API:</strong> Checagem de
+                            status 200 no endpoint raiz e 401/403 com token no mentor.
+                          </li>
+                          <li>
+                            <strong className="text-white">Validar o player:</strong> HTTP 206
+                            Partial Content com Range bytes no /stream/27.
+                          </li>
+                          <li>
+                            <strong className="text-white">Validar o login do mentor:</strong>{' '}
+                            Obtenção de token e listagem de cursos no painel.
+                          </li>
+                          <li>
+                            <strong className="text-white">Validar o acesso do aluno:</strong>{' '}
+                            Reprodução da aula e gravação de progresso em progresso_aulas.
+                          </li>
+                        </ol>
+                      </div>
+
+                      <div className="space-y-2">
+                        <h4 className="font-semibold text-white">
+                          Os 8 Itens de Homologação Final (Exclusivos do Operador):
+                        </h4>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-slate-300">
+                          {[
+                            '1. Login do Mentor via credenciais / SSO',
+                            '2. Listagem e status dos Cursos',
+                            '3. Matriz Curricular e Etapas',
+                            '4. Upload de Vídeo MP4 na VPS',
+                            '5. Substituição de Mídia na Etapa',
+                            '6. Streaming com Buffer Contínuo',
+                            '7. Player e Materiais de Apoio (PDF)',
+                            '8. Aula 27 e Acesso dos Alunos Matriculados',
+                          ].map((item, i) => (
+                            <div
+                              key={i}
+                              className="p-2 rounded bg-slate-950/60 border border-slate-800 flex items-center gap-2"
+                            >
+                              <Badge
+                                variant="outline"
+                                className="text-[10px] border-amber-500/40 text-amber-300"
+                              >
+                                Pendente
+                              </Badge>
+                              <span>{item}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {selectedDoc === 'inventario' && (
+                  <Card className="bg-slate-900 border-slate-800">
+                    <CardHeader className="border-b border-slate-800 pb-4">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div>
+                          <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/30 mb-2">
+                            Template Operacional
+                          </Badge>
+                          <CardTitle className="text-lg text-white font-mono flex items-center gap-2">
+                            <Server className="w-5 h-5 text-purple-400" />
+                            docs/operacoes/INVENTARIO_EASYPANEL.md
+                          </CardTitle>
+                          <CardDescription className="text-slate-400 text-xs mt-1">
+                            Mapeamento dos 4 serviços: Cursos-API, PostgreSQL, PocketBase e Redis
+                          </CardDescription>
+                        </div>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleCopyPath('docs/operacoes/INVENTARIO_EASYPANEL.md')}
+                          className="border-slate-700 bg-slate-950 text-xs shrink-0"
+                        >
+                          {copiedDoc === 'docs/operacoes/INVENTARIO_EASYPANEL.md' ? (
+                            <>
+                              <Check className="w-3.5 h-3.5 mr-1 text-emerald-400" />
+                              Caminho Copiado!
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="w-3.5 h-3.5 mr-1 text-slate-400" />
+                              Copiar Caminho
+                            </>
+                          )}
+                        </Button>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="space-y-4 pt-4 text-xs text-slate-300">
+                      <p>
+                        O inventário contém os comandos{' '}
+                        <code className="text-purple-300">docker inspect</code> para o operador
+                        preencher cada campo sem registrar segredos, apenas os nomes das variáveis.
+                      </p>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div className="p-3 bg-slate-950 rounded border border-slate-800">
+                          <h5 className="font-semibold text-white mb-1">Cursos-API (Porta 3333)</h5>
+                          <p className="text-slate-400 text-[11px]">
+                            Backend Express. Depende de Postgres, Redis e PocketBase. Monta
+                            /srv/cursos/videos/ em /app/videos/.
+                          </p>
+                        </div>
+                        <div className="p-3 bg-slate-950 rounded border border-slate-800">
+                          <h5 className="font-semibold text-white mb-1">PostgreSQL (Porta 5432)</h5>
+                          <p className="text-slate-400 text-[11px]">
+                            Banco relacional com usuários, cursos, aulas, etapas, matrículas,
+                            progresso e avaliações.
+                          </p>
+                        </div>
+                        <div className="p-3 bg-slate-950 rounded border border-slate-800">
+                          <h5 className="font-semibold text-white mb-1">PocketBase (Porta 8090)</h5>
+                          <p className="text-slate-400 text-[11px]">
+                            Serviço de identidade/SSO persistido em pb_data.
+                          </p>
+                        </div>
+                        <div className="p-3 bg-slate-950 rounded border border-slate-800">
+                          <h5 className="font-semibold text-white mb-1">Redis (Porta 6379)</h5>
+                          <p className="text-slate-400 text-[11px]">
+                            Cache temporário e rate limit do login/bridge-proxy. Volátil em caso de
+                            perda.
+                          </p>
+                        </div>
+                      </div>
+                      <div className="p-3 bg-slate-950/80 rounded border border-slate-800">
+                        <strong className="text-purple-300">
+                          Integrações Externas Registradas:
+                        </strong>{' '}
+                        Cloudinary (imagens/vídeos), Groq AI (moderação) e Microsoft Graph
+                        (OneDrive).
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {selectedDoc === 'checklist' && (
+                  <Card className="bg-slate-900 border-slate-800">
+                    <CardHeader className="border-b border-slate-800 pb-4">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div>
+                          <Badge className="bg-cyan-500/20 text-cyan-400 border-cyan-500/30 mb-2">
+                            Governança Operacional
+                          </Badge>
+                          <CardTitle className="text-lg text-white font-mono flex items-center gap-2">
+                            <ListChecks className="w-5 h-5 text-cyan-400" />
+                            docs/operacoes/CHECKLIST_PRE_FASE1.md
+                          </CardTitle>
+                          <CardDescription className="text-slate-400 text-xs mt-1">
+                            Separação rigorosa entre itens já atendidos e pendências do operador
+                          </CardDescription>
+                        </div>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleCopyPath('docs/operacoes/CHECKLIST_PRE_FASE1.md')}
+                          className="border-slate-700 bg-slate-950 text-xs shrink-0"
+                        >
+                          {copiedDoc === 'docs/operacoes/CHECKLIST_PRE_FASE1.md' ? (
+                            <>
+                              <Check className="w-3.5 h-3.5 mr-1 text-emerald-400" />
+                              Caminho Copiado!
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="w-3.5 h-3.5 mr-1 text-slate-400" />
+                              Copiar Caminho
+                            </>
+                          )}
+                        </Button>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="space-y-4 pt-4 text-xs">
+                      <div>
+                        <h4 className="font-semibold text-emerald-400 mb-2">
+                          Já Confirmados e Auditados no Workspace:
+                        </h4>
+                        <ul className="space-y-1.5 text-slate-300 bg-slate-950 p-3 rounded border border-slate-800">
+                          <li className="flex items-center gap-2">
+                            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                            <span>
+                              Branch correcao-fluxo-cursos e commit base 47aa7b1 confirmados
+                            </span>
+                          </li>
+                          <li className="flex items-center gap-2">
+                            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                            <span>
+                              Commit 34df2d6 isolado na prévia (não está na branch nem na VPS)
+                            </span>
+                          </li>
+                          <li className="flex items-center gap-2">
+                            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                            <span>
+                              Material completo de backup e rollback entregue em docs/operacoes/
+                            </span>
+                          </li>
+                          <li className="flex items-center gap-2">
+                            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                            <span>
+                              Segredos ausentes de qualquer arquivo de código ou documentação
+                            </span>
+                          </li>
+                        </ul>
+                      </div>
+
+                      <div>
+                        <h4 className="font-semibold text-amber-400 mb-2">
+                          Pendências Obrigatórias a Devolver pelo Operador:
+                        </h4>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-slate-300">
+                          {[
+                            '1. Execução do backup na VPS e validação do manifesto',
+                            '2. Teste de restauração em modo --dry-run',
+                            '3. Inventário EasyPanel preenchido com dados reais',
+                            '4. Envio do arquivo provas.js',
+                            '5. Screenshots da referência visual Adapta',
+                            '6. Confirmação da versão do Node.js no container',
+                            '7. Verificação do migration.sql da raiz',
+                            '8. Confirmação do volume de vídeos /srv/cursos/videos/',
+                            '9. ROTAÇÃO DO TOKEN DO EASYPANEL no painel',
+                            '10. Sanitização do DOCUMENTACAO.md no commit',
+                            '11. Confirmação de que nenhum commit foi publicado',
+                          ].map((pend, idx) => (
+                            <div
+                              key={idx}
+                              className="p-2 rounded bg-slate-950/80 border border-slate-800 flex items-start gap-2"
+                            >
+                              <AlertTriangle className="w-3.5 h-3.5 text-amber-400 shrink-0 mt-0.5" />
+                              <span>{pend}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+              </div>
+            </div>
+          </TabsContent>
 
           {/* Aba 1: Resumo & Arquitetura */}
           <TabsContent value="resumo" className="space-y-6 mt-6">
