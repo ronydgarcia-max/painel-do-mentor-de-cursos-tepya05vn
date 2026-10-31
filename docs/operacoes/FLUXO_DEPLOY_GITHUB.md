@@ -5,7 +5,7 @@
 **Branch de Trabalho Autorizada:** `correcao-fluxo-cursos`  
 **Commit de Referência Estável:** `47aa7b1`  
 **Serviço no EasyPanel:** `Cursos-API`  
-**Ambiente:** VPS de Produção (`69.62.124.240`)
+**Ambiente:** VPS de Produção do Projeto
 
 ---
 

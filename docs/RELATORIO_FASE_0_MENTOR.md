@@ -2,7 +2,7 @@
 
 Este documento registra a análise técnica completa, estruturada e exaustiva da **Fase 0** e o **Plano de Reescrita Controlada da Fase 1**, conforme as diretrizes estritas do projeto **Cursos API (Conexão Batista)**.
 
-> **Regra do Projeto:** Nenhuma alteração de código é aplicada na VPS sem análise prévia entregue e autorização explícita do mantenedor. O GoSkip não possui acesso direto à VPS (`69.62.124.240`). A homologação real em produção é manual.
+> **Regra do Projeto:** Nenhuma alteração de código é aplicada na VPS sem análise prévia entregue e autorização explícita do mantenedor. O GoSkip não possui acesso direto à VPS do projeto. A homologação real em produção é manual.
 >
 > **Repositório Oficial:** `github.com/ronydgarcia-max/cursos-api` | **Branch de Trabalho:** `correcao-fluxo-cursos` | **Commit Base Estável:** `47aa7b1`  
 > **Serviços EasyPanel:** Cursos-API, PocketBase, PostgreSQL, Redis.
@@ -81,10 +81,10 @@ Nenhum arquivo deste workspace (documentos, scripts ou protótipos) armazena sen
 
 | Componente               | Estado Conhecido no Workspace                                                        | Declaração Conflitante                               | Ação / Depende de Confirmação na VPS                                                                                                                                                                                                                    |
 | ------------------------ | ------------------------------------------------------------------------------------ | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Node.js Runtime**      | `Dockerfile` declara `FROM node:20-alpine`                                           | `DOCUMENTACAO.md` menciona Node 18                   | **A confirmar na VPS**: Operador deve rodar `docker exec <container_api> node -v` para atestar se o container roda Node 18 ou Node 20.                                                                                                                  |
+| **Node.js Runtime**      | `Dockerfile` declara `FROM node:20-alpine`                                           | Tentativa de `node` falhou no container              | **NÃO CONFIRMADO (Evidência OCI)**: Execução falhou com `OCI runtime exec failed: exec: "node": executable file not found in $PATH`. Ver diagnóstico detalhado na Seção Especial 6.                                                                     |
 | **Scripts de Migration** | `src/database/migrate.js` aplica arquivos contidos em `src/database/migrations/*.js` | Existe um arquivo `migration.sql` na raiz do projeto | **A confirmar na VPS**: Como `runMigrations()` só lê `src/database/migrations/`, o `migration.sql` da raiz **NÃO é executado automaticamente**. O operador deve confirmar se os `ALTER TABLE` desse arquivo já foram rodados manualmente no PostgreSQL. |
 | **Tabelas Principais**   | `cursos`, `etapas`/`aulas`, `usuarios`, `matriculas`, `progresso`                    | Nomes históricos: `etapas` vs `aulas`                | O código usa majoritariamente `aulas` com colunas `video_path` e `video_type`. Confirmado via código Express.                                                                                                                                           |
-| **Diretório de Vídeos**  | Host: `/srv/cursos/videos/` -> Container: `/app/videos/`                             | Mapeamento no Docker Compose / EasyPanel             | **A confirmar na VPS**: Operador deve verificar permissões de escrita (UID/GID) no volume montado.                                                                                                                                                      |
+| **Diretório de Vídeos**  | Host: `/srv/cursos/videos/` -> Container: `/app/videos/`                             | Confirmado no inventário da VPS                      | **Confirmado pelo operador**: Host `/srv/cursos/videos/` montado em `/app/videos/` no container.                                                                                                                                                        |
 
 ### 2. Diretrizes de Migrations para a Fase 1
 
@@ -330,13 +330,129 @@ Quando a Fase 1 for expressamente autorizada, a rota de streaming será corrigid
 
 ---
 
-## PENDÊNCIAS EXPLÍCITAS DA FASE 0 (AGUARDANDO ENVIO DO OPERADOR)
+## SEÇÃO ESPECIAL 5: INVENTÁRIO DO EASYPANEL INCORPORADO (EVIDÊNCIA REAL DA VPS)
 
-1. **Análise de `src/routes/provas.js`:** **PENDENTE.** O arquivo de provas não foi fornecido no pacote inicial e será enviado separadamente pelo operador. Nenhuma rota ou regra de prova foi inventada ou assumida.
-2. **Screenshots da Referência Adapta:** **PENDENTE.** As capturas visuais da área de membros da Adapta serão enviadas pelo operador.
-3. **Confirmação da Versão do Node.js:** **PENDENTE.** Confirmação manual pelo operador na VPS (`docker exec cursos-api node -v`).
-4. **Validação do `migration.sql` da Raiz:** **PENDENTE.** Confirmação se as instruções DDL da raiz já foram rodadas manualmente no PostgreSQL da VPS.
-5. **Execução do Backup e Rotação do Token:** **PENDENTE.** Execução dos scripts e rotação do token de deploy no painel EasyPanel.
+Com base no inventário gerado pelo operador na VPS (`/root/INVENTARIO_EASYPANEL.md` em `Sat Oct 31 19:53:19 -03 2026`, servidor `srv845644`), os dados estruturais dos **4 serviços do projeto Cursos** foram formalmente incorporados:
+
+### 1. Os 4 Serviços do Projeto Cursos
+
+#### A. PostgreSQL (`cursos-api_postgres.1.mpp4zqgnifgzjkh2y0hz9f4hm`)
+
+- **Imagem:** `postgres:17`
+- **Portas:** `5432/tcp` (sem porta externa pública publicada no host; acesso restrito às redes internas Docker)
+- **Volumes Persistentes:**
+  - Host: `/etc/easypanel/projects/cursos-api/postgres/data` -> Container: `/var/lib/postgresql/data`
+- **Redes Docker:** `easypanel`, `easypanel-cursos-api`
+- **Variáveis de Ambiente (apenas nomes registrados):** `GOSU_VERSION`, `LANG`, `PATH`, `PGDATA`, `PG_MAJOR`, `PG_VERSION`, `POSTGRES_DB`, `POSTGRES_PASSWORD`, `POSTGRES_USER`
+
+#### B. Cursos-API (`cursos-api_cursos-api.*` - múltiplas instâncias/réplicas ativas)
+
+- **Imagem:** `easypanel/cursos-api/cursos-api:latest`
+- **Portas:** `3333/tcp` interna (sem publicação direta visível em IP público; roteamento e terminação TLS gerenciados pelo Traefik)
+- **Instâncias Detectadas:** 5+ containers ativos da mesma imagem (ex.: `cursos-api_cursos-api.1.jsmxpl7rmip278eajgb5f5ms4`, `j5smm6275xwx0p0iinl3sb49h`, `4gevvrjk3f2wk36ydjublduq8`, `43ad3ku8iu2na3bbgpwah6lni`, `lm6isq5x8musocfsnnciz9gqh`)
+- **Volumes e Caminhos de Vídeos:**
+  - Host: `/srv/cursos/videos/` -> Container: `/app/videos/`
+- **Redes Docker:** `easypanel`
+
+#### C. Redis (`cursos-api_redis.1.t9nm3rw7cag3ooovnskhnjlok`)
+
+- **Imagem:** `redis:7`
+- **Portas:** `6379/tcp` interna (sem porta externa exposta)
+- **Volumes Persistentes:**
+  - Host: `/etc/easypanel/projects/cursos-api/redis/data` -> Container: `/data`
+- **Redes Docker:** `easypanel`, `easypanel-cursos-api`
+- **Variáveis de Ambiente (apenas nomes registrados):** `PATH`, `REDIS_PASSWORD`, `REDIS_VERSION`
+
+#### D. PocketBase (`cursos-api_pocketbase.1.kohju1jfjbvrbafqt44xbe0qu`)
+
+- **Imagem:** `ghcr.io/muchobien/pocketbase:latest`
+- **Portas:** Sem porta externa publicada visível (acesso interno via proxy reverso/rede interna)
+- **Redes Docker:** `easypanel`
+
+### 2. Infraestrutura de Borda e Outros Serviços no Host (Fora do Escopo Direto)
+
+- **Traefik:** `traefik:3.6.7` gerenciando portas `80/tcp` e `443/tcp` (HTTP/HTTPS) para roteamento público e certificados SSL.
+- **EasyPanel Core:** `easypanel/easypanel:latest` expondo porta `3000/tcp`.
+- **Outros Serviços Hospedados (Fora do Escopo de Cursos):**
+  - `devocional-api` (`devocional-conexao-batista-api`, portas 3100->3333)
+  - `devocional-static` e `devocional-backend-proxy` (`nginx:alpine`, porta 80)
+  - `devocional-devocional-pocketbase-1` (`ghcr.io/muchobien/pocketbase:latest`, porta local de loopback)
+  - `admin-conexao-admin-frontend-1` (`admin-conexao-frontend:latest`, porta 8080->80)
+  - `admin-conexao-admin-api-1` (`admin-conexao-backend:latest`, porta 4000)
+  - `vscode-dev` (`codercom/code-server:latest`, porta 8081->8080)
+
+---
+
+## SEÇÃO ESPECIAL 6: DIAGNÓSTICO DO RUNTIME NODE.JS (SITUAÇÃO: NÃO CONFIRMADO)
+
+Durante a auditoria executada na VPS pelo operador, a tentativa de checar a versão do Node dentro do container `cursos-api` retornou a seguinte mensagem de erro:
+
+```text
+OCI runtime exec failed: exec failed: unable to start container process: exec: "node": executable file not found in $PATH
+```
+
+### 1. Conclusão Técnica
+
+A versão real do Node.js em produção **CONTINUA NÃO CONFIRMADA**.
+
+### 2. Hipóteses Técnicas a Validar na VPS
+
+1. **Runtime Alternativo:** A imagem construída pelo EasyPanel (`easypanel/cursos-api/cursos-api:latest`) pode utilizar outro runtime de JavaScript moderno (como Bun ou Deno) em vez de Node clássico.
+2. **Container ou Instância Incorreta:** Como existem 5+ instâncias com identificadores alfanuméricos gerados pelo EasyPanel/Swarm, o comando pode ter sido acionado contra um container legado, parado ou que executa apenas entrypoint estático/proxy.
+3. **Instalação em Caminho Não Padrão:** O binário pode estar em diretório customizado não exportado no `$PATH` padrão do container (ex.: `/usr/local/bin`, `~/.nvm`, etc.).
+
+### 3. Comandos de Diagnóstico Sugeridos para o Operador na VPS
+
+Para esclarecer definitivamente o runtime antes da Fase 1, o operador deve executar como root na VPS:
+
+```bash
+# A. Inspecionar o sistema operacional e procurar executáveis de runtime:
+docker exec <CONTAINER_CURSOS_API_ATIVO> sh -c "which node || which bun || which deno; cat /etc/os-release"
+
+# B. Checar processos ativos dentro do container principal:
+docker exec <CONTAINER_CURSOS_API_ATIVO> sh -c "ps aux || ps -ef"
+
+# C. Checar o Dockerfile utilizado na raiz do repositório na VPS:
+cat /root/cursos-api/Dockerfile || docker inspect <CONTAINER_CURSOS_API_ATIVO> --format '{{json .Config.Entrypoint}} {{json .Config.Cmd}}'
+```
+
+---
+
+## SEÇÃO ESPECIAL 7: CONFIRMAÇÃO DO BACKUP COMPLETO (AÇÃO CONCLUÍDA PELO OPERADOR)
+
+> **ATRIBUIÇÃO MANDATÓRIA:** Todas as ações abaixo foram executadas e validadas exclusivamente pelo **OPERADOR DA VPS**, sem intervenção de execução direta pelo GoSkip.
+
+- **Data e Hora da Conclusão:** `2026-10-31 19:51:47 -03`
+- **Localização do Snapshot:** `/root/backups/cursos/20261031_195147`
+- **Itens Contidos e Validados:**
+  1. `cursos-api.bundle` (Bundle completo do repositório Git com histórico e tags)
+  2. `cursos-api-source.tar.gz` (Código-fonte versionado e arquivos de configuração)
+  3. `cursos-videos.tar.gz` (Arquivos de vídeo de `/srv/cursos/videos/`)
+  4. `postgres.sql` (Dump estrutural e de dados do PostgreSQL 17)
+  5. Volumes do PocketBase (Arquivos de dados e configurações do PocketBase)
+  6. Configurações estruturais do PostgreSQL
+  7. Configurações estruturais do Redis
+  8. Manifesto Git e metadados operacionais
+  9. `SHA256SUMS.txt` (Assinatura e somas de verificação SHA-256 de todos os artefatos)
+- **Validações Concluídas pelo Operador:**
+  - Hashes SHA-256 validados com sucesso via checksum.
+  - Execução de `restaurar-cursos-vps.sh --dry-run` concluída com **100% de sucesso**.
+  - Nenhuma alteração aplicada na produção.
+
+---
+
+## PENDÊNCIAS RESTANTES PRÉ-FASE 1 (LISTA OFICIAL DOS 6 ITENS)
+
+Com a incorporação do inventário EasyPanel e a confirmação do backup e dry-run pelo operador, restam exatamente **6 pendências mandatórias** antes do início da Fase 1:
+
+1. **Rotação Obrigatória do Token do EasyPanel:** O operador deve rotacionar no painel EasyPanel o token de deploy/API exposto em relatórios anteriores deste projeto.
+2. **Análise de `src/routes/provas.js`:** Arquivo real a ser enviado pelo operador para análise técnica da lógica de avaliações.
+3. **Screenshots Desktop e Celular do Player:** Capturas de tela da área de membros do player de referência (Adapta) a serem enviadas pelo operador.
+4. **Confirmação da Versão Real do Node.js:** Esclarecimento do erro OCI e confirmação se a produção usa Node 18, Node 20, Bun ou Deno.
+5. **Confirmação sobre Migrations do PostgreSQL:** Confirmação de que o `migration.sql` da raiz já foi executado no PostgreSQL ou se é necessário script idempotente de alinhamento.
+6. **Avaliação de Necessidade de Backup dos Dados do Redis:** Avaliação pelo operador se os dados em cache/rate-limit do Redis exigem snapshot persistente ou se podem ser recriados sob demanda.
+
+_(Após o atendimento destes 6 itens, o relatório final da Fase 0 será concluído para emissão do termo de autorização da Fase 1)._
 
 ---
 
@@ -391,7 +507,22 @@ Somente após a autorização do operador, do backup confirmado na VPS e do rece
 | Conflito de versão Node.js no build           | Alto    | Baixa         | Confirmar previamente se a VPS roda Node 18 ou Node 20 antes de gerar dependências               |
 | DDL concorrente ou falha de migration         | Crítico | Baixa         | Nenhuma migration automática na Fase 1; qualquer DDL deve ser testada e com rollback documentado |
 
-### 3. Critérios de Aceite da Fase 1
+### 3. Critérios de Autorização da Fase 1
+
+A autorização para a Fase 1 depende dos seguintes critérios formais:
+
+- [x] **Backup completo preparado e confirmado pelo operador:** Concluído em `/root/backups/cursos/20261031_195147` com bundle Git, fonte, vídeos, dump Postgres, PocketBase e SHA-256.
+- [x] **Restauração em modo `--dry-run` validada pelo operador:** Execução com 100% de sucesso sem alterar produção.
+- [x] **Inventário EasyPanel estruturado na VPS:** Concluído e incorporado em `/root/INVENTARIO_EASYPANEL.md`.
+- [ ] **Rotação do token EasyPanel exposto:** Pendente de execução manual pelo operador no painel da VPS.
+- [ ] **Recebimento e análise de `src/routes/provas.js`:** Pendente de envio pelo operador.
+- [ ] **Recebimento de screenshots desktop e celular do player:** Pendente de envio pelo operador.
+- [ ] **Confirmação da versão real do Node.js (ou runtime):** Pendente do diagnóstico via comandos sugeridos na Seção Especial 6.
+- [ ] **Confirmação do estado do `migration.sql`:** Pendente de confirmação no PostgreSQL.
+- [ ] **Avaliação sobre dados do Redis:** Pendente de validação pelo operador.
+- [ ] **Atualização do relatório final e termo formal assinado pelo mantenedor.**
+
+### 4. Critérios de Aceite Técnico da Fase 1 (Pós-Autorização)
 
 - [ ] Todo streaming local dinâmico lê de `aulas.video_path` com segurança contra path traversal comprovada.
 - [ ] Mentores conseguem pré-visualizar suas aulas no novo player sem receber erro 403.

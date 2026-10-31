@@ -1,8 +1,6 @@
 import React, { useState } from 'react'
 import {
   BookOpen,
-  Users,
-  Clock,
   Video,
   FileText,
   CheckCircle2,
@@ -13,12 +11,9 @@ import {
   ExternalLink,
   Sparkles,
   Server,
-  FileCheck,
-  Download,
   Terminal,
   RotateCcw,
   ListChecks,
-  Check,
   Copy,
   FolderGit2,
   GitBranch,
@@ -26,6 +21,12 @@ import {
   KeyRound,
   Database,
   Radio,
+  Archive,
+  Cpu,
+  Clock,
+  HardDrive,
+  Network,
+  Info,
 } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -34,7 +35,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 
 export default function Index() {
-  const [activeTab, setActiveTab] = useState('commits_seguranca')
+  const [activeTab, setActiveTab] = useState('inventario_real')
   const [selectedDoc, setSelectedDoc] = useState<
     | 'backup'
     | 'restore'
@@ -43,7 +44,7 @@ export default function Index() {
     | 'checklist'
     | 'fluxo_deploy'
     | 'seguranca_secrets'
-  >('checklist')
+  >('inventario')
   const [copiedDoc, setCopiedDoc] = useState<string | null>(null)
   const [selectedVideoSource, setSelectedVideoSource] = useState<
     'vps' | 'youtube' | 'onedrive' | 'cloudinary'
@@ -62,7 +63,7 @@ export default function Index() {
         <div>
           <div className="flex items-center gap-2 mb-2 flex-wrap">
             <Badge variant="outline" className="border-amber-500/50 text-amber-400 bg-amber-500/10">
-              Fase 0: Preparação Segura Pré-Fase 1
+              Fase 0 (Continuação &bull; NÃO é a Fase 1)
             </Badge>
             <Badge variant="outline" className="border-blue-500/50 text-blue-400 bg-blue-500/10">
               github.com/ronydgarcia-max/cursos-api (correcao-fluxo-cursos)
@@ -71,7 +72,7 @@ export default function Index() {
               variant="outline"
               className="border-purple-500/50 text-purple-400 bg-purple-500/10"
             >
-              Commit Base: 47aa7b1
+              Commit Estável: 47aa7b1
             </Badge>
           </div>
           <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-white flex items-center gap-2">
@@ -79,8 +80,8 @@ export default function Index() {
             Painel do Mentor de Cursos &bull; Auditoria Pré-Fase 1
           </h1>
           <p className="text-slate-400 text-sm mt-1">
-            Governança rigorosa, classificação de commits, sanitização de credenciais, fluxo
-            GitHub/EasyPanel em 14 etapas e plano de streaming dinâmico.
+            Governança rigorosa: Inventário EasyPanel da VPS incorporado, Backup e Dry-Run atestados
+            pelo operador, diagnóstico do runtime e checklist das 6 pendências.
           </p>
         </div>
 
@@ -105,19 +106,17 @@ export default function Index() {
         <Alert className="border-amber-500/40 bg-amber-950/20 text-amber-200">
           <ShieldAlert className="h-5 w-5 text-amber-400 shrink-0" />
           <AlertTitle className="font-semibold text-amber-300">
-            Regra Mandatória de Segurança: Nenhuma alteração de código ou deploy em produção
-            realizado
+            Aviso de Governança: Workspace GoSkip é estritamente painel de documentação/prévia
           </AlertTitle>
           <AlertDescription className="text-amber-200/90 text-sm mt-1 space-y-1">
             <p>
-              O GoSkip <strong>NÃO TEM ACESSO À VPS</strong>. A homologação, o backup e o deploy em
-              produção são manuais pelo operador. Arquivos de produção (<code>mentor.js</code>,{' '}
-              <code>etapas.js</code>, <code>painel-mentor.html</code>, <code>stream.js</code>,
-              banco, migrations, etc.) permanecem estritamente intactos.
+              O GoSkip <strong>NÃO TEM ACESSO À VPS</strong>. Nada de produção é alterado aqui. O
+              backup, o teste dry-run e o inventário foram executados na VPS diretamente pelo{' '}
+              <strong>OPERADOR</strong>.
             </p>
             <p className="text-xs text-amber-300/80 font-mono">
-              A Fase 1 só começará após autorização expressa do operador e confirmação de backup na
-              VPS.
+              A Fase 1 permanece bloqueada aguardando as 6 pendências restantes e a autorização
+              formal.
             </p>
           </AlertDescription>
         </Alert>
@@ -127,14 +126,14 @@ export default function Index() {
           <Card className="bg-slate-900 border-slate-800">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium text-slate-400">
-                Commits do Workspace
+                Inventário EasyPanel (VPS)
               </CardTitle>
-              <GitBranch className="w-4 h-4 text-cyan-400" />
+              <Server className="w-4 h-4 text-purple-400" />
             </CardHeader>
             <CardContent>
-              <div className="text-xl font-bold text-white font-mono">34df2d6 &bull; ecf1cc0</div>
-              <p className="text-xs text-emerald-400 mt-1">
-                100% isolados na prévia GoSkip (fora da VPS)
+              <div className="text-xl font-bold text-white font-mono">4 Serviços Ativos</div>
+              <p className="text-xs text-purple-400 mt-1">
+                Postgre 17 &bull; API &bull; Redis 7 &bull; PocketBase
               </p>
             </CardContent>
           </Card>
@@ -142,42 +141,46 @@ export default function Index() {
           <Card className="bg-slate-900 border-slate-800">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium text-slate-400">
-                Segurança &amp; Token
+                Backup do Operador
               </CardTitle>
-              <KeyRound className="w-4 h-4 text-amber-400" />
+              <Archive className="w-4 h-4 text-emerald-400" />
             </CardHeader>
             <CardContent>
-              <div className="text-xl font-bold text-amber-400 flex items-center gap-1.5">
-                EXPOSTO - ROTACIONAR
+              <div className="text-xl font-bold text-emerald-400 flex items-center gap-1.5">
+                Confirmado ✓
               </div>
-              <p className="text-xs text-slate-400 mt-1">[TOKEN_REMOVIDO_E_ROTACIONADO]</p>
+              <p className="text-xs text-slate-400 mt-1 font-mono">
+                /root/backups/cursos/20261031_195147
+              </p>
             </CardContent>
           </Card>
 
           <Card className="bg-slate-900 border-slate-800">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium text-slate-400">
-                Fluxo de Deploy GitHub
+                Diagnóstico Node Runtime
               </CardTitle>
-              <Terminal className="w-4 h-4 text-blue-400" />
+              <Cpu className="w-4 h-4 text-amber-400" />
             </CardHeader>
             <CardContent>
-              <div className="text-xl font-bold text-white">14 Etapas</div>
-              <p className="text-xs text-blue-400 mt-1">correcao-fluxo-cursos (main protegida)</p>
+              <div className="text-xl font-bold text-amber-400">NÃO Confirmado</div>
+              <p className="text-xs text-slate-400 mt-1">Erro OCI: node not found in $PATH</p>
             </CardContent>
           </Card>
 
           <Card className="bg-slate-900 border-slate-800">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium text-slate-400">
-                Streaming da Aula 27
+                Commits GoSkip Internos
               </CardTitle>
-              <Radio className="w-4 h-4 text-purple-400" />
+              <GitBranch className="w-4 h-4 text-cyan-400" />
             </CardHeader>
             <CardContent>
-              <div className="text-xl font-bold text-white">Plano Dinâmico</div>
-              <p className="text-xs text-purple-400 mt-1">
-                Ler video_path em /app/videos (sem código)
+              <div className="text-xl font-bold text-white font-mono">
+                34df2d6 &bull; ecf1cc0 &bull; 505e672
+              </div>
+              <p className="text-xs text-cyan-400 mt-1">
+                Apenas documentação interna GoSkip (não publicar)
               </p>
             </CardContent>
           </Card>
@@ -187,60 +190,614 @@ export default function Index() {
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="bg-slate-900 border border-slate-800 p-1 w-full flex flex-wrap justify-start h-auto gap-1">
             <TabsTrigger
+              value="inventario_real"
+              className="data-[state=active]:bg-purple-600 data-[state=active]:text-white font-semibold flex items-center gap-1.5"
+            >
+              <Server className="w-4 h-4" />
+              Inventário EasyPanel (Real)
+            </TabsTrigger>
+            <TabsTrigger
+              value="backup_operador"
+              className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white font-semibold flex items-center gap-1.5"
+            >
+              <Archive className="w-4 h-4" />
+              Backup Confirmado (Operador)
+            </TabsTrigger>
+            <TabsTrigger
+              value="node_migrations"
+              className="data-[state=active]:bg-amber-600 data-[state=active]:text-white font-semibold flex items-center gap-1.5"
+            >
+              <Cpu className="w-4 h-4" />
+              Node &amp; Migrations (Diagnóstico)
+            </TabsTrigger>
+            <TabsTrigger
+              value="checklist_fase1"
+              className="data-[state=active]:bg-blue-600 data-[state=active]:text-white font-semibold flex items-center gap-1.5"
+            >
+              <ListChecks className="w-4 h-4" />
+              Checklist das 6 Pendências
+            </TabsTrigger>
+            <TabsTrigger
               value="commits_seguranca"
               className="data-[state=active]:bg-cyan-600 data-[state=active]:text-white font-semibold flex items-center gap-1.5"
             >
               <GitBranch className="w-4 h-4" />
-              Situação dos Commits &amp; Segurança
-            </TabsTrigger>
-            <TabsTrigger
-              value="checklist_fase1"
-              className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white font-semibold flex items-center gap-1.5"
-            >
-              <ListChecks className="w-4 h-4" />
-              Checklist Pré-Fase 1
+              Commits GoSkip &amp; Secrets
             </TabsTrigger>
             <TabsTrigger
               value="deploy_14etapas"
-              className="data-[state=active]:bg-blue-600 data-[state=active]:text-white font-semibold flex items-center gap-1.5"
+              className="data-[state=active]:bg-slate-800 data-[state=active]:text-white flex items-center gap-1.5"
             >
               <Terminal className="w-4 h-4" />
               Fluxo Deploy (14 Etapas)
             </TabsTrigger>
             <TabsTrigger
               value="streaming_plano"
-              className="data-[state=active]:bg-purple-600 data-[state=active]:text-white font-semibold flex items-center gap-1.5"
+              className="data-[state=active]:bg-slate-800 data-[state=active]:text-white flex items-center gap-1.5"
             >
               <Radio className="w-4 h-4" />
-              Plano do Streaming
-            </TabsTrigger>
-            <TabsTrigger
-              value="versoes_migrations"
-              className="data-[state=active]:bg-amber-600 data-[state=active]:text-white font-semibold flex items-center gap-1.5"
-            >
-              <Database className="w-4 h-4" />
-              Versões &amp; Migrations
+              Streaming Dinâmico
             </TabsTrigger>
             <TabsTrigger
               value="operacoes"
               className="data-[state=active]:bg-slate-800 data-[state=active]:text-white flex items-center gap-1.5"
             >
               <FolderGit2 className="w-4 h-4" />
-              Scripts VPS (Backup/Rollback)
+              Documentos VPS
             </TabsTrigger>
             <TabsTrigger
               value="player"
               className="data-[state=active]:bg-slate-800 data-[state=active]:text-white flex items-center gap-1.5"
             >
               <Play className="w-4 h-4" />
-              Mock do Player (Adapta)
+              Mock Player (Adapta)
             </TabsTrigger>
           </TabsList>
 
-          {/* Aba 1: Situação dos Commits e Segurança */}
+          {/* Aba: Inventário EasyPanel Real */}
+          <TabsContent value="inventario_real" className="space-y-6 mt-6">
+            <Card className="bg-slate-900 border-slate-800">
+              <CardHeader>
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                  <div>
+                    <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/30 mb-2">
+                      Fonte Real: /root/INVENTARIO_EASYPANEL.md (Host srv845644)
+                    </Badge>
+                    <CardTitle className="text-lg text-white flex items-center gap-2">
+                      <Server className="w-5 h-5 text-purple-400" />
+                      Inventário dos 4 Serviços do Projeto Cursos no EasyPanel
+                    </CardTitle>
+                    <CardDescription className="text-slate-400 text-xs mt-1">
+                      Mapeamento preciso de imagens, portas, volumes montados e variáveis (somente
+                      nomes registrados, zero secrets).
+                    </CardDescription>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => handleCopyPath('docs/operacoes/INVENTARIO_EASYPANEL.md')}
+                    className="border-slate-700 bg-slate-950 text-xs shrink-0"
+                  >
+                    <Copy className="w-3.5 h-3.5 mr-1 text-slate-400" />
+                    Copiar docs/operacoes/INVENTARIO_EASYPANEL.md
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4 text-xs">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Card Serviço: Cursos-API */}
+                  <div className="p-4 rounded-lg bg-slate-950 border border-slate-800 space-y-3">
+                    <div className="flex items-center justify-between border-b border-slate-800/80 pb-2">
+                      <span className="font-bold text-white text-sm flex items-center gap-1.5">
+                        <Terminal className="w-4 h-4 text-blue-400" />
+                        1. Cursos-API (Backend)
+                      </span>
+                      <Badge className="bg-blue-500/20 text-blue-300 border-blue-500/30 text-[10px]">
+                        5+ Réplicas Ativas
+                      </Badge>
+                    </div>
+                    <div className="space-y-1.5 text-slate-300">
+                      <div>
+                        <strong className="text-slate-400">Imagem:</strong>{' '}
+                        <span className="font-mono text-cyan-300">
+                          easypanel/cursos-api/cursos-api:latest
+                        </span>
+                      </div>
+                      <div>
+                        <strong className="text-slate-400">Portas:</strong>{' '}
+                        <span className="font-mono text-slate-200">3333/tcp</span> (sem publicação
+                        pública direta; tráfego mediado por Traefik 3.6.7)
+                      </div>
+                      <div>
+                        <strong className="text-slate-400">Volumes de Vídeo Confirmados:</strong>
+                        <div className="p-2 bg-black/40 rounded mt-1 font-mono text-[11px] text-emerald-300">
+                          Host: /srv/cursos/videos/ &rarr; Container: /app/videos/
+                        </div>
+                      </div>
+                      <div>
+                        <strong className="text-slate-400">Redes:</strong>{' '}
+                        <span className="font-mono text-slate-200">easypanel</span>
+                      </div>
+                      <div>
+                        <strong className="text-slate-400">Situação Node:</strong>{' '}
+                        <span className="text-amber-400 font-semibold">NÃO confirmado</span> (erro
+                        OCI ao tentar rodar node)
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Card Serviço: PostgreSQL */}
+                  <div className="p-4 rounded-lg bg-slate-950 border border-slate-800 space-y-3">
+                    <div className="flex items-center justify-between border-b border-slate-800/80 pb-2">
+                      <span className="font-bold text-white text-sm flex items-center gap-1.5">
+                        <Database className="w-4 h-4 text-emerald-400" />
+                        2. PostgreSQL (Banco Relacional)
+                      </span>
+                      <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30 text-[10px]">
+                        Postgres 17
+                      </Badge>
+                    </div>
+                    <div className="space-y-1.5 text-slate-300">
+                      <div>
+                        <strong className="text-slate-400">Imagem:</strong>{' '}
+                        <span className="font-mono text-cyan-300">postgres:17</span>
+                      </div>
+                      <div>
+                        <strong className="text-slate-400">Portas:</strong>{' '}
+                        <span className="font-mono text-slate-200">5432/tcp</span> (restrita à rede
+                        Docker; sem porta externa exposta)
+                      </div>
+                      <div>
+                        <strong className="text-slate-400">Volume Persistente:</strong>
+                        <div className="p-2 bg-black/40 rounded mt-1 font-mono text-[11px] text-slate-200">
+                          /etc/easypanel/projects/cursos-api/postgres/data &rarr;
+                          /var/lib/postgresql/data
+                        </div>
+                      </div>
+                      <div>
+                        <strong className="text-slate-400">Redes:</strong>{' '}
+                        <span className="font-mono text-slate-200">
+                          easypanel, easypanel-cursos-api
+                        </span>
+                      </div>
+                      <div>
+                        <strong className="text-slate-400">Variáveis (Nomes apenas):</strong>
+                        <p className="font-mono text-[11px] text-slate-400 mt-0.5">
+                          PGDATA, POSTGRES_DB, POSTGRES_PASSWORD, POSTGRES_USER, GOSU_VERSION, LANG,
+                          PATH, PG_MAJOR, PG_VERSION
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Card Serviço: Redis */}
+                  <div className="p-4 rounded-lg bg-slate-950 border border-slate-800 space-y-3">
+                    <div className="flex items-center justify-between border-b border-slate-800/80 pb-2">
+                      <span className="font-bold text-white text-sm flex items-center gap-1.5">
+                        <HardDrive className="w-4 h-4 text-red-400" />
+                        3. Redis (Cache &amp; Rate-Limit)
+                      </span>
+                      <Badge className="bg-red-500/20 text-red-300 border-red-500/30 text-[10px]">
+                        Redis 7
+                      </Badge>
+                    </div>
+                    <div className="space-y-1.5 text-slate-300">
+                      <div>
+                        <strong className="text-slate-400">Imagem:</strong>{' '}
+                        <span className="font-mono text-cyan-300">redis:7</span>
+                      </div>
+                      <div>
+                        <strong className="text-slate-400">Portas:</strong>{' '}
+                        <span className="font-mono text-slate-200">6379/tcp</span> (sem publicação
+                        pública)
+                      </div>
+                      <div>
+                        <strong className="text-slate-400">Volume Persistente:</strong>
+                        <div className="p-2 bg-black/40 rounded mt-1 font-mono text-[11px] text-slate-200">
+                          /etc/easypanel/projects/cursos-api/redis/data &rarr; /data
+                        </div>
+                      </div>
+                      <div>
+                        <strong className="text-slate-400">Redes:</strong>{' '}
+                        <span className="font-mono text-slate-200">
+                          easypanel, easypanel-cursos-api
+                        </span>
+                      </div>
+                      <div>
+                        <strong className="text-slate-400">Variáveis (Nomes apenas):</strong>
+                        <p className="font-mono text-[11px] text-slate-400 mt-0.5">
+                          REDIS_PASSWORD, PATH, REDIS_VERSION
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Card Serviço: PocketBase */}
+                  <div className="p-4 rounded-lg bg-slate-950 border border-slate-800 space-y-3">
+                    <div className="flex items-center justify-between border-b border-slate-800/80 pb-2">
+                      <span className="font-bold text-white text-sm flex items-center gap-1.5">
+                        <KeyRound className="w-4 h-4 text-purple-400" />
+                        4. PocketBase (SSO / Auth)
+                      </span>
+                      <Badge className="bg-purple-500/20 text-purple-300 border-purple-500/30 text-[10px]">
+                        PocketBase Latest
+                      </Badge>
+                    </div>
+                    <div className="space-y-1.5 text-slate-300">
+                      <div>
+                        <strong className="text-slate-400">Imagem:</strong>{' '}
+                        <span className="font-mono text-cyan-300">
+                          ghcr.io/muchobien/pocketbase:latest
+                        </span>
+                      </div>
+                      <div>
+                        <strong className="text-slate-400">Portas:</strong>{' '}
+                        <span className="text-slate-400">
+                          Sem porta externa publicada visível (acesso interno EasyPanel)
+                        </span>
+                      </div>
+                      <div>
+                        <strong className="text-slate-400">Container:</strong>{' '}
+                        <span className="font-mono text-slate-200">
+                          cursos-api_pocketbase.1.kohju1jfjbvrbafqt44xbe0qu
+                        </span>
+                      </div>
+                      <div>
+                        <strong className="text-slate-400">Redes:</strong>{' '}
+                        <span className="font-mono text-slate-200">easypanel</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Bloco: Outros Serviços no Host */}
+                <div className="p-3 bg-slate-950/60 rounded border border-slate-800 space-y-1">
+                  <div className="font-semibold text-slate-300 flex items-center gap-1.5">
+                    <Network className="w-4 h-4 text-slate-400" />
+                    Infraestrutura de Borda e Outros Serviços no Host (Fora do Escopo Direto de
+                    Cursos):
+                  </div>
+                  <p className="text-slate-400 text-[11px]">
+                    <strong>Traefik 3.6.7</strong> (portas 80 e 443 para SSL e roteamento público)
+                    &bull; <strong>EasyPanel Core</strong> (porta 3000) &bull; Serviços devocional e
+                    admin-conexao permanecem segregados e intocados.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Aba: Backup Confirmado (Operador) */}
+          <TabsContent value="backup_operador" className="space-y-6 mt-6">
+            <Card className="bg-slate-900 border-slate-800">
+              <CardHeader>
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                  <div>
+                    <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 mb-2">
+                      Ação Realizada pelo OPERADOR DA VPS
+                    </Badge>
+                    <CardTitle className="text-lg text-white flex items-center gap-2">
+                      <Archive className="w-5 h-5 text-emerald-400" />
+                      Backup Completo e Dry-Run Validados na VPS
+                    </CardTitle>
+                    <CardDescription className="text-slate-400 text-xs mt-1">
+                      Atestado formalmente pelo operador em 2026-10-31 19:51:47 -03. O GoSkip não
+                      executou ações de produção.
+                    </CardDescription>
+                  </div>
+                  <Badge
+                    variant="outline"
+                    className="border-emerald-500/50 text-emerald-300 bg-emerald-500/10 text-xs font-mono"
+                  >
+                    SHA-256 Checksum: OK ✓
+                  </Badge>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4 text-xs">
+                <div className="p-3 bg-emerald-950/20 border border-emerald-800/40 rounded space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-emerald-300 text-sm">
+                      Diretório do Snapshot na VPS:
+                    </span>
+                    <span className="font-mono text-emerald-400">2026-10-31 19:51:47 -03</span>
+                  </div>
+                  <div className="p-2 bg-black/60 rounded font-mono text-emerald-300 text-sm">
+                    /root/backups/cursos/20261031_195147
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <h4 className="font-semibold text-white">
+                    Conteúdo do Snapshot Confirmado pelo Operador:
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-slate-300">
+                    {[
+                      {
+                        item: 'cursos-api.bundle',
+                        desc: 'Bundle Git completo com histórico e tags',
+                      },
+                      {
+                        item: 'cursos-api-source.tar.gz',
+                        desc: 'Código-fonte versionado e configurações',
+                      },
+                      {
+                        item: 'cursos-videos.tar.gz',
+                        desc: 'Arquivos de vídeo de /srv/cursos/videos/',
+                      },
+                      { item: 'postgres.sql', desc: 'Dump estrutural e de dados do PostgreSQL 17' },
+                      {
+                        item: 'Volumes PocketBase',
+                        desc: 'Dados e configurações do serviço de autenticação',
+                      },
+                      {
+                        item: 'Configurações estruturais',
+                        desc: 'Configurações estruturais de PostgreSQL e Redis',
+                      },
+                      {
+                        item: 'Manifesto Git',
+                        desc: 'Metadados operacionais e commit de referência',
+                      },
+                      {
+                        item: 'SHA256SUMS.txt',
+                        desc: 'Hashes SHA-256 validados com 100% de integridade',
+                      },
+                    ].map((entry, idx) => (
+                      <div
+                        key={idx}
+                        className="p-2.5 rounded bg-slate-950 border border-slate-800 flex items-start gap-2"
+                      >
+                        <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                        <div>
+                          <strong className="text-white font-mono">{entry.item}</strong>
+                          <p className="text-slate-400 text-[11px]">{entry.desc}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="p-3 rounded bg-blue-950/30 border border-blue-800/40 text-blue-200 space-y-1">
+                  <div className="font-semibold flex items-center gap-1.5">
+                    <CheckCircle2 className="w-4 h-4 text-blue-400" />
+                    Validação em Modo Dry-Run Executada com Sucesso:
+                  </div>
+                  <p className="text-[11px] text-slate-300">
+                    O script <code>restaurar-cursos-vps.sh --dry-run</code> foi executado pelo
+                    operador contra o diretório gerado, atestando a integridade dos checksums sem
+                    alterar nenhuma tabela ou arquivo de produção.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Aba: Node & Migrations (Diagnóstico) */}
+          <TabsContent value="node_migrations" className="space-y-6 mt-6">
+            <Card className="bg-slate-900 border-slate-800">
+              <CardHeader>
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                  <div>
+                    <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/30 mb-2">
+                      Diagnóstico Obrigatório Pré-Fase 1
+                    </Badge>
+                    <CardTitle className="text-lg text-white flex items-center gap-2">
+                      <Cpu className="w-5 h-5 text-amber-400" />
+                      Situação do Runtime Node.js e Migrations do PostgreSQL
+                    </CardTitle>
+                    <CardDescription className="text-slate-400 text-xs mt-1">
+                      Registro explícito do erro OCI obtido e plano de resolução pelo operador.
+                    </CardDescription>
+                  </div>
+                  <Badge
+                    variant="destructive"
+                    className="bg-red-500/20 text-red-300 border-red-500/30 text-xs font-mono"
+                  >
+                    Node: NÃO Confirmado
+                  </Badge>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-5 text-xs">
+                {/* Bloco Node OCI */}
+                <div className="p-3 bg-red-950/20 border border-red-800/40 rounded space-y-2">
+                  <div className="font-semibold text-red-300 flex items-center gap-1.5">
+                    <AlertTriangle className="w-4 h-4 text-red-400" />
+                    Evidência do Erro OCI no Container Cursos-API:
+                  </div>
+                  <pre className="p-2.5 bg-black/60 rounded font-mono text-red-300 text-[11px] overflow-x-auto whitespace-pre-wrap">
+                    OCI runtime exec failed: exec failed: unable to start container process: exec:
+                    "node": executable file not found in $PATH
+                  </pre>
+                  <p className="text-slate-300 text-[11px]">
+                    <strong>Conclusão Técnica:</strong> A versão real do Node em produção continua{' '}
+                    <strong>NÃO confirmada</strong>.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="p-3 bg-slate-950 rounded border border-slate-800 space-y-2">
+                    <h4 className="font-semibold text-white flex items-center gap-1.5">
+                      <Info className="w-4 h-4 text-blue-400" />
+                      Hipóteses Técnicas a Validar na VPS:
+                    </h4>
+                    <ul className="list-disc pl-4 space-y-1 text-slate-400 text-[11px]">
+                      <li>
+                        <strong className="text-slate-300">Runtime Alternativo:</strong> A imagem do
+                        EasyPanel pode utilizar Bun ou Deno em vez de Node clássico.
+                      </li>
+                      <li>
+                        <strong className="text-slate-300">Instância Consultada:</strong> Como há 5+
+                        containers com IDs gerados pelo Swarm/EasyPanel, o comando pode ter sido
+                        executado contra réplica inativa ou proxy.
+                      </li>
+                      <li>
+                        <strong className="text-slate-300">Caminho $PATH:</strong> O executável pode
+                        estar em caminho não padrão (ex.: NVM ou /usr/local/bin).
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div className="p-3 bg-slate-950 rounded border border-slate-800 space-y-2">
+                    <h4 className="font-semibold text-white flex items-center gap-1.5">
+                      <Terminal className="w-4 h-4 text-emerald-400" />
+                      Comandos Sugeridos para o Operador:
+                    </h4>
+                    <p className="text-slate-400 text-[11px]">
+                      Executar no container Cursos-API ativo na VPS:
+                    </p>
+                    <pre className="p-2 bg-black/60 rounded font-mono text-[11px] text-emerald-300 overflow-x-auto">
+                      {`docker exec <container> sh -c "which node || which bun || which deno; cat /etc/os-release"`}
+                    </pre>
+                    <p className="text-slate-400 text-[11px]">
+                      E verificar o Dockerfile real do projeto:
+                    </p>
+                    <pre className="p-2 bg-black/60 rounded font-mono text-[11px] text-cyan-300 overflow-x-auto">
+                      {`cat /root/cursos-api/Dockerfile`}
+                    </pre>
+                  </div>
+                </div>
+
+                {/* Bloco Migrations */}
+                <div className="p-3 bg-slate-950 rounded border border-slate-800 space-y-2">
+                  <h4 className="font-semibold text-white flex items-center gap-1.5">
+                    <Database className="w-4 h-4 text-amber-400" />
+                    Situação das Migrations do PostgreSQL (Postgres 17):
+                  </h4>
+                  <p className="text-slate-300 text-[11px]">
+                    O runner <code>src/database/migrate.js</code> executa apenas os arquivos
+                    contidos em <code>src/database/migrations/*.js</code>. O arquivo{' '}
+                    <code>migration.sql</code> presente na raiz do projeto{' '}
+                    <strong>NÃO é executado automaticamente</strong>.
+                  </p>
+                  <p className="text-slate-400 text-[11px]">
+                    <strong>Ação do Operador:</strong> Confirmar se as instruções SQL da raiz já
+                    foram aplicadas manualmente no banco antes do início da Fase 1.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Aba: Checklist das 6 Pendências */}
+          <TabsContent value="checklist_fase1" className="space-y-6 mt-6">
+            <Card className="bg-slate-900 border-slate-800">
+              <CardHeader>
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                  <div>
+                    <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30 mb-2">
+                      Governança Pré-Fase 1
+                    </Badge>
+                    <CardTitle className="text-lg text-white flex items-center gap-2">
+                      <ListChecks className="w-5 h-5 text-blue-400" />
+                      Checklist: O que Foi Confirmado vs. As 6 Pendências Restantes
+                    </CardTitle>
+                    <CardDescription className="text-slate-400 text-xs mt-1">
+                      Separação transparente entre validações concluídas pelo operador e
+                      bloqueadores da Fase 1.
+                    </CardDescription>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => handleCopyPath('docs/operacoes/CHECKLIST_PRE_FASE1.md')}
+                    className="border-slate-700 bg-slate-950 text-xs shrink-0"
+                  >
+                    <Copy className="w-3.5 h-3.5 mr-1 text-slate-400" />
+                    Copiar docs/operacoes/CHECKLIST_PRE_FASE1.md
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-6 text-xs">
+                {/* Grupo 1: Confirmado pelo Operador */}
+                <div>
+                  <h4 className="font-semibold text-emerald-400 mb-2 flex items-center gap-1.5 text-sm">
+                    <CheckCircle2 className="w-4 h-4" />
+                    1. Confirmado e Concluído pelo Operador na VPS:
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-slate-300">
+                    {[
+                      'Backup completo executado em /root/backups/cursos/20261031_195147',
+                      'Hashes SHA256SUMS.txt validados com 100% de sucesso',
+                      'Restauração em modo --dry-run validada sem erros',
+                      'Inventário EasyPanel gerado no host srv845644 e incorporado',
+                      'Caminhos de vídeo confirmados: /srv/cursos/videos/ -> /app/videos/',
+                      'Nenhuma alteração feita na produção durante a Fase 0',
+                    ].map((item, idx) => (
+                      <div
+                        key={idx}
+                        className="p-2.5 rounded bg-slate-950/80 border border-slate-800 flex items-start gap-2"
+                      >
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
+                        <span>{item}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Grupo 2: As 6 Pendências Restantes */}
+                <div>
+                  <h4 className="font-semibold text-amber-400 mb-2 flex items-center gap-1.5 text-sm">
+                    <AlertTriangle className="w-4 h-4" />
+                    2. As 6 Pendências Restantes Pré-Fase 1 (Bloqueadoras da Fase 1):
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-slate-300">
+                    {[
+                      {
+                        title: '1. Rotação do Token EasyPanel',
+                        desc: 'Rotacionar no painel EasyPanel o token de webhook exposto anteriormente.',
+                        badge: 'Pendente Operador',
+                      },
+                      {
+                        title: '2. Análise de src/routes/provas.js',
+                        desc: 'Operador enviará o arquivo real de provas para análise da lógica de avaliação.',
+                        badge: 'Aguardando Envio',
+                      },
+                      {
+                        title: '3. Screenshots Desktop e Celular do Player',
+                        desc: 'Capturas de tela da área de membros de referência (Adapta) a serem enviadas.',
+                        badge: 'Aguardando Envio',
+                      },
+                      {
+                        title: '4. Confirmação da Versão Real do Node',
+                        desc: 'Esclarecer falha OCI rodando diagnóstico de runtime (Node vs Bun vs Deno).',
+                        badge: 'Pendente Diagnóstico',
+                      },
+                      {
+                        title: '5. Confirmação sobre Migrations PostgreSQL',
+                        desc: 'Validar se comandos de migration.sql da raiz já foram rodados no Postgres 17.',
+                        badge: 'Pendente Confirmação',
+                      },
+                      {
+                        title: '6. Avaliação sobre Backup dos Dados do Redis',
+                        desc: 'Avaliar se dados em cache do Redis precisam de snapshot ou se são voláteis.',
+                        badge: 'Pendente Avaliação',
+                      },
+                    ].map((item, idx) => (
+                      <div
+                        key={idx}
+                        className="p-3 rounded bg-slate-950/80 border border-amber-900/40 space-y-1"
+                      >
+                        <div className="flex items-center justify-between">
+                          <strong className="text-white">{item.title}</strong>
+                          <Badge
+                            variant="outline"
+                            className="text-[10px] border-amber-500/40 text-amber-300 shrink-0"
+                          >
+                            {item.badge}
+                          </Badge>
+                        </div>
+                        <p className="text-slate-400 text-[11px]">{item.desc}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Aba: Commits GoSkip & Secrets */}
           <TabsContent value="commits_seguranca" className="space-y-6 mt-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Card 1: Situação dos Commits do Workspace */}
+              {/* Card Commits Internos */}
               <Card className="bg-slate-900 border-slate-800">
                 <CardHeader>
                   <div className="flex items-center justify-between">
@@ -251,10 +808,10 @@ export default function Index() {
                   </div>
                   <CardTitle className="text-lg text-white mt-2 flex items-center gap-2">
                     <GitBranch className="w-5 h-5 text-cyan-400" />
-                    Situação dos Commits do Workspace (34df2d6 e ecf1cc0)
+                    Commits do Workspace GoSkip (34df2d6, ecf1cc0, 505e672)
                   </CardTitle>
                   <CardDescription className="text-slate-400 text-xs">
-                    Resposta estruturada aos 7 pontos levantados pelo operador da VPS:
+                    Classificação estrita dos commits gerados no workspace de documentação:
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3 text-xs">
@@ -262,79 +819,39 @@ export default function Index() {
                     <div className="flex items-start gap-2">
                       <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
                       <div>
-                        <strong className="text-white">1. Onde foram criados:</strong>
+                        <strong className="text-white">Isolamento no Workspace:</strong>
                         <p className="text-slate-400">
-                          Criados estritamente dentro do workspace de prévia do GoSkip.
+                          Os commits <code>34df2d6</code>, <code>ecf1cc0</code> e{' '}
+                          <code>505e672</code> foram criados exclusivamente dentro do workspace
+                          efêmero de documentação do GoSkip.
                         </p>
                       </div>
                     </div>
                     <div className="flex items-start gap-2">
                       <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
                       <div>
-                        <strong className="text-white">
-                          2. Não pertencem ao repositório real:
-                        </strong>
+                        <strong className="text-white">Não estão no repositório real:</strong>
                         <p className="text-slate-400">
-                          Não pertencem ao repositório <code>cursos-api</code>.
+                          Não foram enviados (sem push) e não pertencem ao repositório oficial{' '}
+                          <code>cursos-api</code>.
                         </p>
                       </div>
                     </div>
                     <div className="flex items-start gap-2">
                       <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
                       <div>
-                        <strong className="text-white">3. Não estão na branch de trabalho:</strong>
+                        <strong className="text-white">Zero impacto em produção:</strong>
                         <p className="text-slate-400">
-                          Não pertencem à branch <code>correcao-fluxo-cursos</code>.
+                          Nenhum arquivo de produção da VPS foi alterado.{' '}
+                          <strong>NÃO devem ser publicados na VPS.</strong>
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                      <div>
-                        <strong className="text-white">4. Não foram enviados ao GitHub:</strong>
-                        <p className="text-slate-400">Nenhum push foi executado para o GitHub.</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                      <div>
-                        <strong className="text-white">5. Não alteram produção:</strong>
-                        <p className="text-slate-400">
-                          Zero impacto no ambiente ou serviços da VPS.
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                      <div>
-                        <strong className="text-white">6. Conteúdo exclusivo:</strong>
-                        <p className="text-slate-400">
-                          Contêm apenas documentação e o protótipo de visualização (
-                          <code>docs/RELATORIO_FASE_0_MENTOR.md</code> e{' '}
-                          <code>src/pages/Index.tsx</code>).
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                      <div>
-                        <strong className="text-white">7. Destino e isolamento:</strong>
-                        <p className="text-slate-400">
-                          Mantidos no workspace apenas como material de referência.{' '}
-                          <strong>NÃO serão publicados na VPS.</strong>
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="p-2.5 rounded bg-cyan-950/40 border border-cyan-800/40 text-cyan-200">
-                    <strong>Conclusão:</strong> Commits de relatório/protótipo ficam 100% separados
-                    de produção e não serão misturados à branch de trabalho sem autorização
-                    expressa.
                   </div>
                 </CardContent>
               </Card>
 
-              {/* Card 2: Segurança dos Relatórios & Token EasyPanel */}
+              {/* Card Segurança de Secrets */}
               <Card className="bg-slate-900 border-slate-800">
                 <CardHeader>
                   <div className="flex items-center justify-between">
@@ -353,50 +870,24 @@ export default function Index() {
                     Segurança dos Relatórios &amp; Política de Secrets
                   </CardTitle>
                   <CardDescription className="text-slate-400 text-xs">
-                    Sanitização ativa, mascaramento e solicitação de rotação de credenciais:
+                    Sanitização ativa: zero senhas ou tokens em texto puro nos relatórios.
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3 text-xs">
                   <div className="p-3 bg-red-950/20 border border-red-800/40 rounded space-y-2">
                     <p className="font-semibold text-red-300 flex items-center gap-1.5">
                       <AlertTriangle className="w-4 h-4 text-red-400 shrink-0" />
-                      Alerta de Rotação Obrigatória no EasyPanel:
+                      Token EasyPanel Exposto:
                     </p>
                     <p className="text-slate-300">
-                      O relatório anterior continha um token de deploy do EasyPanel. O valor real
-                      foi completamente removido e substituído por:
+                      O valor real foi substituído pelo marcador de segurança:
                     </p>
                     <div className="p-2 bg-black/60 rounded font-mono text-amber-300 text-center font-bold">
                       [TOKEN_REMOVIDO_E_ROTACIONADO]
                     </div>
-                    <p className="text-slate-400">
-                      O valor real <strong>não é reproduzido em nenhum arquivo</strong> deste
-                      workspace e deve ser rotacionado manualmente pelo operador no painel do
-                      EasyPanel.
-                    </p>
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <h4 className="font-semibold text-white">Política de Sanitização Aplicada:</h4>
-                    <p className="text-slate-400">
-                      Senhas, chaves de API, cookies, headers Authorization, chaves privadas,
-                      strings de conexão e valores de secrets foram sanitizados em todos os
-                      documentos. Mantidos apenas:{' '}
-                      <strong>
-                        nome da variável, serviço onde é usada, finalidade e exemplo fictício
-                      </strong>
-                      .
-                    </p>
-                  </div>
-
-                  <div className="p-2.5 rounded bg-slate-950 border border-slate-800 space-y-1">
-                    <span className="text-slate-300 font-semibold">
-                      Exemplos de Secrets Mascarados:
-                    </span>
-                    <p className="text-slate-400 font-mono text-[11px]">
-                      JWT_SECRET &bull; MENTOR_JWT_SECRET &bull; CURSOS_API_BRIDGE_SECRET &bull;
-                      POSTGRES_PASSWORD &bull; REDIS_PASSWORD &bull; CLOUDINARY_API_SECRET &bull;
-                      MS_GRAPH_CLIENT_SECRET &bull; GROQ_API_KEY
+                    <p className="text-slate-400 text-[11px]">
+                      A rotação manual no EasyPanel continua listada como pendência mandatória do
+                      operador pré-Fase 1.
                     </p>
                   </div>
                 </CardContent>
@@ -404,141 +895,7 @@ export default function Index() {
             </div>
           </TabsContent>
 
-          {/* Aba 2: Checklist Pré-Fase 1 */}
-          <TabsContent value="checklist_fase1" className="space-y-6 mt-6">
-            <Card className="bg-slate-900 border-slate-800">
-              <CardHeader>
-                <div className="flex items-center justify-between flex-wrap gap-2">
-                  <div>
-                    <CardTitle className="text-lg text-white flex items-center gap-2">
-                      <ListChecks className="w-5 h-5 text-emerald-400" />
-                      Checklist de Entrega Pré-Fase 1 (Status por Item)
-                    </CardTitle>
-                    <CardDescription className="text-slate-400 text-xs mt-1">
-                      Distinção rigorosa entre itens prontos no workspace e pendências que dependem
-                      do operador / envio externo.
-                    </CardDescription>
-                  </div>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => handleCopyPath('docs/operacoes/CHECKLIST_PRE_FASE1.md')}
-                    className="border-slate-700 bg-slate-950 text-xs shrink-0"
-                  >
-                    <Copy className="w-3.5 h-3.5 mr-1 text-slate-400" />
-                    Copiar Caminho do Checklist
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-6 text-xs">
-                {/* Grupo 1: Pronto no Workspace */}
-                <div>
-                  <h4 className="font-semibold text-emerald-400 mb-2 flex items-center gap-1.5 text-sm">
-                    <CheckCircle2 className="w-4 h-4" />
-                    1. Pronto e Auditado no Workspace GoSkip:
-                  </h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-slate-300">
-                    {[
-                      'Branch de trabalho correcao-fluxo-cursos e commit base 47aa7b1 definidos',
-                      'Commits 34df2d6 e ecf1cc0 classificados como internos e isolados',
-                      'Script de backup com 13 itens entregue (docs/operacoes/backup-cursos-vps.sh)',
-                      'Script de restauração com --dry-run entregue (restaurar-cursos-vps.sh)',
-                      'Plano de rollback em 8 etapas e homologações (PLANO_ROLLBACK.md)',
-                      'Template de inventário EasyPanel entregue (INVENTARIO_EASYPANEL.md)',
-                      'Fluxo de deploy GitHub/EasyPanel em 14 etapas documentado',
-                      'Política de segurança de secrets e mascaramento formalizada',
-                      'Token exposto marcado como [TOKEN_REMOVIDO_E_ROTACIONADO]',
-                      'Plano de correção do streaming dinâmico especificado sem alterar stream.js',
-                      'Delimitação estrita de arquivos intocados na Fase 0',
-                    ].map((item, idx) => (
-                      <div
-                        key={idx}
-                        className="p-2.5 rounded bg-slate-950/80 border border-slate-800 flex items-start gap-2"
-                      >
-                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
-                        <span>{item}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Grupo 2: Pendente do Operador */}
-                <div>
-                  <h4 className="font-semibold text-amber-400 mb-2 flex items-center gap-1.5 text-sm">
-                    <AlertTriangle className="w-4 h-4" />
-                    2. Pendente do Operador da VPS (Execução / Confirmação):
-                  </h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-slate-300">
-                    {[
-                      'Executar backup-cursos-vps.sh na VPS e validar manifesto SHA-256',
-                      'Executar restaurar-cursos-vps.sh em modo --dry-run para teste',
-                      'Preencher INVENTARIO_EASYPANEL.md com dados reais dos 4 serviços',
-                      'ROTAÇÃO OBRIGATÓRIA DO TOKEN DO EASYPANEL no painel de webhooks',
-                      'Confirmar versão do Node.js no container (Node 18 vs Node 20)',
-                      'Verificar se o migration.sql da raiz já foi executado no PostgreSQL',
-                      'Confirmar permissões de gravação no volume /srv/cursos/videos/',
-                      'Sanitizar DOCUMENTACAO.md no repositório da VPS',
-                      'Confirmar que nenhum commit foi mesclado sem homologação',
-                    ].map((item, idx) => (
-                      <div
-                        key={idx}
-                        className="p-2.5 rounded bg-slate-950/80 border border-amber-900/30 flex items-start gap-2"
-                      >
-                        <Badge
-                          variant="outline"
-                          className="text-[10px] border-amber-500/40 text-amber-300 shrink-0"
-                        >
-                          Pendente VPS
-                        </Badge>
-                        <span>{item}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Grupo 3: Aguardando Envio do Operador */}
-                <div>
-                  <h4 className="font-semibold text-cyan-400 mb-2 flex items-center gap-1.5 text-sm">
-                    <Clock className="w-4 h-4" />
-                    3. Aguardando Envio Separado pelo Operador:
-                  </h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-slate-300">
-                    <div className="p-3 rounded bg-slate-950/80 border border-cyan-900/40 space-y-1">
-                      <div className="flex items-center justify-between">
-                        <strong className="text-white font-mono">src/routes/provas.js</strong>
-                        <Badge className="bg-cyan-500/20 text-cyan-300 border-cyan-500/30 text-[10px]">
-                          Aguardando Envio
-                        </Badge>
-                      </div>
-                      <p className="text-slate-400 text-[11px]">
-                        Arquivo será enviado separadamente pelo operador.{' '}
-                        <strong>Não disponível nesta rodada</strong>: rotas e lógica de provas não
-                        foram analisadas nem inventadas.
-                      </p>
-                    </div>
-
-                    <div className="p-3 rounded bg-slate-950/80 border border-cyan-900/40 space-y-1">
-                      <div className="flex items-center justify-between">
-                        <strong className="text-white font-mono">
-                          Screenshots do Player Adapta
-                        </strong>
-                        <Badge className="bg-cyan-500/20 text-cyan-300 border-cyan-500/30 text-[10px]">
-                          Aguardando Envio
-                        </Badge>
-                      </div>
-                      <p className="text-slate-400 text-[11px]">
-                        Capturas da área restrita de alunos serão enviadas pelo operador. Análise
-                        atual é baseada na descrição e mock conceitual, pois a página real exige
-                        login.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Aba 3: Fluxo de Deploy GitHub em 14 Etapas */}
+          {/* Aba: Fluxo de Deploy GitHub em 14 Etapas */}
           <TabsContent value="deploy_14etapas" className="space-y-6 mt-6">
             <Card className="bg-slate-900 border-slate-800">
               <CardHeader>
@@ -597,7 +954,7 @@ export default function Index() {
                     },
                     {
                       step: 6,
-                      title: '6. EasyPanel reconstrói o serviço Cursos-API',
+                      title: '6. EasyPanel reconstrói Cursos-API',
                       desc: 'Operador aciona Rebuild/Redeploy no dashboard do EasyPanel para o serviço Cursos-API.',
                     },
                     {
@@ -655,23 +1012,17 @@ export default function Index() {
                     </div>
                   ))}
                 </div>
-
-                <div className="p-3 rounded bg-blue-950/30 border border-blue-800/40 text-blue-200">
-                  <strong>Avisos em Destaque:</strong> Branch <code>main</code> protegida e não
-                  utilizada sem autorização; commits do workspace não são publicados
-                  automaticamente; deploy, logs e homologação são 100% manuais pelo operador na VPS.
-                </div>
               </CardContent>
             </Card>
           </TabsContent>
 
-          {/* Aba 4: Plano do Streaming (Documentação) */}
+          {/* Aba: Streaming Dinâmico */}
           <TabsContent value="streaming_plano" className="space-y-6 mt-6">
             <Card className="bg-slate-900 border-slate-800">
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/30">
-                    Apenas Documentação &bull; Sem Implementar Nesta Rodada
+                    Apenas Documentação &bull; Sem Alterar Código Nesta Rodada
                   </Badge>
                   <span className="text-xs font-mono text-slate-400">
                     src/routes/stream.js (Intocado)
@@ -679,162 +1030,54 @@ export default function Index() {
                 </div>
                 <CardTitle className="text-lg text-white mt-2 flex items-center gap-2">
                   <Radio className="w-5 h-5 text-purple-400" />
-                  Plano de Correção do Streaming Dinâmico
+                  Plano de Correção do Streaming Dinâmico (Fase 1)
                 </CardTitle>
-                <CardDescription className="text-slate-400 text-xs">
-                  Especificação aprovada para substituição do mapa estático e liberação do mentor na
-                  Fase 1:
-                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4 text-xs">
                 <div className="p-3 bg-red-950/20 border border-red-800/30 rounded space-y-1">
-                  <span className="font-semibold text-red-300">
-                    Problema Atual (Mapa Fixo da Aula 27):
-                  </span>
+                  <span className="font-semibold text-red-300">Problema Atual:</span>
                   <p className="text-slate-300">
-                    A rota <code>GET /stream/:aulaId</code> usa{' '}
-                    <code>LOCAL_VIDEO_FILES = {'{ 27: ... }'}</code>. Qualquer outra aula com{' '}
-                    <code>video_type = 'local'</code> falha com erro 400. Além disso, o mentor
-                    proprietário do curso recebe erro 403 por não estar matriculado como aluno.
+                    A rota <code>GET /stream/:aulaId</code> usa mapa fixo para a aula 27 (
+                    <code>LOCAL_VIDEO_FILES</code>). As demais aulas locais falham com erro 400.
+                    Além disso, o mentor proprietário recebe 403 por não estar matriculado.
                   </p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-slate-300">
-                  <div className="p-3 bg-slate-950 rounded border border-slate-800 space-y-1.5">
+                  <div className="p-3 bg-slate-950 rounded border border-slate-800 space-y-1">
                     <strong className="text-emerald-400">1. Consulta Dinâmica:</strong>
                     <p className="text-slate-400">
-                      Ler <code>video_path</code> e <code>video_type</code> da tabela{' '}
-                      <code>aulas</code> no PostgreSQL.
+                      Ler <code>video_path</code> da tabela <code>aulas</code> no PostgreSQL.
                     </p>
                   </div>
-
-                  <div className="p-3 bg-slate-950 rounded border border-slate-800 space-y-1.5">
+                  <div className="p-3 bg-slate-950 rounded border border-slate-800 space-y-1">
                     <strong className="text-emerald-400">2. Proteção Path Traversal:</strong>
                     <p className="text-slate-400">
-                      Resolver com <code>path.resolve('/app/videos', aula.video_path)</code> e
-                      validar que o caminho resultante permanece dentro de <code>/app/videos/</code>
-                      .
+                      Validar que o caminho permanece contido em <code>/app/videos/</code>.
                     </p>
                   </div>
-
-                  <div className="p-3 bg-slate-950 rounded border border-slate-800 space-y-1.5">
-                    <strong className="text-emerald-400">3. Validação de Arquivo:</strong>
+                  <div className="p-3 bg-slate-950 rounded border border-slate-800 space-y-1">
+                    <strong className="text-emerald-400">3. Liberação do Mentor:</strong>
                     <p className="text-slate-400">
-                      Checar existência física em disco (<code>fs.existsSync</code>) e retornar HTTP
-                      404 seguro caso não encontrado.
+                      Permitir acesso para aluno matriculado OU mentor proprietário (
+                      <code>mentor_id = req.usuario.id</code>) OU admin.
                     </p>
                   </div>
-
-                  <div className="p-3 bg-slate-950 rounded border border-slate-800 space-y-1.5">
+                  <div className="p-3 bg-slate-950 rounded border border-slate-800 space-y-1">
                     <strong className="text-emerald-400">4. Fallback Temporário:</strong>
                     <p className="text-slate-400">
-                      Manter mapa fixo da aula 27 como fallback exclusivo caso{' '}
-                      <code>video_path</code> esteja nulo no banco.
+                      Manter mapa fixo da aula 27 como fallback exclusivo se <code>video_path</code>{' '}
+                      estiver nulo.
                     </p>
                   </div>
-
-                  <div className="p-3 bg-slate-950 rounded border border-slate-800 space-y-1.5">
-                    <strong className="text-emerald-400">5. Liberação do Mentor:</strong>
-                    <p className="text-slate-400">
-                      Permitir acesso ao streaming para aluno matriculado OU mentor dono do curso (
-                      <code>cursos.mentor_id = req.usuario.id</code>) OU admin.
-                    </p>
-                  </div>
-
-                  <div className="p-3 bg-slate-950 rounded border border-slate-800 space-y-1.5">
-                    <strong className="text-emerald-400">6. Limpeza de Vídeo Órfão:</strong>
-                    <p className="text-slate-400">
-                      Deletar arquivo antigo de vídeo quando o mentor substituir o{' '}
-                      <code>video_path</code> de uma aula.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="p-2.5 rounded bg-purple-950/40 border border-purple-800/40 text-purple-200">
-                  <strong>Status na Rodada Atual:</strong> Apenas documentado.{' '}
-                  <strong>NÃO IMPLEMENTADO</strong> nesta rodada (stream.js preservado intacto).
                 </div>
               </CardContent>
             </Card>
           </TabsContent>
 
-          {/* Aba 5: Versões e Migrations */}
-          <TabsContent value="versoes_migrations" className="space-y-6 mt-6">
-            <Card className="bg-slate-900 border-slate-800">
-              <CardHeader>
-                <CardTitle className="text-lg text-white flex items-center gap-2">
-                  <Database className="w-5 h-5 text-amber-400" />
-                  Estado de Versões e Migrations (O que Falta Confirmar na VPS)
-                </CardTitle>
-                <CardDescription className="text-slate-400 text-xs">
-                  Mapeamento minucioso de dependências e discrepâncias detectadas:
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4 text-xs">
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left border-collapse">
-                    <thead>
-                      <tr className="border-b border-slate-800 text-slate-400">
-                        <th className="p-2 font-medium">Componente</th>
-                        <th className="p-2 font-medium">No Workspace</th>
-                        <th className="p-2 font-medium">Conflito / Suspeita</th>
-                        <th className="p-2 font-medium">Confirmação Pendente na VPS</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-800/60 text-slate-300">
-                      <tr>
-                        <td className="p-2 font-semibold text-white">Node.js Runtime</td>
-                        <td className="p-2 font-mono text-blue-300">Dockerfile: node:20-alpine</td>
-                        <td className="p-2 text-amber-300">DOCUMENTACAO.md diz Node 18</td>
-                        <td className="p-2 text-slate-400">
-                          Operador deve rodar <code>node -v</code> no container da VPS
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="p-2 font-semibold text-white">Scripts de Migration</td>
-                        <td className="p-2 font-mono text-blue-300">
-                          src/database/migrations/*.js
-                        </td>
-                        <td className="p-2 text-amber-300">migration.sql existe na raiz</td>
-                        <td className="p-2 text-slate-400">
-                          runMigrations só lê pasta src; migration.sql da raiz NÃO roda automático.
-                          Confirmar se ALTER TABLE já foi rodado.
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="p-2 font-semibold text-white">Novas Migrations na Fase 1</td>
-                        <td className="p-2 text-emerald-400">Regra de Minimização</td>
-                        <td className="p-2 text-slate-400">Sem criação desnecessária</td>
-                        <td className="p-2 text-slate-400">
-                          Se houver DDL, rollback será documentado e testado antes do merge
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-
-                <div className="p-3 bg-slate-950 rounded border border-slate-800 text-slate-400">
-                  <strong className="text-amber-300">
-                    Arquivos Protegidos que NÃO Serão Alterados na Fase 1:
-                  </strong>
-                  <p className="mt-1 font-mono text-[11px] text-slate-300">
-                    mentor.js &bull; etapas.js &bull; painel-mentor.html &bull; stream.js &bull;
-                    banco &bull; migrations &bull; autenticação &bull; EasyPanel &bull; Dockerfile
-                    &bull; deploy &bull; frontend do aluno &bull; rotas públicas
-                  </p>
-                  <p className="mt-1 text-xs text-slate-500">
-                    Qualquer alteração futura dependerá de autorização expressa e análise prévia de
-                    provas.js.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Aba 6: Scripts de Operações (Backup e Rollback) */}
+          {/* Aba: Documentos VPS */}
           <TabsContent value="operacoes" className="space-y-6 mt-6">
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-              {/* Menu Lateral de Documentos Operacionais */}
               <Card className="bg-slate-900 border-slate-800 lg:col-span-1 h-fit">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-sm font-semibold text-white flex items-center gap-2">
@@ -843,208 +1086,70 @@ export default function Index() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2 p-3 text-xs">
-                  <button
-                    onClick={() => setSelectedDoc('backup')}
-                    className={`w-full text-left p-2 rounded border transition-colors ${
-                      selectedDoc === 'backup'
-                        ? 'bg-emerald-950/60 border-emerald-500/50 text-emerald-300 font-medium'
-                        : 'bg-slate-950/50 border-slate-800 text-slate-300 hover:bg-slate-800'
-                    }`}
-                  >
-                    <div className="font-mono flex items-center gap-1.5">
-                      <Terminal className="w-3.5 h-3.5 text-emerald-400" />
-                      backup-cursos-vps.sh
-                    </div>
-                  </button>
-
-                  <button
-                    onClick={() => setSelectedDoc('restore')}
-                    className={`w-full text-left p-2 rounded border transition-colors ${
-                      selectedDoc === 'restore'
-                        ? 'bg-emerald-950/60 border-emerald-500/50 text-emerald-300 font-medium'
-                        : 'bg-slate-950/50 border-slate-800 text-slate-300 hover:bg-slate-800'
-                    }`}
-                  >
-                    <div className="font-mono flex items-center gap-1.5">
-                      <RotateCcw className="w-3.5 h-3.5 text-blue-400" />
-                      restaurar-cursos-vps.sh
-                    </div>
-                  </button>
-
-                  <button
-                    onClick={() => setSelectedDoc('rollback')}
-                    className={`w-full text-left p-2 rounded border transition-colors ${
-                      selectedDoc === 'rollback'
-                        ? 'bg-emerald-950/60 border-emerald-500/50 text-emerald-300 font-medium'
-                        : 'bg-slate-950/50 border-slate-800 text-slate-300 hover:bg-slate-800'
-                    }`}
-                  >
-                    <div className="font-mono flex items-center gap-1.5">
-                      <FileText className="w-3.5 h-3.5 text-amber-400" />
-                      PLANO_ROLLBACK.md
-                    </div>
-                  </button>
-
-                  <button
-                    onClick={() => setSelectedDoc('inventario')}
-                    className={`w-full text-left p-2 rounded border transition-colors ${
-                      selectedDoc === 'inventario'
-                        ? 'bg-emerald-950/60 border-emerald-500/50 text-emerald-300 font-medium'
-                        : 'bg-slate-950/50 border-slate-800 text-slate-300 hover:bg-slate-800'
-                    }`}
-                  >
-                    <div className="font-mono flex items-center gap-1.5">
-                      <Server className="w-3.5 h-3.5 text-purple-400" />
-                      INVENTARIO_EASYPANEL.md
-                    </div>
-                  </button>
-
-                  <button
-                    onClick={() => setSelectedDoc('fluxo_deploy')}
-                    className={`w-full text-left p-2 rounded border transition-colors ${
-                      selectedDoc === 'fluxo_deploy'
-                        ? 'bg-emerald-950/60 border-emerald-500/50 text-emerald-300 font-medium'
-                        : 'bg-slate-950/50 border-slate-800 text-slate-300 hover:bg-slate-800'
-                    }`}
-                  >
-                    <div className="font-mono flex items-center gap-1.5">
-                      <Terminal className="w-3.5 h-3.5 text-blue-400" />
-                      FLUXO_DEPLOY_GITHUB.md
-                    </div>
-                  </button>
-
-                  <button
-                    onClick={() => setSelectedDoc('seguranca_secrets')}
-                    className={`w-full text-left p-2 rounded border transition-colors ${
-                      selectedDoc === 'seguranca_secrets'
-                        ? 'bg-emerald-950/60 border-emerald-500/50 text-emerald-300 font-medium'
-                        : 'bg-slate-950/50 border-slate-800 text-slate-300 hover:bg-slate-800'
-                    }`}
-                  >
-                    <div className="font-mono flex items-center gap-1.5">
-                      <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
-                      SEGURANCA_SECRETS.md
-                    </div>
-                  </button>
+                  {[
+                    {
+                      id: 'inventario',
+                      label: 'INVENTARIO_EASYPANEL.md',
+                      icon: Server,
+                      color: 'text-purple-400',
+                    },
+                    {
+                      id: 'backup',
+                      label: 'backup-cursos-vps.sh',
+                      icon: Terminal,
+                      color: 'text-emerald-400',
+                    },
+                    {
+                      id: 'restore',
+                      label: 'restaurar-cursos-vps.sh',
+                      icon: RotateCcw,
+                      color: 'text-blue-400',
+                    },
+                    {
+                      id: 'rollback',
+                      label: 'PLANO_ROLLBACK.md',
+                      icon: FileText,
+                      color: 'text-amber-400',
+                    },
+                    {
+                      id: 'fluxo_deploy',
+                      label: 'FLUXO_DEPLOY_GITHUB.md',
+                      icon: Terminal,
+                      color: 'text-blue-400',
+                    },
+                    {
+                      id: 'seguranca_secrets',
+                      label: 'SEGURANCA_SECRETS.md',
+                      icon: ShieldCheck,
+                      color: 'text-amber-400',
+                    },
+                  ].map((item) => (
+                    <button
+                      key={item.id}
+                      onClick={() => setSelectedDoc(item.id as typeof selectedDoc)}
+                      className={`w-full text-left p-2 rounded border transition-colors ${
+                        selectedDoc === item.id
+                          ? 'bg-purple-950/60 border-purple-500/50 text-purple-300 font-medium'
+                          : 'bg-slate-950/50 border-slate-800 text-slate-300 hover:bg-slate-800'
+                      }`}
+                    >
+                      <div className="font-mono flex items-center gap-1.5 text-[11px]">
+                        <item.icon className={`w-3.5 h-3.5 ${item.color}`} />
+                        {item.label}
+                      </div>
+                    </button>
+                  ))}
                 </CardContent>
               </Card>
 
-              {/* Exibição do Documento Operacional Selecionado */}
               <div className="lg:col-span-3 space-y-4">
-                {selectedDoc === 'backup' && (
-                  <Card className="bg-slate-900 border-slate-800">
-                    <CardHeader className="border-b border-slate-800 pb-4">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 mb-1">
-                            Script Idempotente
-                          </Badge>
-                          <CardTitle className="text-base text-white font-mono">
-                            docs/operacoes/backup-cursos-vps.sh
-                          </CardTitle>
-                        </div>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleCopyPath('docs/operacoes/backup-cursos-vps.sh')}
-                          className="border-slate-700 bg-slate-950 text-xs"
-                        >
-                          <Copy className="w-3.5 h-3.5 mr-1" />
-                          Copiar Caminho
-                        </Button>
-                      </div>
-                    </CardHeader>
-                    <CardContent className="pt-4 text-xs space-y-3">
-                      <p className="text-slate-300">
-                        Cria snapshot completo em{' '}
-                        <code>/srv/backups/cursos/&lt;timestamp&gt;/</code> contendo 13 itens:
-                        bundle git, tag, dump Postgres (-Fc), PocketBase pb_data, vídeos, inspects
-                        de volumes, redes e EasyPanel, Redis BGSAVE e manifesto com checksums
-                        SHA-256.
-                      </p>
-                      <pre className="p-2.5 bg-black/60 rounded text-slate-200 font-mono text-[11px] overflow-x-auto">
-                        {`chmod +x docs/operacoes/backup-cursos-vps.sh\n./docs/operacoes/backup-cursos-vps.sh`}
-                      </pre>
-                    </CardContent>
-                  </Card>
-                )}
-
-                {selectedDoc === 'restore' && (
-                  <Card className="bg-slate-900 border-slate-800">
-                    <CardHeader className="border-b border-slate-800 pb-4">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30 mb-1">
-                            Restauração com Dry-Run
-                          </Badge>
-                          <CardTitle className="text-base text-white font-mono">
-                            docs/operacoes/restaurar-cursos-vps.sh
-                          </CardTitle>
-                        </div>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleCopyPath('docs/operacoes/restaurar-cursos-vps.sh')}
-                          className="border-slate-700 bg-slate-950 text-xs"
-                        >
-                          <Copy className="w-3.5 h-3.5 mr-1" />
-                          Copiar Caminho
-                        </Button>
-                      </div>
-                    </CardHeader>
-                    <CardContent className="pt-4 text-xs space-y-3">
-                      <p className="text-slate-300">
-                        Restauração interativa com confirmação e suporte ao modo{' '}
-                        <code>--dry-run</code> para validação prévia de SHA-256 e manifesto:
-                      </p>
-                      <pre className="p-2.5 bg-black/60 rounded text-slate-200 font-mono text-[11px] overflow-x-auto">
-                        {`./docs/operacoes/restaurar-cursos-vps.sh /srv/backups/cursos/<timestamp> --dry-run`}
-                      </pre>
-                    </CardContent>
-                  </Card>
-                )}
-
-                {selectedDoc === 'rollback' && (
-                  <Card className="bg-slate-900 border-slate-800">
-                    <CardHeader className="border-b border-slate-800 pb-4">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/30 mb-1">
-                            Plano de Contingência
-                          </Badge>
-                          <CardTitle className="text-base text-white font-mono">
-                            docs/operacoes/PLANO_ROLLBACK.md
-                          </CardTitle>
-                        </div>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleCopyPath('docs/operacoes/PLANO_ROLLBACK.md')}
-                          className="border-slate-700 bg-slate-950 text-xs"
-                        >
-                          <Copy className="w-3.5 h-3.5 mr-1" />
-                          Copiar Caminho
-                        </Button>
-                      </div>
-                    </CardHeader>
-                    <CardContent className="pt-4 text-xs space-y-3">
-                      <p className="text-slate-300">
-                        8 etapas sequenciais de reversão para o commit estável <code>
-                          47aa7b1
-                        </code>{' '}
-                        e 8 testes de homologação final do operador.
-                      </p>
-                    </CardContent>
-                  </Card>
-                )}
-
                 {selectedDoc === 'inventario' && (
                   <Card className="bg-slate-900 border-slate-800">
                     <CardHeader className="border-b border-slate-800 pb-4">
                       <div className="flex items-center justify-between">
                         <div>
                           <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/30 mb-1">
-                            Template dos 4 Serviços
+                            Dados Reais do Host srv845644
                           </Badge>
                           <CardTitle className="text-base text-white font-mono">
                             docs/operacoes/INVENTARIO_EASYPANEL.md
@@ -1061,10 +1166,86 @@ export default function Index() {
                         </Button>
                       </div>
                     </CardHeader>
-                    <CardContent className="pt-4 text-xs space-y-3">
+                    <CardContent className="pt-4 text-xs space-y-2">
                       <p className="text-slate-300">
-                        Mapeamento para preenchimento na VPS: Cursos-API (3333), PostgreSQL (5432),
-                        PocketBase (8090) e Redis (6379), sem senhas em texto puro.
+                        Preenchido com base no arquivo real da VPS. Mapeia os 4 serviços:
+                      </p>
+                      <ul className="list-disc pl-4 text-slate-400 space-y-1">
+                        <li>
+                          <strong>PostgreSQL 17:</strong> volume em
+                          /etc/easypanel/projects/cursos-api/postgres/data &rarr;
+                          /var/lib/postgresql/data
+                        </li>
+                        <li>
+                          <strong>Cursos-API:</strong> porta 3333/tcp interna, 5+ réplicas, volume
+                          de vídeos em /srv/cursos/videos/
+                        </li>
+                        <li>
+                          <strong>Redis 7:</strong> volume em
+                          /etc/easypanel/projects/cursos-api/redis/data &rarr; /data
+                        </li>
+                        <li>
+                          <strong>PocketBase:</strong> ghcr.io/muchobien/pocketbase:latest
+                        </li>
+                      </ul>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {selectedDoc === 'backup' && (
+                  <Card className="bg-slate-900 border-slate-800">
+                    <CardHeader className="border-b border-slate-800 pb-4">
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="text-base text-white font-mono">
+                          docs/operacoes/backup-cursos-vps.sh
+                        </CardTitle>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleCopyPath('docs/operacoes/backup-cursos-vps.sh')}
+                          className="border-slate-700 bg-slate-950 text-xs"
+                        >
+                          <Copy className="w-3.5 h-3.5 mr-1" />
+                          Copiar Caminho
+                        </Button>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="pt-4 text-xs space-y-2">
+                      <p className="text-slate-300">
+                        Snapshot concluído pelo operador em{' '}
+                        <code>/root/backups/cursos/20261031_195147</code> com manifesto e SHA-256.
+                      </p>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {selectedDoc === 'restore' && (
+                  <Card className="bg-slate-900 border-slate-800">
+                    <CardHeader className="border-b border-slate-800 pb-4">
+                      <CardTitle className="text-base text-white font-mono">
+                        docs/operacoes/restaurar-cursos-vps.sh
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="pt-4 text-xs space-y-2">
+                      <p className="text-slate-300">
+                        Script de restauração guiada com modo <code>--dry-run</code> testado com
+                        sucesso pelo operador.
+                      </p>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {selectedDoc === 'rollback' && (
+                  <Card className="bg-slate-900 border-slate-800">
+                    <CardHeader className="border-b border-slate-800 pb-4">
+                      <CardTitle className="text-base text-white font-mono">
+                        docs/operacoes/PLANO_ROLLBACK.md
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="pt-4 text-xs space-y-2">
+                      <p className="text-slate-300">
+                        Plano de contingência em 8 etapas para restauração para o commit estável{' '}
+                        <code>47aa7b1</code>.
                       </p>
                     </CardContent>
                   </Card>
@@ -1073,32 +1254,13 @@ export default function Index() {
                 {selectedDoc === 'fluxo_deploy' && (
                   <Card className="bg-slate-900 border-slate-800">
                     <CardHeader className="border-b border-slate-800 pb-4">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30 mb-1">
-                            14 Etapas
-                          </Badge>
-                          <CardTitle className="text-base text-white font-mono">
-                            docs/operacoes/FLUXO_DEPLOY_GITHUB.md
-                          </CardTitle>
-                        </div>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleCopyPath('docs/operacoes/FLUXO_DEPLOY_GITHUB.md')}
-                          className="border-slate-700 bg-slate-950 text-xs"
-                        >
-                          <Copy className="w-3.5 h-3.5 mr-1" />
-                          Copiar Caminho
-                        </Button>
-                      </div>
+                      <CardTitle className="text-base text-white font-mono">
+                        docs/operacoes/FLUXO_DEPLOY_GITHUB.md
+                      </CardTitle>
                     </CardHeader>
-                    <CardContent className="pt-4 text-xs space-y-3">
+                    <CardContent className="pt-4 text-xs space-y-2">
                       <p className="text-slate-300">
-                        Manual das 14 etapas de entrega: alteração local, testes, build, commit,
-                        push para <code>correcao-fluxo-cursos</code>, rebuild EasyPanel, logs,
-                        healthcheck, testes de API, mentor, aluno, upload e stream, e
-                        confirmação/rollback.
+                        14 etapas de entrega: do workspace ao EasyPanel e homologação na VPS.
                       </p>
                     </CardContent>
                   </Card>
@@ -1107,31 +1269,14 @@ export default function Index() {
                 {selectedDoc === 'seguranca_secrets' && (
                   <Card className="bg-slate-900 border-slate-800">
                     <CardHeader className="border-b border-slate-800 pb-4">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/30 mb-1">
-                            Política de Sanitização
-                          </Badge>
-                          <CardTitle className="text-base text-white font-mono">
-                            docs/operacoes/SEGURANCA_SECRETS.md
-                          </CardTitle>
-                        </div>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleCopyPath('docs/operacoes/SEGURANCA_SECRETS.md')}
-                          className="border-slate-700 bg-slate-950 text-xs"
-                        >
-                          <Copy className="w-3.5 h-3.5 mr-1" />
-                          Copiar Caminho
-                        </Button>
-                      </div>
+                      <CardTitle className="text-base text-white font-mono">
+                        docs/operacoes/SEGURANCA_SECRETS.md
+                      </CardTitle>
                     </CardHeader>
-                    <CardContent className="pt-4 text-xs space-y-3">
+                    <CardContent className="pt-4 text-xs space-y-2">
                       <p className="text-slate-300">
-                        Regra permanente de jamais incluir senhas em relatórios/repositório,
-                        registro da solicitação de rotação do token EasyPanel e tabela de variáveis
-                        de ambiente conhecidas.
+                        Política rigorosa: zero senhas ou tokens em relatórios e solicitação de
+                        rotação.
                       </p>
                     </CardContent>
                   </Card>
@@ -1140,7 +1285,7 @@ export default function Index() {
             </div>
           </TabsContent>
 
-          {/* Aba 7: Mock do Player (Adapta) */}
+          {/* Aba: Mock Player (Adapta) */}
           <TabsContent value="player" className="space-y-6 mt-6">
             <Card className="bg-slate-900 border-slate-800">
               <CardHeader>
@@ -1331,7 +1476,7 @@ export default function Index() {
       {/* Footer */}
       <footer className="max-w-7xl mx-auto border-t border-slate-800 mt-12 pt-6 text-center text-xs text-slate-500">
         Plataforma Cursos API &bull; Repositório: github.com/ronydgarcia-max/cursos-api &bull;
-        Branch: correcao-fluxo-cursos &bull; Commit Base: 47aa7b1 &bull; VPS 69.62.124.240
+        Branch: correcao-fluxo-cursos &bull; Commit Base Estável: 47aa7b1 &bull; Host: srv845644
       </footer>
     </div>
   )

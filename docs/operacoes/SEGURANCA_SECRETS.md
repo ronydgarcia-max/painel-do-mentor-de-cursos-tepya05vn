@@ -39,7 +39,7 @@ Quando uma credencial for referenciada em documentos operacionais ou quando for 
   - O valor foi completamente removido de todos os arquivos do GoSkip.
   - O marcador `[TOKEN_REMOVIDO_E_ROTACIONADO]` foi inserido no lugar.
 - **Ação Requerida do Operador da VPS:**
-  - Acessar o painel administrativo do EasyPanel na VPS (`69.62.124.240`).
+  - Acessar o painel administrativo do EasyPanel na VPS do projeto.
   - Navegar até as configurações de Webhooks / Deploy do serviço `Cursos-API`.
   - **Revogar e rotacionar** imediatamente o token de deploy / URL de webhook.
   - Atualizar os gatilhos externos apenas com o novo segredo gerado.

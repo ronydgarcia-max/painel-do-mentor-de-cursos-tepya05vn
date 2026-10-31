@@ -3,66 +3,67 @@
 **Documento:** `docs/operacoes/CHECKLIST_PRE_FASE1.md`  
 **Escopo:** Critérios estritos de governança que regulam o início da Fase 1 (Reescrita e correções de código da API).  
 **Regra Mandatória:** Nenhuma alteração de código ou publicação na VPS deve ocorrer antes da validação integral deste checklist.  
-**Repositório Oficial:** `github.com/ronydgarcia-max/cursos-api` | **Branch Autorizada:** `correcao-fluxo-cursos` | **Commit Base Estável:** `47aa7b1`
+**Repositório Oficial:** `github.com/ronydgarcia-max/cursos-api` | **Branch Autorizada:** `correcao-fluxo-cursos` | **Commit Base Estável:** `47aa7b1`  
+**Aviso GoSkip:** Este GoSkip workspace é estritamente painel de documentação/prévia; nada de produção é alterado aqui.
 
 ---
 
-## 1. ITENS JÁ CONFIRMADOS E AUDITADOS NO WORKSPACE (PRONTOS)
+## 1. ITENS CONFIRMADOS E AUDITADOS PELO OPERADOR NA VPS (CONCLUÍDOS)
 
-Estes itens foram verificados, documentados e validados no workspace de trabalho do GoSkip:
+Estes itens foram executados e atestados formalmente pelo **OPERADOR DA VPS**:
 
-- [x] **1. Branch Oficial de Trabalho Definida:** A branch de trabalho é estritamente `correcao-fluxo-cursos` no repositório `github.com/ronydgarcia-max/cursos-api`. A branch `main` está protegida e NÃO será utilizada sem autorização expressa.
-- [x] **2. Commit Base Estável Identificado:** Commit de referência estável confirmado na VPS e repositório: `47aa7b1`.
-- [x] **3. Isolamento dos Commits do Workspace GoSkip:** Os commits `34df2d6` e `ecf1cc0` criados no workspace de prévia do GoSkip (documentação e protótipo) NÃO fazem parte do repositório real `cursos-api`, NÃO pertencem à branch `correcao-fluxo-cursos`, NÃO foram enviados ao GitHub, não alteram produção e NÃO serão publicados na VPS.
-- [x] **4. Análise e Diagnóstico Técnico da Fase 0 Concluídos:** Mapeamento exaustivo de 24 arquivos, 16 rotas, fluxos de autenticação, streaming da aula 27 e falhas de autorização documentados no `docs/RELATORIO_FASE_0_MENTOR.md`.
-- [x] **5. Scripts Operacionais e Planos Entregues:**
-  - Script idempotente de backup com 13 itens e integridade: `docs/operacoes/backup-cursos-vps.sh`
-  - Script de restauração guiada com `--dry-run`: `docs/operacoes/restaurar-cursos-vps.sh`
-  - Plano de rollback em 8 etapas e 8 testes de homologação: `docs/operacoes/PLANO_ROLLBACK.md`
-  - Template de inventário do EasyPanel e análise de dependências: `docs/operacoes/INVENTARIO_EASYPANEL.md`
-  - Fluxo de deploy no GitHub e EasyPanel em 14 etapas: `docs/operacoes/FLUXO_DEPLOY_GITHUB.md`
-  - Política de segurança e sanitização de secrets: `docs/operacoes/SEGURANCA_SECRETS.md`
-- [x] **6. Ausência Total de Segredos no Código e Documentos:** Nenhum token, senha, chave privada ou credencial real inserida no código ou na documentação deste workspace. Tokens expostos em relatórios anteriores marcados como `[TOKEN_REMOVIDO_E_ROTACIONADO]` e classificados como `EXPOSTO - ROTACIONAR`.
-- [x] **7. Plano de Correção do Streaming Documentado:** Especificação da leitura dinâmica de `aulas.video_path`, proteção contra path traversal em `/app/videos/`, fallback temporário para a aula 27 e liberação para o mentor do curso documentados sem alteração de código nesta rodada.
-- [x] **8. Delimitação Clara de Arquivos da Fase 1:** Lista de arquivos intocados e protegidos (mentor.js, etapas.js, painel-mentor.html, stream.js, banco, migrations, etc.) rigorosamente respeitada.
+- [x] **1. Backup Completo Executado pelo Operador:** Concluído em `/root/backups/cursos/20261031_195147` em `2026-10-31 19:51:47 -03`, contendo:
+  - `cursos-api.bundle` (bundle Git completo)
+  - `cursos-api-source.tar.gz` (código versionado)
+  - `cursos-videos.tar.gz` (vídeos de `/srv/cursos/videos/`)
+  - `postgres.sql` (export estrutural e de dados do PostgreSQL 17)
+  - Volumes do PocketBase
+  - Configurações estruturais do PostgreSQL e Redis
+  - Manifesto Git e arquivo de somas de verificação
+- [x] **2. Hashes SHA-256 Validados pelo Operador:** Arquivo `SHA256SUMS.txt` gerado e conferido com 100% de integridade dos arquivos gerados.
+- [x] **3. Restauração em Modo `--dry-run` Validada pelo Operador:** Execução de `restaurar-cursos-vps.sh --dry-run` finalizada com sucesso, sem erros e sem qualquer alteração na produção.
+- [x] **4. Inventário EasyPanel Gerado na VPS pelo Operador:** Arquivo `/root/INVENTARIO_EASYPANEL.md` gerado no host `srv845644` e incorporado ao workspace, detalhando os 4 serviços (Cursos-API, PostgreSQL 17, Redis 7, PocketBase) sem qualquer secret em texto puro.
+- [x] **5. Confirmação dos Caminhos de Vídeo:** Mapeamento validado entre Host (`/srv/cursos/videos/`) e Container (`/app/videos/`).
 
 ---
 
-## 2. ITENS PENDENTES DO OPERADOR DA VPS (BLOQUEADORES DA FASE 1)
+## 2. ITENS PRONTOS E AUDITADOS NO WORKSPACE GOSKIP (DOCUMENTAÇÃO E PROTÓTIPO)
 
-A autorização para a Fase 1 só se torna efetiva após o operador executar na VPS e confirmar os seguintes pontos:
-
-- [ ] **1. Execução do Backup na VPS:** Executar `backup-cursos-vps.sh` na VPS como root e confirmar a geração do diretório `/srv/backups/cursos/<timestamp>/` contendo o manifesto `backup-manifest.txt` com status `APROVADO PARA RESTAURAÇÃO`.
-- [ ] **2. Teste de Restauração em Modo `--dry-run`:** Executar `./restaurar-cursos-vps.sh /srv/backups/cursos/<timestamp> --dry-run` e confirmar que a validação de checksums SHA-256 e o manifesto passaram com 100% de sucesso.
-- [ ] **3. Inventário do EasyPanel Preenchido:** Preencher o arquivo `INVENTARIO_EASYPANEL.md` com os dados reais obtidos dos 4 serviços (`cursos-api`, `postgres`, `pocketbase`, `redis`) rodando na VPS.
-- [ ] **4. ROTAÇÃO OBRIGATÓRIA DO TOKEN DO EASYPANEL:** O operador deve rotacionar no painel do EasyPanel o token de API / webhook de deploy que foi exposto em comunicações técnicas preliminares anteriores.
-- [ ] **5. Confirmação da Versão Real do Node.js na VPS:** Executar `docker exec <container_api> node -v` para confirmar se o ambiente de produção roda Node 18 ou Node 20 (resolvendo o conflito entre Dockerfile e DOCUMENTACAO.md).
-- [ ] **6. Verificação do Arquivo `migration.sql` da Raiz:** Confirmar se as instruções SQL do arquivo `migration.sql` na raiz do projeto na VPS já foram aplicadas manualmente no PostgreSQL ou se estão pendentes.
-- [ ] **7. Confirmação dos Volumes Docker e Diretório de Vídeos:** Confirmar que o diretório `/srv/cursos/videos/` está ativo no host e com permissões corretas de gravação para o container `/app/videos/`.
-- [ ] **8. Sanitização do `DOCUMENTACAO.md` na VPS:** Garantir que o repositório na VPS não contenha credenciais antigas em arquivos Markdown.
-- [ ] **9. Confirmação de Isolamento da Branch:** Atestar que nenhum commit não autorizado foi mesclado na branch `correcao-fluxo-cursos` ou enviado para a branch `main`.
+- [x] **1. Branch Oficial e Commit Base Identificados:** `correcao-fluxo-cursos` no repositório `github.com/ronydgarcia-max/cursos-api`, commit base `47aa7b1`.
+- [x] **2. Isolamento dos Commits Internos do Workspace:** Os commits `34df2d6`, `ecf1cc0` e `505e672` pertencem exclusivamente ao workspace efêmero do GoSkip, não estão no repositório oficial, não afetam produção e jamais serão publicados na VPS.
+- [x] **3. Sanitização Total de Credenciais e Secrets:** Todos os arquivos registram exclusivamente nomes de variáveis de ambiente. Qualquer menção a token antigo foi substituída por `[TOKEN_REMOVIDO_E_ROTACIONADO]`.
+- [x] **4. Mapeamento Técnico de Riscos e Fluxo de Deploy:** Documentados `docs/RELATORIO_FASE_0_MENTOR.md`, `FLUXO_DEPLOY_GITHUB.md` (14 etapas) e `PLANO_ROLLBACK.md`.
 
 ---
 
-## 3. ITENS AGUARDANDO ENVIO DE ARQUIVOS PELO OPERADOR (SEPARADOS)
+## 3. AS 6 PENDÊNCIAS RESTANTES PRÉ-FASE 1 (BLOQUEADORAS DO INÍCIO DA FASE 1)
 
-Estes arquivos **NÃO estão disponíveis nesta rodada** e SERÃO ENVIADOS SEPARADAMENTE pelo operador:
+A transição da Fase 0 para a Fase 1 continua **BLOQUEADA** até a conclusão das seguintes 6 pendências:
 
-- [ ] **1. Envio do Arquivo `src/routes/provas.js` Real:** O operador enviará o arquivo real de rotas e lógica de provas/avaliações. **Status atual:** Pendente de recebimento; não inventado nem assumido na Fase 0.
-- [ ] **2. Envio de Screenshots Reais do Player de Referência:** O operador enviará capturas de tela da área restrita do player de referência (`alunos.adapta.org`). **Status atual:** Pendente de recebimento; a análise atual foi declarada expressamente como baseada em descrição funcional e mock conceitual, não na inspeção direta da página que exige login.
+- [ ] **1. Rotação do Token EasyPanel Exposto:** O operador deve rotacionar no painel do EasyPanel na VPS o token de deploy/API que apareceu em comunicações técnicas anteriores.
+- [ ] **2. Análise de `src/routes/provas.js`:** Arquivo real a ser enviado pelo operador para que a lógica de avaliações seja analisada antes da reescrita (nada de provas foi inventado ou assumido).
+- [ ] **3. Screenshots Desktop e Celular do Player de Referência:** Capturas de tela da área de membros do player de referência (Adapta) a serem enviadas pelo operador para guiar o visual definitivo.
+- [ ] **4. Confirmação da Versão Real do Node.js (ou Runtime):** Esclarecer a falha `OCI runtime exec failed: exec: "node": executable file not found in $PATH` rodando no container ativo:
+  ```bash
+  docker exec <container> sh -c "which node || which bun || which deno; cat /etc/os-release"
+  ```
+- [ ] **5. Confirmação sobre Migrations do PostgreSQL:** Confirmar na VPS se os comandos DDL contidos em `migration.sql` (raiz do projeto) já foram rodados manualmente no PostgreSQL ou se requerem script idempotente.
+- [ ] **6. Avaliação sobre Necessidade de Backup dos Dados do Redis:** Avaliar se as chaves em memória do Redis exigem export persistente ou se o serviço opera apenas com cache e rate-limit voláteis.
 
 ---
 
-## 4. DECLARAÇÃO DE LIBERAÇÃO DA FASE 1
+## 4. TERMO DE AUTORIZAÇÃO DA FASE 1 (A PREENCHER APÓS AS 6 PENDÊNCIAS)
 
 ```text
-[ ] LIBERAÇÃO DA FASE 1 AUTORIZADA PELO RESPONSÁVEL
+[ ] FASE 1 FORMALMENTE AUTORIZADA PELO RESPONSÁVEL DO PROJETO
 
-Responsável: _________________________________________
-Data / Hora: _________________________________________
-Ponto de Restauração Ativo: /srv/backups/cursos/____________________
-Hash do Backup Verificado: _________________________________________
-Confirmação de Rotação do Token EasyPanel: [ ] SIM [ ] NÃO
-Confirmação da Versão do Node.js na VPS: [ ] Node 18  [ ] Node 20
-Confirmação do migration.sql da Raiz: [ ] Já Aplicado [ ] Não Aplicado
+Responsável: __________________________________________________
+Data e Hora: __________________________________________________
+Snapshot de Backup Validado: /root/backups/cursos/20261031_195147 (SHA-256 OK)
+Token EasyPanel Rotacionado: [ ] SIM  [ ] NÃO
+Runtime Confirmado: [ ] Node 18  [ ] Node 20  [ ] Bun  [ ] Outro: ________
+Arquivo provas.js Recebido e Analisado: [ ] SIM  [ ] NÃO
+Screenshots do Player Recebidos: [ ] SIM  [ ] NÃO
+Alinhamento de Migrations Confirmado: [ ] SIM  [ ] NÃO
+Decisão sobre Dados Redis: [ ] Volátil  [ ] Persistente
 ```
