@@ -432,27 +432,28 @@ cat /root/cursos-api/Dockerfile || docker inspect <CONTAINER_CURSOS_API_ATIVO> -
   5. Volumes do PocketBase (Arquivos de dados e configurações do PocketBase)
   6. Configurações estruturais do PostgreSQL
   7. Configurações estruturais do Redis
-  8. Manifesto Git e metadados operacionais
-  9. `SHA256SUMS.txt` (Assinatura e somas de verificação SHA-256 de todos os artefatos)
+  8. `redis-dump.rdb` (Snapshot RDB do Redis validado com `redis-check-rdb`: arquivo íntegro, checksum interno OK, ZERO chaves no momento do backup, ZERO expirações — pendência de backup do Redis RESOLVIDA pelo operador)
+  9. Manifesto Git e metadados operacionais
+  10. `SHA256SUMS.txt` (Assinatura e somas de verificação SHA-256 de todos os artefatos)
 - **Validações Concluídas pelo Operador:**
   - Hashes SHA-256 validados com sucesso via checksum.
+  - Snapshot do Redis `redis-dump.rdb` validado com utilitário oficial `redis-check-rdb`: integridade confirmada, checksum OK, zero chaves ativas, zero expirações.
   - Execução de `restaurar-cursos-vps.sh --dry-run` concluída com **100% de sucesso**.
   - Nenhuma alteração aplicada na produção.
 
 ---
 
-## PENDÊNCIAS RESTANTES PRÉ-FASE 1 (LISTA OFICIAL DOS 6 ITENS)
+## PENDÊNCIAS RESTANTES PRÉ-FASE 1 (LISTA OFICIAL DAS 5 PENDÊNCIAS RESTANTES)
 
-Com a incorporação do inventário EasyPanel e a confirmação do backup e dry-run pelo operador, restam exatamente **6 pendências mandatórias** antes do início da Fase 1:
+Com a incorporação do inventário EasyPanel, a confirmação do backup e dry-run pelo operador e a validação do snapshot do Redis RDB (pendência de backup do Redis **RESOLVIDA** com zero chaves e zero expirações), restam exatamente **5 pendências mandatórias** antes do início da Fase 1:
 
-1. **Rotação Obrigatória do Token do EasyPanel:** O operador deve rotacionar no painel EasyPanel o token de deploy/API exposto em relatórios anteriores deste projeto.
-2. **Análise de `src/routes/provas.js`:** Arquivo real a ser enviado pelo operador para análise técnica da lógica de avaliações.
+1. **Rotação Obrigatória do Token do EasyPanel:** O operador deve rotacionar no painel EasyPanel o token de deploy/API exposto em relatórios anteriores deste projeto (marcador `[TOKEN_REMOVIDO_E_ROTACIONADO]`, status `EXPOSTO - ROTACIONAR`).
+2. **Análise de `src/routes/provas.js`:** Arquivo real a ser enviado pelo operador para análise técnica da lógica de avaliações (arquivo ainda não recebido).
 3. **Screenshots Desktop e Celular do Player:** Capturas de tela da área de membros do player de referência (Adapta) a serem enviadas pelo operador.
-4. **Confirmação da Versão Real do Node.js:** Esclarecimento do erro OCI e confirmação se a produção usa Node 18, Node 20, Bun ou Deno.
+4. **Confirmação da Versão Real do Node.js:** Esclarecimento do erro OCI (`exec: "node": executable file not found in $PATH`) e confirmação se a produção usa Node 18, Node 20, Bun ou Deno (runtime pode não ser Node).
 5. **Confirmação sobre Migrations do PostgreSQL:** Confirmação de que o `migration.sql` da raiz já foi executado no PostgreSQL ou se é necessário script idempotente de alinhamento.
-6. **Avaliação de Necessidade de Backup dos Dados do Redis:** Avaliação pelo operador se os dados em cache/rate-limit do Redis exigem snapshot persistente ou se podem ser recriados sob demanda.
 
-_(Após o atendimento destes 6 itens, o relatório final da Fase 0 será concluído para emissão do termo de autorização da Fase 1)._
+_(A pendência referente ao backup dos dados do Redis foi **RESOLVIDA** com a validação do `redis-dump.rdb` pelo operador. Após o atendimento destas 5 pendências restantes, o relatório final da Fase 0 será concluído para emissão do termo de autorização da Fase 1)._
 
 ---
 
@@ -511,15 +512,15 @@ Somente após a autorização do operador, do backup confirmado na VPS e do rece
 
 A autorização para a Fase 1 depende dos seguintes critérios formais:
 
-- [x] **Backup completo preparado e confirmado pelo operador:** Concluído em `/root/backups/cursos/20261031_195147` com bundle Git, fonte, vídeos, dump Postgres, PocketBase e SHA-256.
+- [x] **Backup completo preparado e confirmado pelo operador:** Concluído em `/root/backups/cursos/20261031_195147` com bundle Git, fonte, vídeos, dump Postgres, PocketBase, Redis RDB (`redis-dump.rdb` validado com `redis-check-rdb`, zero chaves, zero expirações) e SHA-256.
 - [x] **Restauração em modo `--dry-run` validada pelo operador:** Execução com 100% de sucesso sem alterar produção.
 - [x] **Inventário EasyPanel estruturado na VPS:** Concluído e incorporado em `/root/INVENTARIO_EASYPANEL.md`.
-- [ ] **Rotação do token EasyPanel exposto:** Pendente de execução manual pelo operador no painel da VPS.
-- [ ] **Recebimento e análise de `src/routes/provas.js`:** Pendente de envio pelo operador.
+- [x] **Backup dos dados do Redis (RDB):** Concluído e validado pelo operador via `redis-check-rdb` (`redis-dump.rdb` íntegro, checksum OK, zero chaves, zero expirações). Pendência **RESOLVIDA**.
+- [ ] **Rotação do token EasyPanel exposto:** Pendente de execução manual pelo operador no painel da VPS (`[TOKEN_REMOVIDO_E_ROTACIONADO]`).
+- [ ] **Recebimento e análise de `src/routes/provas.js`:** Pendente de envio pelo operador (arquivo ainda não recebido).
 - [ ] **Recebimento de screenshots desktop e celular do player:** Pendente de envio pelo operador.
-- [ ] **Confirmação da versão real do Node.js (ou runtime):** Pendente do diagnóstico via comandos sugeridos na Seção Especial 6.
+- [ ] **Confirmação da versão real do Node.js (ou runtime):** Pendente do diagnóstico via comandos sugeridos na Seção Especial 6 (`exec node not found` — runtime pode não ser Node).
 - [ ] **Confirmação do estado do `migration.sql`:** Pendente de confirmação no PostgreSQL.
-- [ ] **Avaliação sobre dados do Redis:** Pendente de validação pelo operador.
 - [ ] **Atualização do relatório final e termo formal assinado pelo mantenedor.**
 
 ### 4. Critérios de Aceite Técnico da Fase 1 (Pós-Autorização)

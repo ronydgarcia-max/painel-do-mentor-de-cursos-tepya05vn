@@ -81,7 +81,7 @@ export default function Index() {
           </h1>
           <p className="text-slate-400 text-sm mt-1">
             Governança rigorosa: Inventário EasyPanel da VPS incorporado, Backup e Dry-Run atestados
-            pelo operador, diagnóstico do runtime e checklist das 6 pendências.
+            pelo operador, diagnóstico do runtime e checklist das 5 pendências restantes.
           </p>
         </div>
 
@@ -115,7 +115,7 @@ export default function Index() {
               <strong>OPERADOR</strong>.
             </p>
             <p className="text-xs text-amber-300/80 font-mono">
-              A Fase 1 permanece bloqueada aguardando as 6 pendências restantes e a autorização
+              A Fase 1 permanece bloqueada aguardando as 5 pendências restantes e a autorização
               formal.
             </p>
           </AlertDescription>
@@ -215,7 +215,7 @@ export default function Index() {
               className="data-[state=active]:bg-blue-600 data-[state=active]:text-white font-semibold flex items-center gap-1.5"
             >
               <ListChecks className="w-4 h-4" />
-              Checklist das 6 Pendências
+              Checklist das 5 Pendências
             </TabsTrigger>
             <TabsTrigger
               value="commits_seguranca"
@@ -534,6 +534,10 @@ export default function Index() {
                         desc: 'Configurações estruturais de PostgreSQL e Redis',
                       },
                       {
+                        item: 'redis-dump.rdb (Redis RDB)',
+                        desc: 'Snapshot Redis validado com redis-check-rdb: checksum OK, 0 chaves, 0 expirações (RESOLVIDO)',
+                      },
+                      {
                         item: 'Manifesto Git',
                         desc: 'Metadados operacionais e commit de referência',
                       },
@@ -677,7 +681,7 @@ export default function Index() {
             </Card>
           </TabsContent>
 
-          {/* Aba: Checklist das 6 Pendências */}
+          {/* Aba: Checklist das 5 Pendências Restantes */}
           <TabsContent value="checklist_fase1" className="space-y-6 mt-6">
             <Card className="bg-slate-900 border-slate-800">
               <CardHeader>
@@ -688,11 +692,11 @@ export default function Index() {
                     </Badge>
                     <CardTitle className="text-lg text-white flex items-center gap-2">
                       <ListChecks className="w-5 h-5 text-blue-400" />
-                      Checklist: O que Foi Confirmado vs. As 6 Pendências Restantes
+                      Checklist: O que Foi Confirmado vs. As 5 Pendências Restantes
                     </CardTitle>
                     <CardDescription className="text-slate-400 text-xs mt-1">
-                      Separação transparente entre validações concluídas pelo operador e
-                      bloqueadores da Fase 1.
+                      Separação transparente entre validações concluídas pelo operador (incluindo
+                      Redis RDB) e os 5 bloqueadores restantes da Fase 1.
                     </CardDescription>
                   </div>
                   <Button
@@ -716,6 +720,7 @@ export default function Index() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-slate-300">
                     {[
                       'Backup completo executado em /root/backups/cursos/20261031_195147',
+                      'Redis RDB (redis-dump.rdb): validado com redis-check-rdb, checksum OK, 0 chaves, 0 expirações (RESOLVIDO)',
                       'Hashes SHA256SUMS.txt validados com 100% de sucesso',
                       'Restauração em modo --dry-run validada sem erros',
                       'Inventário EasyPanel gerado no host srv845644 e incorporado',
@@ -733,22 +738,22 @@ export default function Index() {
                   </div>
                 </div>
 
-                {/* Grupo 2: As 6 Pendências Restantes */}
+                {/* Grupo 2: As 5 Pendências Restantes */}
                 <div>
                   <h4 className="font-semibold text-amber-400 mb-2 flex items-center gap-1.5 text-sm">
                     <AlertTriangle className="w-4 h-4" />
-                    2. As 6 Pendências Restantes Pré-Fase 1 (Bloqueadoras da Fase 1):
+                    2. As 5 Pendências Restantes Pré-Fase 1 (Bloqueadoras da Fase 1):
                   </h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-slate-300">
                     {[
                       {
                         title: '1. Rotação do Token EasyPanel',
-                        desc: 'Rotacionar no painel EasyPanel o token de webhook exposto anteriormente.',
+                        desc: 'Rotacionar no painel EasyPanel o token exposto ([TOKEN_REMOVIDO_E_ROTACIONADO]).',
                         badge: 'Pendente Operador',
                       },
                       {
                         title: '2. Análise de src/routes/provas.js',
-                        desc: 'Operador enviará o arquivo real de provas para análise da lógica de avaliação.',
+                        desc: 'Operador enviará o arquivo real de provas (arquivo ainda não recebido) para análise.',
                         badge: 'Aguardando Envio',
                       },
                       {
@@ -758,18 +763,13 @@ export default function Index() {
                       },
                       {
                         title: '4. Confirmação da Versão Real do Node',
-                        desc: 'Esclarecer falha OCI rodando diagnóstico de runtime (Node vs Bun vs Deno).',
+                        desc: 'Esclarecer falha OCI (exec node not found — runtime pode não ser Node) na VPS.',
                         badge: 'Pendente Diagnóstico',
                       },
                       {
                         title: '5. Confirmação sobre Migrations PostgreSQL',
                         desc: 'Validar se comandos de migration.sql da raiz já foram rodados no Postgres 17.',
                         badge: 'Pendente Confirmação',
-                      },
-                      {
-                        title: '6. Avaliação sobre Backup dos Dados do Redis',
-                        desc: 'Avaliar se dados em cache do Redis precisam de snapshot ou se são voláteis.',
-                        badge: 'Pendente Avaliação',
                       },
                     ].map((item, idx) => (
                       <div
