@@ -22,27 +22,29 @@ Quando uma credencial for referenciada em documentos operacionais ou quando for 
    ```text
    [TOKEN_REMOVIDO_E_ROTACIONADO]
    ```
-2. **Classificação de Risco:** Segredos expostos previamente devem ser taxativamente marcados como:
+2. **Classificação e Tratamento de Tokens Rotacionados:** Chaves e tokens rotacionados devem ser taxativamente identificados como:
    ```text
-   STATUS: EXPOSTO - ROTACIONAR
+   STATUS: ROTACIONADO PELO OPERADOR (CHAVE ANTIGA REVOGADA)
+   MARCADOR: [TOKEN_REMOVIDO_E_ROTACIONADO]
    ```
-3. **Proibição de Reprodução:** É estritamente proibido reproduzir, colar ou derivar o valor real da credencial em qualquer arquivo, mesmo que parcialmente mascarado (ex: não utilizar `ey...`, `sec_...`).
+3. **Proibição de Reprodução:** É estritamente proibido reproduzir, colar ou derivar o valor real da credencial em qualquer arquivo, mesmo que parcialmente mascarado (ex: não utilizar `ey...`, `sec_...`). O novo valor NUNCA deve aparecer em relatórios, commits, arquivos, screenshots ou mensagens.
 
 ---
 
-## 3. REGISTRO DO PEDIDO DE ROTAÇÃO AO OPERADOR DA VPS
+## 3. CONFIRMAÇÃO DA ROTAÇÃO EXECUTADA PELO OPERADOR DA VPS
 
-### Incidente Registrado: Token de Deploy do EasyPanel
+### Incidente Resolvido: Token de Deploy / Chave API do EasyPanel
 
-- **Diagnóstico:** Em comunicação e relatório técnico preliminar anterior, foi identificado o vazamento de um token de webhook de deploy do EasyPanel.
+- **Diagnóstico:** Em comunicação e relatório técnico preliminar anterior, foi identificado o vazamento de um token de webhook de deploy / API do EasyPanel.
 - **Ação Executada no Workspace:**
   - O valor foi completamente removido de todos os arquivos do GoSkip.
   - O marcador `[TOKEN_REMOVIDO_E_ROTACIONADO]` foi inserido no lugar.
-- **Ação Requerida do Operador da VPS:**
-  - Acessar o painel administrativo do EasyPanel na VPS do projeto.
-  - Navegar até as configurações de Webhooks / Deploy do serviço `Cursos-API`.
-  - **Revogar e rotacionar** imediatamente o token de deploy / URL de webhook.
-  - Atualizar os gatilhos externos apenas com o novo segredo gerado.
+- **Ação Concluída pelo Operador da VPS:**
+  - O **OPERADOR DA VPS** revogou no painel administrativo do EasyPanel a chave API antiga exposta.
+  - O operador gerou uma **NOVA CHAVE** no painel da VPS.
+  - O novo segredo é mantido exclusivamente na VPS / EasyPanel e **NUNCA DEVE APARECER** neste workspace.
+  - O marcador `[TOKEN_REMOVIDO_E_ROTACIONADO]` é mantido em todos os documentos.
+  - **Status:** **CONCLUÍDO E ENCERRADO**.
 
 ---
 

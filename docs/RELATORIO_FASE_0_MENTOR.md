@@ -25,28 +25,28 @@ Este documento registra a análise técnica completa, estruturada e exaustiva da
 
 ## SEÇÃO ESPECIAL 1: SITUAÇÃO DOS COMMITS DO WORKSPACE
 
-Em atendimento aos 7 pontos de auditoria formulados pelo operador da VPS a respeito dos commits `34df2d6` e `ecf1cc0`:
+Em atendimento aos 7 pontos de auditoria formulados pelo operador da VPS a respeito dos commits de workspace `34df2d6`, `ecf1cc0` e `505e672`:
 
-1. **Onde foram criados:** Os commits `34df2d6` e `ecf1cc0` foram criados estritamente dentro do workspace efêmero de prévia do GoSkip.
+1. **Onde foram criados:** Os commits `34df2d6`, `ecf1cc0` e `505e672` foram criados estritamente dentro do workspace efêmero de prévia do GoSkip.
 2. **Relação com o repositório oficial:** Eles **NÃO pertencem** e **NÃO foram criados** no repositório oficial `github.com/ronydgarcia-max/cursos-api`.
-3. **Relação com a branch de trabalho:** Eles **NÃO pertencem** à branch de trabalho `correcao-fluxo-cursos`.
+3. **Relação com a branch de trabalho:** Eles **NÃO pertencem** à branch de trabalho oficial `correcao-fluxo-cursos`.
 4. **Envio ao GitHub:** Eles **NÃO foram enviados (push)** ao GitHub e não constam em nenhum branch remoto do repositório.
 5. **Impacto em produção:** Eles **NÃO alteram** e **NÃO impactam** o ambiente de produção da VPS em nenhuma circunstância.
 6. **Conteúdo exclusivo:** Eles contêm única e exclusivamente arquivos de documentação técnica e prototipagem do workspace (notadamente `docs/RELATORIO_FASE_0_MENTOR.md`, documentos operacionais e o componente de visualização em `src/pages/Index.tsx`).
-7. **Destino e isolamento:** Ficam mantidos no workspace do GoSkip exclusivamente como material de referência, alinhamento técnico e conferência visual. **NÃO serão publicados nem mesclados na VPS.**
+7. **Destino e isolamento:** Ficam mantidos no workspace do GoSkip exclusivamente como material de referência, alinhamento técnico e conferência visual. **NÃO devem ser publicados nem mesclados na VPS sob nenhuma hipótese.**
 
-> **Conclusão:** Commits de relatório e protótipo do GoSkip permanecem 100% segregados do código-fonte de produção e jamais serão misturados à branch `correcao-fluxo-cursos` sem autorização expressa do operador.
+> **Conclusão:** Commits de relatório e protótipo do GoSkip (`34df2d6`, `ecf1cc0`, `505e672`) permanecem 100% segregados do código-fonte de produção e jamais serão misturados à branch `correcao-fluxo-cursos`.
 
 ---
 
 ## SEÇÃO ESPECIAL 2: SEGURANÇA DOS RELATÓRIOS E SANITIZAÇÃO DE SECRETS
 
-### 1. Auditoria de Token Exposto no Histórico
+### 1. Auditoria e Rotação do Token do EasyPanel (CONCLUÍDA PELO OPERADOR)
 
-- Foi identificado que um relatório preliminar anterior continha um token de deploy de webhook do EasyPanel.
-- **Classificação:** `EXPOSTO - ROTACIONAR`.
-- **Ação Imediata no Workspace:** Qualquer ocorrência ou menção a valores de credenciais foi substituída pelo marcador padrão `[TOKEN_REMOVIDO_E_ROTACIONADO]`. O valor real foi completamente expurgado e **não é reproduzido em nenhum arquivo**.
-- **Solicitação Formal ao Operador:** Foi registrada a solicitação formal de rotação imediata do token de deploy / API no dashboard do EasyPanel na VPS.
+- Foi identificado em rodadas preliminares que um token de deploy de webhook/API do EasyPanel constava no histórico.
+- **Ação Imediata no Workspace:** Qualquer ocorrência ou menção a valores de credenciais foi substituída pelo marcador padrão `[TOKEN_REMOVIDO_E_ROTACIONADO]`. O valor real foi completamente expurgado e **nunca é reproduzido em nenhum relatório, commit, arquivo, screenshot ou mensagem**.
+- **Resolução Externa pelo Operador:** O **OPERADOR DA VPS** revogou no painel do EasyPanel a chave API antiga exposta e gerou uma **NOVA CHAVE**. O novo valor **NUNCA DEVE APARECER** neste workspace. Usar exclusivamente o marcador sanitizado `[TOKEN_REMOVIDO_E_ROTACIONADO]`.
+- **Status da Pendência:** **CONCLUÍDA E ENCERRADA**. A rotação foi atestada pelo operador; nenhuma pendência de credencial permanece aberta.
 
 ### 2. Política Geral de Sanitização
 
@@ -59,19 +59,19 @@ Nenhum arquivo deste workspace (documentos, scripts ou protótipos) armazena sen
 
 ### 3. Lista de Secrets Removidos / Mascarados
 
-| Variável / Secret          | Serviço EasyPanel       | Finalidade Técnica                                  | Estado / Valor Sanitizado                               |
-| -------------------------- | ----------------------- | --------------------------------------------------- | ------------------------------------------------------- |
-| `EASYPANEL_DEPLOY_TOKEN`   | EasyPanel Webhooks      | Gatilho de deploy automático via webhook            | `[TOKEN_REMOVIDO_E_ROTACIONADO]` (EXPOSTO - ROTACIONAR) |
-| `JWT_SECRET`               | Cursos-API              | Assinatura e validação dos tokens JWT dos usuários  | Nome mantido; valor real omitido                        |
-| `MENTOR_JWT_SECRET`        | Cursos-API / SSO        | Validação de tokens de login SSO do mentor          | Nome mantido; valor real omitido                        |
-| `CURSOS_API_BRIDGE_SECRET` | Cursos-API              | Proteção de comunicação interna via bridge          | Nome mantido; valor real omitido                        |
-| `POSTGRES_PASSWORD`        | PostgreSQL / Cursos-API | Senha do banco relacional PostgreSQL                | Nome mantido; valor real omitido                        |
-| `DATABASE_URL`             | Cursos-API              | String de conexão com o banco de dados              | `postgresql://cursos_user:***@postgres:5432/cursos_db`  |
-| `REDIS_PASSWORD`           | Redis / Cursos-API      | Autenticação no Redis para cache e rate-limit       | Nome mantido; valor real omitido                        |
-| `REDIS_URL`                | Cursos-API              | String de conexão do Redis                          | `redis://:***@redis:6379`                               |
-| `CLOUDINARY_API_SECRET`    | Cursos-API              | Chave de autenticação na API do Cloudinary          | Nome mantido; valor real omitido                        |
-| `MS_GRAPH_CLIENT_SECRET`   | Cursos-API              | Segredo de aplicativo Azure para streaming OneDrive | Nome mantido; valor real omitido                        |
-| `GROQ_API_KEY`             | Cursos-API              | Chave de API para moderação de conteúdo por IA      | Nome mantido; valor real omitido                        |
+| Variável / Secret          | Serviço EasyPanel       | Finalidade Técnica                                  | Estado / Valor Sanitizado                                                            |
+| -------------------------- | ----------------------- | --------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `EASYPANEL_DEPLOY_TOKEN`   | EasyPanel Webhooks      | Gatilho de deploy automático via webhook            | `[TOKEN_REMOVIDO_E_ROTACIONADO]` (ROTACIONADO PELO OPERADOR - CHAVE ANTIGA REVOGADA) |
+| `JWT_SECRET`               | Cursos-API              | Assinatura e validação dos tokens JWT dos usuários  | Nome mantido; valor real omitido                                                     |
+| `MENTOR_JWT_SECRET`        | Cursos-API / SSO        | Validação de tokens de login SSO do mentor          | Nome mantido; valor real omitido                                                     |
+| `CURSOS_API_BRIDGE_SECRET` | Cursos-API              | Proteção de comunicação interna via bridge          | Nome mantido; valor real omitido                                                     |
+| `POSTGRES_PASSWORD`        | PostgreSQL / Cursos-API | Senha do banco relacional PostgreSQL                | Nome mantido; valor real omitido                                                     |
+| `DATABASE_URL`             | Cursos-API              | String de conexão com o banco de dados              | `postgresql://cursos_user:***@postgres:5432/cursos_db`                               |
+| `REDIS_PASSWORD`           | Redis / Cursos-API      | Autenticação no Redis para cache e rate-limit       | Nome mantido; valor real omitido                                                     |
+| `REDIS_URL`                | Cursos-API              | String de conexão do Redis                          | `redis://:***@redis:6379`                                                            |
+| `CLOUDINARY_API_SECRET`    | Cursos-API              | Chave de autenticação na API do Cloudinary          | Nome mantido; valor real omitido                                                     |
+| `MS_GRAPH_CLIENT_SECRET`   | Cursos-API              | Segredo de aplicativo Azure para streaming OneDrive | Nome mantido; valor real omitido                                                     |
+| `GROQ_API_KEY`             | Cursos-API              | Chave de API para moderação de conteúdo por IA      | Nome mantido; valor real omitido                                                     |
 
 ---
 
@@ -336,9 +336,11 @@ Quando a Fase 1 for expressamente autorizada, a rota de streaming será corrigid
 
 ## ANÁLISE COMPARATIVA: NOVO PLAYER (REFERÊNCIA ADAPTA) E LIMITAÇÕES
 
-> **DECLARAÇÃO DE LIMITAÇÃO OBRIGATÓRIA:**  
-> A análise atual da interface do player de referência é baseada na descrição funcional e na especificação conceitual da plataforma Adapta Alunos (`https://alunos.adapta.org/area/conteudo/aula/7869245`), **NÃO na página real inspecionada diretamente pelo GoSkip**, uma vez que a URL exige autenticação restrita de aluno ativo.  
-> Os **screenshots reais do player de referência SERÃO ENVIADOS SEPARADAMENTE pelo operador** e **NÃO estão disponíveis nesta rodada**. Nenhuma conclusão visual definitiva é tomada antes do envio dessas capturas.
+> **DECLARAÇÃO DE LIMITAÇÃO OBRIGATÓRIA (ÚNICA PENDÊNCIA EXTERNA RESTANTE):**  
+> A análise da interface do player é baseada na especificação conceitual da plataforma Adapta Alunos (`https://alunos.adapta.org/area/conteudo/aula/7869245`), **NÃO na página real inspecionada diretamente pelo GoSkip**, uma vez que a URL exige autenticação restrita de aluno ativo.  
+> Os screenshots enviados anteriormente pelo operador mostravam apenas a tela do EasyPanel referente à chave API, e não a área de membros do player.  
+> O envio dos **SCREENSHOTS REAIS DO PLAYER** (desktop e celular; e, se disponíveis, módulos abertos e progresso/conclusão) é a **ÚNICA PENDÊNCIA EXTERNA RESTANTE**.  
+> **Diretrizes Estritas de Uso da Referência Visual:** A referência visual do player Adapta só deve ser utilizada para: organização visual, posição do player, lista de módulos, aula atual, progresso, navegação, materiais, responsividade, estados de carregamento, erro de reprodução e conclusão da aula. **NUNCA copiar código, imagens, textos, scripts, estilos ou identidade visual da Adapta**.
 
 - **Layout Conceitual:** Estrutura limpa com tema escuro/elegante.
 - **Área Central:** Player em destaque (proporção 16:9) com controles de velocidade, tela cheia, qualidade e volume.
@@ -462,12 +464,10 @@ O arquivo oficial `src/routes/provas.js` foi fornecido pelo operador e incorpora
     if (!u) return res.status(404).json({ error: 'Usuário não encontrado' })
     const ehMentor = u.mentor_status === 'aprovado' || u.role === 'admin'
     if (!ehMentor)
-      return res
-        .status(403)
-        .json({
-          error: 'Apenas mentores aprovados têm acesso a esta área',
-          status_atual: u.mentor_status,
-        })
+      return res.status(403).json({
+        error: 'Apenas mentores aprovados têm acesso a esta área',
+        status_atual: u.mentor_status,
+      })
     req.usuario.role = u.role
     req.usuario.mentor_status = u.mentor_status
     next()
@@ -548,19 +548,24 @@ O arquivo oficial `src/routes/provas.js` foi fornecido pelo operador e incorpora
 
 ---
 
-## PENDÊNCIAS RESTANTES PRÉ-FASE 1 (LISTA OFICIAL: EXATAMENTE 2 PENDÊNCIAS RESTANTES)
+## PENDÊNCIA RESTANTE PRÉ-FASE 1 (LISTA OFICIAL FINAL: EXATAMENTE 1 PENDÊNCIA EXTERNA RESTANTE)
 
-Com os avanços confirmados pelo operador e pela auditoria da Fase 0:
+Com os avanços confirmados e formalmente atestados pelo **OPERADOR DA VPS** e pela auditoria da Fase 0:
 
-- **Redis RDB:** Backup e integridade confirmados pelo operador (`redis-dump.rdb` validado com `redis-check-rdb`, zero chaves).
-- **Node.js Runtime:** Confirmado pelo operador como **Node v20.20.2** no container `cursos-api_cursos-api.1.jsmxpl7rmip278eajgb5f5ms4`.
-- **PostgreSQL / Migrations:** Confirmado pelo operador que a tabela `cursos` já possui todas as colunas necessárias e a migration está aplicada. Decisão formal: **não executar migration.sql novamente** e corrigir a duplicidade de `matriz_curricular` apenas no código na Fase 1.
-- **Arquivo `src/routes/provas.js`:** Recebido, integralmente analisado e documentado na Seção Especial 8.
+- **Backup Completo da VPS:** Executado e confirmado pelo operador em `/root/backups/cursos/20261031_195147` (cursos-api.bundle, cursos-api-source.tar.gz, cursos-videos.tar.gz, postgres.sql, PocketBase, redis-dump.rdb, manifests, configurações estruturais, SHA256SUMS.txt).
+- **Dry-run de Restauração:** Executado pelo operador com `restaurar-cursos-vps.sh --dry-run`, 100% OK e sem alterações em produção.
+- **Redis RDB:** Snapshot `redis-dump.rdb` validado com `redis-check-rdb`, checksum OK, zero chaves, zero expirações.
+- **Inventário EasyPanel Real:** Confirmado no host `srv845644` com 4 serviços: Cursos-API, PocketBase, PostgreSQL e Redis.
+- **Rotação do Token EasyPanel (CONCLUÍDA):** Chave API antiga revogada e nova criada pelo operador no painel da VPS. O novo valor NUNCA deve ser registrado em relatórios, commits, arquivos, screenshots ou mensagens — mantido exclusivamente o marcador `[TOKEN_REMOVIDO_E_ROTACIONADO]`. Pendência encerrada.
+- **Runtime Node.js:** Confirmado pelo operador como **Node v20.20.2** no container `cursos-api_cursos-api.1.jsmxpl7rmip278eajgb5f5ms4`. Dockerfile e documentações com Node 18 marcados como desatualizados (correção do Dockerfile é tema da Fase 1).
+- **PostgreSQL / Migrations Aplicadas:** Confirmado pelo operador no container `cursos-api_postgres.1.mpp4zqgnifgzjkh2y0hz9f4hm` que a tabela `cursos` já possui as 8 colunas (`video_url`, `video_type`, `video_public_id`, `thumbnail_url`, `confirmed_author`, `ia_score`, `matriz_curricular`, `subcategoria`). **Aviso explícito: NÃO reexecutar `migration.sql`**. Duplicidade de `matriz_curricular` a corrigir somente no código da migration, sem tocar no banco.
+- **Arquivo `src/routes/provas.js`:** Recebido, integralmente analisado e documentado na Seção Especial 8. O arquivo `provas.js` **NÃO deve ser alterado**.
+- **Branch Oficial e Commit Base:** Branch exclusiva `correcao-fluxo-cursos` no repositório `github.com/ronydgarcia-max/cursos-api`; commit base estável `47aa7b1` (inalterado). Proibido usar branch `main` sem autorização expressa.
+- **Commits GoSkip de Workspace:** Commits `34df2d6`, `ecf1cc0` e `505e672` são restritos ao protótipo/documentação e **NÃO devem ser publicados na VPS**.
 
-Restam **EXATAMENTE 2 PENDÊNCIAS MANDATÓRIAS** para a liberação da Fase 1:
+Resta **EXATAMENTE 1 PENDÊNCIA EXTERNA RESTANTE** para a liberação da Fase 1:
 
-1. **Rotação Obrigatória do Token do EasyPanel Exposto:** O operador deve rotacionar no painel EasyPanel na VPS o token de deploy/API que apareceu em relatórios anteriores deste projeto (marcador de segurança: `[TOKEN_REMOVIDO_E_ROTACIONADO]`, classificação: `EXPOSTO - ROTACIONAR`).
-2. **Screenshots Desktop e Celular do Player de Referência:** Capturas de tela reais da área de membros do player de referência (Adapta) a serem enviadas pelo operador para definição visual final.
+1. **Screenshots Desktop e Celular do Player de Referência:** Envio pelo operador das capturas de tela REAIS da área de membros do player de referência (`https://alunos.adapta.org/area/conteudo/aula/7869245` — os screenshots enviados anteriormente exibiam apenas o painel do EasyPanel de API keys, não o player). A referência visual só deve ser usada para: organização visual, posição do player, lista de módulos, aula atual, progresso, navegação, materiais, responsividade, estados de carregamento, erro de reprodução, conclusão da aula — **NUNCA copiar código, imagens, textos, scripts, estilos ou identidade visual**. Se disponíveis, enviar também telas com módulos abertos e progresso/conclusão.
 
 ---
 
@@ -610,27 +615,33 @@ Somente após a autorização do operador, do backup confirmado na VPS e do rece
 
 ### 2. Matriz de Riscos da Fase 1
 
-| Risco                                         | Impacto | Probabilidade | Mitigação Planejada                                                                              |
-| --------------------------------------------- | ------- | ------------- | ------------------------------------------------------------------------------------------------ |
-| Quebra de streaming na aula 27 já existente   | Alto    | Média         | Manter `LOCAL_VIDEO_FILES[27]` como fallback incondicional caso `video_path` seja nulo           |
-| Sobrecarga de disco por uploads locais órfãos | Médio   | Média         | Implementar limpeza automática de arquivos temporários e deleção ao substituir vídeo             |
-| Conflito de versão Node.js no build           | Alto    | Baixa         | Confirmar previamente se a VPS roda Node 18 ou Node 20 antes de gerar dependências               |
-| DDL concorrente ou falha de migration         | Crítico | Baixa         | Nenhuma migration automática na Fase 1; qualquer DDL deve ser testada e com rollback documentado |
+| Risco                                         | Impacto | Probabilidade | Mitigação Planejada                                                                                                                                     |
+| --------------------------------------------- | ------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Quebra de streaming na aula 27 já existente   | Alto    | Média         | Manter `LOCAL_VIDEO_FILES[27]` como fallback incondicional caso `video_path` seja nulo                                                                  |
+| Sobrecarga de disco por uploads locais órfãos | Médio   | Média         | Implementar limpeza automática de arquivos temporários e deleção ao substituir vídeo                                                                    |
+| Conflito de versão Node.js no build           | Alto    | Baixa         | Runtime Node v20.20.2 confirmado pelo operador; alinhar dependências e Dockerfile exclusivamente no padrão Node 20 LTS                                  |
+| Reexecução inadvertida de migration           | Crítico | Baixa         | Trava documental explícita: NÃO reexecutar `migration.sql`; colunas da tabela cursos já existem; duplicidade de matriz_curricular corrigir só no código |
+| DDL concorrente ou falha de migration         | Crítico | Baixa         | Nenhuma migration automática na Fase 1; qualquer DDL deve ser testada e com rollback documentado                                                        |
+| Regressão em avaliações/provas                | Alto    | Baixa         | Manter transação atômica BEGIN/COMMIT/ROLLBACK, validações de domínio e isolamento de mentor mapeados na análise técnica                                |
+| Vazamento de secrets ou tokens no deploy      | Crítico | Baixa         | Sanitização rigorosa pré-commit; proibição absoluta de senhas, chaves ou tokens nos repositórios e relatórios                                           |
 
 ### 3. Critérios de Autorização da Fase 1
 
-A autorização para a Fase 1 depende dos seguintes critérios formais:
+A autorização formal para o início da Fase 1 depende dos seguintes critérios:
 
 - [x] **Backup completo preparado e confirmado pelo operador:** Concluído em `/root/backups/cursos/20261031_195147` com bundle Git, fonte, vídeos, dump Postgres, PocketBase, Redis RDB (`redis-dump.rdb` validado com `redis-check-rdb`, zero chaves, zero expirações) e SHA-256.
-- [x] **Restauração em modo `--dry-run` validada pelo operador:** Execução com 100% de sucesso sem alterar produção.
-- [x] **Inventário EasyPanel estruturado na VPS:** Concluído e incorporado em `/root/INVENTARIO_EASYPANEL.md`.
-- [x] **Backup dos dados do Redis (RDB):** Concluído e validado pelo operador via `redis-check-rdb` (`redis-dump.rdb` íntegro, checksum OK, zero chaves, zero expirações). Concluído.
-- [x] **Confirmação da versão real do Node.js:** Node v20.20.2 confirmado pelo operador no container real `cursos-api_cursos-api.1.jsmxpl7rmip278eajgb5f5ms4`. Dockerfile/docs com Node 18 desatualizados. Concluído.
-- [x] **Confirmação das Migrations no PostgreSQL:** Confirmado pelo operador que a tabela `cursos` já possui todas as colunas. Migration aplicada. Não executar `migration.sql` novamente. Correção de duplicidade fica para código da Fase 1. Concluído.
-- [x] **Recebimento e análise técnica de `src/routes/provas.js`:** Arquivo fornecido pelo operador, analisado minuciosamente na Seção Especial 8. Concluído.
-- [ ] **Rotação do token EasyPanel exposto:** Pendente de execução manual pelo operador no painel da VPS (`[TOKEN_REMOVIDO_E_ROTACIONADO]`, status `EXPOSTO - ROTACIONAR`).
-- [ ] **Recebimento de screenshots desktop e celular do player:** Pendente de envio pelo operador.
-- [ ] **Atualização do relatório final e termo formal assinado pelo mantenedor.**
+- [x] **Restauração em modo `--dry-run` validada pelo operador:** Execução com 100% de sucesso sem alterar produção (`restaurar-cursos-vps.sh --dry-run`).
+- [x] **Inventário EasyPanel estruturado na VPS:** Concluído e incorporado em `/root/INVENTARIO_EASYPANEL.md` (4 serviços: Cursos-API, PocketBase, Postgre, Redis).
+- [x] **Backup dos dados do Redis (RDB):** Concluído e validado pelo operador via `redis-check-rdb` (`redis-dump.rdb` íntegro, checksum OK, zero chaves, zero expirações).
+- [x] **Rotação do token do EasyPanel (CONCLUÍDA PELO OPERADOR):** Chave antiga revogada e nova criada pelo operador no painel da VPS. Marcador `[TOKEN_REMOVIDO_E_ROTACIONADO]` mantido, sem nenhum valor real exposto. Pendência encerrada.
+- [x] **Confirmação da versão real do Node.js:** Node v20.20.2 confirmado pelo operador no container real `cursos-api_cursos-api.1.jsmxpl7rmip278eajgb5f5ms4`. Dockerfile/docs com Node 18 marcados como desatualizados.
+- [x] **Confirmação das Migrations no PostgreSQL:** Confirmado pelo operador no container `cursos-api_postgres.1.mpp4zqgnifgzjkh2y0hz9f4hm` que a tabela `cursos` possui as 8 colunas. Migration aplicada. Não executar `migration.sql` novamente. Correção de duplicidade fica para código da Fase 1.
+- [x] **Recebimento e análise técnica de `src/routes/provas.js`:** Arquivo fornecido pelo operador, analisado minuciosamente na Seção Especial 8. Não alterar `provas.js`.
+- [x] **Branch de trabalho oficial:** `correcao-fluxo-cursos` no repositório `github.com/ronydgarcia-max/cursos-api`. Branch `main` não autorizada.
+- [x] **Commit base estável:** `47aa7b1` (inalterado).
+- [x] **Isolamento de commits de workspace:** `34df2d6`, `ecf1cc0` e `505e672` segregados e NÃO publicados na VPS.
+- [ ] **Recebimento de screenshots desktop e celular do player:** ÚNICA pendência externa restante pré-Fase 1 (aguardando envio pelo operador das telas da área de membros do player de referência Adapta).
+- [ ] **Envio da frase exata de autorização pelo operador:** "Autorizo iniciar a Fase 1 da reescrita do painel do mentor." — a Fase 1 só começa após o envio exato desta frase.
 
 ### 4. Critérios de Aceite Técnico da Fase 1 (Pós-Autorização)
 

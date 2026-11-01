@@ -28,42 +28,54 @@ Estes itens foram executados e atestados formalmente pelo **OPERADOR DA VPS**:
 - [x] **6. Backup dos Dados do Redis Confirmado (RESOLVIDO):** Snapshot RDB gerado e validado pelo operador via `redis-check-rdb` em `/root/backups/cursos/20261031_195147/redis-dump.rdb`: arquivo válido, checksum OK, zero chaves, zero expirações. Pendência de backup do Redis **RESOLVIDA**.
 - [x] **7. Runtime Node Confirmado pelo Operador (Node v20.20.2):** Container real em execução `cursos-api_cursos-api.1.jsmxpl7rmip278eajgb5f5ms4`. Referências a Node 18 em Dockerfile e documentação estão desatualizadas (correção do Dockerfile agendada para Fase 1, sem alteração agora).
 - [x] **8. PostgreSQL e Migrations Confirmadas Aplicadas pelo Operador:** Container `cursos-api_postgres.1.mpp4zqgnifgzjkh2y0hz9f4hm`. A tabela `cursos` já possui todas as colunas (`video_url`, `video_type`, `video_public_id`, `thumbnail_url`, `confirmed_author`, `ia_score`, `matriz_curricular`, `subcategoria`). Migration já aplicada: **NÃO executar `migration.sql` novamente**. Duplicidade de `matriz_curricular` será corrigida apenas no arquivo da migration na Fase 1, sem tocar banco.
-- [x] **9. Arquivo `src/routes/provas.js` Recebido e Analisado:** Código completo examinado e documentado. Mapeadas rotas GET/POST/PUT/DELETE, proteção `apenasMentor`, transação atômica BEGIN/COMMIT/ROLLBACK, validações de negócio, riscos de segurança e funcionalidades a preservar.
+- [x] **9. Arquivo `src/routes/provas.js` Recebido e Analisado:** Código completo examinado e documentado na Seção Especial 8. Mapeadas 5 rotas (listar, detalhar, criar, editar, excluir), auth + apenasMentor, filtro por mentor_id, transação atômica BEGIN/COMMIT/ROLLBACK, alternativa correta obrigatória, letras A–E, nota mínima 0–100. Pontos para revisar na Fase 1 documentados. **Regra estrita: NÃO alterar provas.js**.
+- [x] **10. Rotação do Token EasyPanel Executada pelo Operador (CONCLUÍDA):** A chave API antiga do EasyPanel exposta foi **REVOGADA** e uma **NOVA CHAVE** foi gerada pelo operador. O novo valor **NUNCA** deve aparecer em relatórios, commits, arquivos, screenshots ou mensagens — mantido exclusivamente o marcador `[TOKEN_REMOVIDO_E_ROTACIONADO]`. Pendência **CONCLUÍDA E ENCERRADA**.
 
 ---
 
 ## 2. ITENS PRONTOS E AUDITADOS NO WORKSPACE GOSKIP (DOCUMENTAÇÃO E PROTÓTIPO)
 
-- [x] **1. Branch Oficial e Commit Base Identificados:** `correcao-fluxo-cursos` no repositório `github.com/ronydgarcia-max/cursos-api`, commit base `47aa7b1`.
-- [x] **2. Isolamento dos Commits Internos do Workspace:** Os commits criados no GoSkip pertencem exclusivamente ao workspace efêmero de documentação e prévia, não estão no repositório oficial, não afetam produção e jamais serão publicados na VPS.
-- [x] **3. Sanitização Total de Credenciais e Secrets:** Todos os arquivos registram exclusivamente nomes de variáveis de ambiente. Qualquer menção a token antigo foi substituída por `[TOKEN_REMOVIDO_E_ROTACIONADO]` com status `EXPOSTO - ROTACIONAR`.
+- [x] **1. Branch Oficial e Commit Base Identificados:** `correcao-fluxo-cursos` no repositório `github.com/ronydgarcia-max/cursos-api` (única branch autorizada; branch `main` proibida sem autorização expressa), commit base estável `47aa7b1` (inalterado).
+- [x] **2. Isolamento dos Commits Internos do Workspace:** Os commits criados no GoSkip (`34df2d6`, `ecf1cc0`, `505e672`) pertencem exclusivamente ao workspace efêmero de documentação e prévia, não estão no repositório oficial, não afetam produção e **NÃO DEVEM SER PUBLICADOS NA VPS**.
+- [x] **3. Sanitização Total de Credenciais e Secrets:** Todos os arquivos registram exclusivamente nomes de variáveis de ambiente. O token rotacionado é identificado exclusivamente por `[TOKEN_REMOVIDO_E_ROTACIONADO]`. Zero segredos reais em texto puro.
 - [x] **4. Mapeamento Técnico de Riscos e Fluxo de Deploy:** Documentados `docs/RELATORIO_FASE_0_MENTOR.md`, `FLUXO_DEPLOY_GITHUB.md` (14 etapas) e `PLANO_ROLLBACK.md`.
 
 ---
 
-## 3. AS EXATAMENTE 2 PENDÊNCIAS RESTANTES PRÉ-FASE 1 (BLOQUEADORAS DO INÍCIO DA FASE 1)
+## 3. A ÚNICA PENDÊNCIA EXTERNA RESTANTE PRÉ-FASE 1 (EXATAMENTE 1 ITEM RESTANTE)
 
-Com a resolução e confirmação pelo operador do **Runtime Node v20.20.2**, do **PostgreSQL com Migrations aplicadas** e o recebimento/análise técnica de **`src/routes/provas.js`**, a transição para a Fase 1 depende agora de **EXATAMENTE 2 PENDÊNCIAS MANDATÓRIAS**:
+Com a resolução e confirmação pelo operador do **Backup e Dry-Run**, do **Redis RDB**, do **Inventário EasyPanel**, da **Rotação da Chave API do EasyPanel**, do **Runtime Node v20.20.2**, do **PostgreSQL com Migrations aplicadas** e o recebimento/análise técnica de **`src/routes/provas.js`**, resta agora **EXATAMENTE 1 PENDÊNCIA EXTERNA**:
 
-- [ ] **1. Rotação do Token EasyPanel Exposto:** O operador deve rotacionar no painel do EasyPanel na VPS o token de deploy/API que apareceu em relatórios anteriores deste projeto (marcador: `[TOKEN_REMOVIDO_E_ROTACIONADO]`, status: `EXPOSTO - ROTACIONAR`).
-- [ ] **2. Screenshots Desktop e Celular do Player de Referência:** Capturas de tela da área de membros do player de referência (Adapta) a serem enviadas pelo operador para guiar o visual definitivo e responsivo.
+- [ ] **1. Screenshots Desktop e Celular do Player de Referência:** Capturas de tela REAIS da área de membros do player de referência (`https://alunos.adapta.org/area/conteudo/aula/7869245` — os screenshots enviados anteriormente exibiam apenas o painel do EasyPanel de API keys, não o player). O operador deve enviar capturas reais mostrando: organização visual, posição do player, lista de módulos, aula atual, progresso, navegação, materiais, responsividade, estados de carregamento, erro de reprodução e conclusão da aula (e, se disponíveis, módulos abertos e progresso/conclusão). **NUNCA copiar código, imagens, textos, scripts, estilos ou identidade visual**.
 
 ---
 
-## 4. TERMO DE AUTORIZAÇÃO DA FASE 1 (A PREENCHER APÓS AS 2 PENDÊNCIAS)
+## 4. CONDIÇÃO E FRASE EXATA DE AUTORIZAÇÃO DA FASE 1
+
+> **REGRA MANDATÓRIA DE AUTORIZAÇÃO:**  
+> A reescrita do painel do mentor e as alterações de código da Fase 1 **NÃO INICIARAM**.  
+> A Fase 1 **SÓ COMEÇA** quando o operador enviar **EXATAMENTE A FRASE ABAIXO**:
+>
+> ```text
+> Autorizo iniciar a Fase 1 da reescrita do painel do mentor.
+> ```
+>
+> Qualquer outra mensagem ou frase diferente não autoriza o início da Fase 1.
 
 ```text
 [ ] FASE 1 FORMALMENTE AUTORIZADA PELO RESPONSÁVEL DO PROJETO
 
 Responsável: __________________________________________________
 Data e Hora: __________________________________________________
+Frase Exata Enviada: "Autorizo iniciar a Fase 1 da reescrita do painel do mentor."
 Snapshot de Backup Validado: /root/backups/cursos/20261031_195147 (SHA-256 OK, Redis RDB OK)
-Token EasyPanel Rotacionado: [ ] SIM  [ ] NÃO
-Screenshots do Player Recebidos: [ ] SIM  [ ] NÃO
+Token EasyPanel Rotacionado: [x] SIM (Revogado e recriado pelo operador; marcador [TOKEN_REMOVIDO_E_ROTACIONADO])
+Screenshots Reais do Player Recebidos: [ ] SIM  [ ] NÃO
 
 --- VALIDAÇÕES PRÉVIAS JÁ CONCLUÍDAS PELO OPERADOR E AUDITORIA ---
 Runtime Node.js: [x] CONFIRMADO Node v20.20.2 (container cursos-api_cursos-api.1.jsmxpl7rmip278eajgb5f5ms4)
 PostgreSQL & Migrations: [x] CONFIRMADO tabela cursos completa, migration aplicada; não reexecutar migration.sql
-Arquivo provas.js: [x] RECEBIDO E ANALISADO (rotas GET/POST/PUT/DELETE, apenasMentor, transação BEGIN/COMMIT)
+Arquivo provas.js: [x] RECEBIDO E ANALISADO (rotas GET/POST/PUT/DELETE, apenasMentor, transação BEGIN/COMMIT; não alterar)
 Backup Redis RDB: [x] CONFIRMADO (redis-dump.rdb, zero chaves, zero expirações)
+Token EasyPanel: [x] CONFIRMADO ROTACIONADO (chave antiga revogada, nova criada; [TOKEN_REMOVIDO_E_ROTACIONADO])
 ```

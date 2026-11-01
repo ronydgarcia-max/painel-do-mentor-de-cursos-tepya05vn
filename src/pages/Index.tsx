@@ -81,8 +81,9 @@ export default function Index() {
           </h1>
           <p className="text-slate-400 text-sm mt-1">
             Governança rigorosa: Inventário EasyPanel da VPS incorporado, Backup e Dry-Run atestados
-            pelo operador, Node v20.20.2 e Migrations confirmados, análise de provas.js concluída e
-            exatamente 2 pendências restantes.
+            pelo operador, Token EasyPanel rotacionado, Node v20.20.2 e Migrations confirmados,
+            análise de provas.js concluída e EXATAMENTE 1 pendência externa restante (Screenshots do
+            player).
           </p>
         </div>
 
@@ -116,8 +117,8 @@ export default function Index() {
               <strong>OPERADOR</strong>.
             </p>
             <p className="text-xs text-amber-300/80 font-mono">
-              A Fase 1 permanece bloqueada aguardando exatamente as 2 pendências restantes (rotação
-              de token e screenshots) e a autorização formal.
+              A Fase 1 permanece bloqueada aguardando exatamente a ÚNICA pendência externa restante
+              (screenshots reais do player) e o envio da frase exata de autorização pelo operador.
             </p>
           </AlertDescription>
         </Alert>
@@ -223,7 +224,7 @@ export default function Index() {
               className="data-[state=active]:bg-blue-600 data-[state=active]:text-white font-semibold flex items-center gap-1.5"
             >
               <ListChecks className="w-4 h-4" />
-              Checklist das 2 Pendências
+              Checklist &bull; 1 Pendência Restante
             </TabsTrigger>
             <TabsTrigger
               value="commits_seguranca"
@@ -923,7 +924,7 @@ export default function Index() {
             </Card>
           </TabsContent>
 
-          {/* Aba: Checklist das EXATAMENTE 2 Pendências Restantes */}
+          {/* Aba: Checklist de Governança Pré-Fase 1 */}
           <TabsContent value="checklist_fase1" className="space-y-6 mt-6">
             <Card className="bg-slate-900 border-slate-800">
               <CardHeader>
@@ -934,11 +935,12 @@ export default function Index() {
                     </Badge>
                     <CardTitle className="text-lg text-white flex items-center gap-2">
                       <ListChecks className="w-5 h-5 text-blue-400" />
-                      Checklist: Validações Concluídas vs. EXATAMENTE 2 Pendências Restantes
+                      Checklist: Validações Concluídas vs. EXATAMENTE 1 Pendência Externa Restante
                     </CardTitle>
                     <CardDescription className="text-slate-400 text-xs mt-1">
-                      Com Node, Migrations e provas.js concluídos, restam unicamente a rotação do
-                      token exposto e as screenshots do player.
+                      Backup, Redis, Inventário, Token EasyPanel, Node v20.20.2, Migrations e
+                      provas.js concluídos. Resta unicamente o envio dos screenshots reais do
+                      player.
                     </CardDescription>
                   </div>
                   <Button
@@ -961,16 +963,16 @@ export default function Index() {
                   </h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-slate-300">
                     {[
-                      'Backup completo executado em /root/backups/cursos/20261031_195147',
-                      'Redis RDB (redis-dump.rdb): validado com redis-check-rdb, checksum OK, 0 chaves, 0 expirações (RESOLVIDO)',
-                      'Hashes SHA256SUMS.txt validados com 100% de sucesso',
-                      'Restauração em modo --dry-run validada sem erros',
-                      'Inventário EasyPanel gerado no host srv845644 e incorporado',
-                      'Caminhos de vídeo confirmados: /srv/cursos/videos/ -> /app/videos/',
+                      'Backup completo executado pelo operador em /root/backups/cursos/20261031_195147',
+                      'Restauração em modo dry-run validada pelo operador (restaurar-cursos-vps.sh --dry-run)',
+                      'Redis RDB (redis-dump.rdb): validado com redis-check-rdb, checksum OK, 0 chaves, 0 expirações',
+                      'Hashes SHA256SUMS.txt validados com 100% de sucesso pelo operador',
+                      'Inventário EasyPanel real com 4 serviços: Cursos-API, PocketBase, Postgre, Redis',
+                      'ROTAÇÃO DO TOKEN DO EASYPANEL: chave antiga revogada, nova criada pelo operador ([TOKEN_REMOVIDO_E_ROTACIONADO])',
                       'Runtime Node v20.20.2 CONFIRMADO no container cursos-api_cursos-api.1.jsmxpl7rmip...',
                       'PostgreSQL: tabela cursos possui todas as 8 colunas; migration aplicada; NÃO reexecutar migration.sql',
-                      'src/routes/provas.js recebido e integralmente analisado (rotas, transação BEGIN/COMMIT, riscos)',
-                      'Nenhuma alteração feita na produção durante a Fase 0',
+                      'src/routes/provas.js recebido e integralmente analisado (5 rotas, transação BEGIN/COMMIT; NÃO alterar)',
+                      'Branch correcao-fluxo-cursos e commit base 47aa7b1 inalterados; commits GoSkip segregados (não publicar)',
                     ].map((item, idx) => (
                       <div
                         key={idx}
@@ -983,47 +985,61 @@ export default function Index() {
                   </div>
                 </div>
 
-                {/* Grupo 2: EXATAMENTE 2 Pendências Restantes */}
+                {/* Grupo 2: A ÚNICA Pendência Externa Restante */}
                 <div>
                   <h4 className="font-semibold text-amber-400 mb-2 flex items-center gap-1.5 text-sm">
                     <AlertTriangle className="w-4 h-4" />
-                    2. As EXATAMENTE 2 Pendências Restantes Pré-Fase 1 (Bloqueadoras):
+                    2. A ÚNICA Pendência Externa Restante Pré-Fase 1 (Bloqueadora):
                   </h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-slate-300">
-                    {[
-                      {
-                        title: '1. Rotação do Token EasyPanel Exposto',
-                        desc: 'O operador deve rotacionar no painel EasyPanel o token de deploy/API que apareceu em relatórios anteriores deste projeto (marcador: [TOKEN_REMOVIDO_E_ROTACIONADO]).',
-                        badge: 'EXPOSTO - ROTACIONAR',
-                        variant: 'destructive' as const,
-                      },
-                      {
-                        title: '2. Screenshots Desktop e Celular do Player',
-                        desc: 'Capturas de tela reais da área de membros de referência (Adapta) a serem enviadas pelo operador para guiar o visual definitivo e responsivo.',
-                        badge: 'Aguardando Envio',
-                        variant: 'outline' as const,
-                      },
-                    ].map((item, idx) => (
-                      <div
-                        key={idx}
-                        className="p-3.5 rounded bg-slate-950/80 border border-amber-900/40 space-y-2"
+                  <div className="p-3.5 rounded bg-slate-950/80 border border-amber-900/40 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <strong className="text-white text-sm">
+                        1. Screenshots Desktop e Celular do Player de Referência (Adapta)
+                      </strong>
+                      <Badge
+                        variant="outline"
+                        className="text-[10px] shrink-0 border-amber-500/40 text-amber-300"
                       >
-                        <div className="flex items-center justify-between">
-                          <strong className="text-white text-sm">{item.title}</strong>
-                          <Badge
-                            variant={item.variant}
-                            className={`text-[10px] shrink-0 ${
-                              item.variant === 'destructive'
-                                ? 'bg-red-500/20 text-red-300 border-red-500/30'
-                                : 'border-amber-500/40 text-amber-300'
-                            }`}
-                          >
-                            {item.badge}
-                          </Badge>
-                        </div>
-                        <p className="text-slate-400 text-[11px] leading-relaxed">{item.desc}</p>
-                      </div>
-                    ))}
+                        Aguardando Envio pelo Operador
+                      </Badge>
+                    </div>
+                    <p className="text-slate-400 text-[11px] leading-relaxed">
+                      Capturas de tela REAIS da área de membros do player de referência (
+                      <span className="text-slate-300 font-mono">
+                        https://alunos.adapta.org/area/conteudo/aula/7869245
+                      </span>
+                      ) a serem enviadas pelo operador. Os screenshots anteriores mostravam apenas o
+                      EasyPanel da chave API, não o player. Se disponíveis, enviar também telas com
+                      módulos abertos e progresso/conclusão.
+                    </p>
+                    <div className="p-2 bg-black/60 rounded border border-slate-800 text-[11px] text-amber-200">
+                      <strong>Diretriz de Uso da Referência Visual:</strong> Apenas para organização
+                      visual, posição do player, lista de módulos, aula atual, progresso, navegação,
+                      materiais, responsividade, estados de carregamento, erro de reprodução e
+                      conclusão da aula. <strong>NUNCA</strong> copiar código, imagens, textos,
+                      scripts, estilos ou identidade visual da Adapta.
+                    </div>
+                  </div>
+                </div>
+
+                {/* Grupo 3: Frase Exata de Autorização */}
+                <div className="p-3.5 rounded bg-blue-950/20 border border-blue-900/40 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-semibold text-blue-300 flex items-center gap-1.5 text-sm">
+                      <Terminal className="w-4 h-4 text-blue-400" />
+                      3. Condição e Frase Exata de Autorização da Fase 1:
+                    </h4>
+                    <Badge className="bg-blue-500/20 text-blue-300 border-blue-500/30 text-[10px]">
+                      Aguardando Operador
+                    </Badge>
+                  </div>
+                  <p className="text-slate-300 text-[11px]">
+                    A reescrita do painel do mentor e alterações de código da Fase 1{' '}
+                    <strong>NÃO INICIARAM</strong>. A Fase 1 só começa quando o operador enviar{' '}
+                    <strong>EXATAMENTE</strong> esta frase:
+                  </p>
+                  <div className="p-2.5 bg-black/80 rounded border border-blue-800/60 font-mono text-emerald-400 text-xs font-bold text-center">
+                    &ldquo;Autorizo iniciar a Fase 1 da reescrita do painel do mentor.&rdquo;
                   </div>
                 </div>
               </CardContent>
@@ -1091,39 +1107,37 @@ export default function Index() {
               <Card className="bg-slate-900 border-slate-800">
                 <CardHeader>
                   <div className="flex items-center justify-between">
-                    <Badge
-                      variant="destructive"
-                      className="bg-red-500/20 text-red-400 border-red-500/30"
-                    >
-                      EXPOSTO - ROTACIONAR
+                    <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30">
+                      TOKEN ROTACIONADO ✓
                     </Badge>
                     <span className="text-xs font-mono text-slate-400">
                       docs/operacoes/SEGURANCA_SECRETS.md
                     </span>
                   </div>
                   <CardTitle className="text-lg text-white mt-2 flex items-center gap-2">
-                    <ShieldCheck className="w-5 h-5 text-amber-400" />
-                    Segurança dos Relatórios &amp; Política de Secrets
+                    <ShieldCheck className="w-5 h-5 text-emerald-400" />
+                    Segurança de Secrets &amp; Rotação Concluída
                   </CardTitle>
                   <CardDescription className="text-slate-400 text-xs">
-                    Sanitização ativa: zero senhas ou tokens em texto puro nos relatórios.
+                    Chave antiga revogada e nova criada pelo operador no EasyPanel.
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3 text-xs">
-                  <div className="p-3 bg-red-950/20 border border-red-800/40 rounded space-y-2">
-                    <p className="font-semibold text-red-300 flex items-center gap-1.5">
-                      <AlertTriangle className="w-4 h-4 text-red-400 shrink-0" />
-                      Token EasyPanel Exposto:
+                  <div className="p-3 bg-emerald-950/20 border border-emerald-800/40 rounded space-y-2">
+                    <p className="font-semibold text-emerald-300 flex items-center gap-1.5">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                      Token EasyPanel Rotacionado com Sucesso:
                     </p>
                     <p className="text-slate-300">
-                      O valor real foi substituído pelo marcador de segurança:
+                      O operador revogou a chave antiga exposta e gerou uma nova chave na VPS. O
+                      novo valor NUNCA é registrado em relatórios, commits ou arquivos.
                     </p>
-                    <div className="p-2 bg-black/60 rounded font-mono text-amber-300 text-center font-bold">
+                    <div className="p-2 bg-black/60 rounded font-mono text-emerald-300 text-center font-bold">
                       [TOKEN_REMOVIDO_E_ROTACIONADO]
                     </div>
                     <p className="text-slate-400 text-[11px]">
-                      A rotação manual no EasyPanel continua listada como pendência mandatória do
-                      operador pré-Fase 1.
+                      Pendência encerrada com 100% de conformidade com a política de segurança de
+                      secrets.
                     </p>
                   </div>
                 </CardContent>
