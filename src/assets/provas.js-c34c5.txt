@@ -1,0 +1,214 @@
+const express = require('express');
+const { pool } = require('../database/db');
+const { auth } = require('../middleware/auth');
+
+const router = express.Router();
+
+async function apenasMentor(req, res, next) {
+  try {
+    if (!req.usuario || !req.usuario.id) {
+      return res.status(401).json({ error: 'Não autenticado' });
+    }
+    
+    const result = await pool.query(
+      'SELECT role, mentor_status FROM usuarios WHERE id = $1',
+      [req.usuario.id]
+    );
+    
+    const u = result.rows[0];
+    
+    if (!u) {
+      return res.status(404).json({ error: 'Usuário não encontrado' });
+    }
+    
+    // Autorização estrita: apenas mentor_status = 'aprovado' OU role = 'admin'
+    const ehMentor = u.mentor_status === 'aprovado' || u.role === 'admin';
+    
+    if (!ehMentor) {
+      return res.status(403).json({ 
+        error: 'Apenas mentores aprovados têm acesso a esta área',
+        status_atual: u.mentor_status 
+      });
+    }
+    
+    req.usuario.role = u.role;
+    req.usuario.mentor_status = u.mentor_status;
+    next();
+  } catch (err) {
+    console.error('Erro ao verificar mentor:', err);
+    res.status(500).json({ error: 'Erro ao verificar permissões' });
+  }
+}
+
+router.use(auth, apenasMentor);
+
+async function obterCursoDoMentor(cursoId, mentorId) {
+  const r = await pool.query('SELECT * FROM cursos WHERE id = $1 AND mentor_id = $2', [cursoId, mentorId]);
+  return r.rows[0] || null;
+}
+
+// GET /mentor/cursos/:id/provas
+router.get('/cursos/:id/provas', async (req, res) => {
+  try {
+    const curso = await obterCursoDoMentor(req.params.id, req.usuario.id);
+    if (!curso) return res.status(404).json({ error: 'Curso não encontrado' });
+
+    const r = await pool.query(
+      `SELECT p.*, (SELECT COUNT(*)::int FROM provas_perguntas pp WHERE pp.prova_id = p.id) AS total_perguntas
+       FROM provas p WHERE p.curso_id = $1 ORDER BY p.id ASC`, [req.params.id]);
+    res.json(r.rows);
+  } catch (err) {
+    console.error('Erro ao listar provas:', err);
+    res.status(500).json({ error: 'Erro ao listar provas' });
+  }
+});
+
+// GET /mentor/cursos/:id/provas/:provaId (com perguntas e alternativas)
+router.get('/cursos/:id/provas/:provaId', async (req, res) => {
+  try {
+    const curso = await obterCursoDoMentor(req.params.id, req.usuario.id);
+    if (!curso) return res.status(404).json({ error: 'Curso não encontrado' });
+
+    const prova = await pool.query('SELECT * FROM provas WHERE id = $1 AND curso_id = $2', [req.params.provaId, req.params.id]);
+    if (prova.rows.length === 0) return res.status(404).json({ error: 'Prova não encontrada' });
+
+    const perguntas = await pool.query('SELECT * FROM provas_perguntas WHERE prova_id = $1 ORDER BY ordem ASC, id ASC', [req.params.provaId]);
+    const alternativas = await pool.query(
+      `SELECT a.* FROM provas_alternativas a
+       INNER JOIN provas_perguntas p ON p.id = a.pergunta_id
+       WHERE p.prova_id = $1 ORDER BY a.id ASC`, [req.params.provaId]);
+
+    const perguntasComAlternativas = perguntas.rows.map(p => ({
+      ...p,
+      alternativas: alternativas.rows.filter(a => a.pergunta_id === p.id)
+    }));
+
+    res.json({ ...prova.rows[0], perguntas: perguntasComAlternativas });
+  } catch (err) {
+    console.error('Erro ao buscar prova:', err);
+    res.status(500).json({ error: 'Erro ao buscar prova' });
+  }
+});
+
+// POST /mentor/cursos/:id/provas
+router.post('/cursos/:id/provas', async (req, res) => {
+  const client = await pool.connect();
+  try {
+    const curso = await client.query('SELECT * FROM cursos WHERE id = $1 AND mentor_id = $2', [req.params.id, req.usuario.id]);
+    if (curso.rows.length === 0) {
+      client.release();
+      return res.status(404).json({ error: 'Curso não encontrado' });
+    }
+
+    const { titulo, etapa_id, nota_minima, perguntas } = req.body;
+    if (!titulo) { client.release(); return res.status(400).json({ error: 'Título é obrigatório' }); }
+    if (!Array.isArray(perguntas) || perguntas.length === 0) {
+      client.release();
+      return res.status(400).json({ error: 'A prova precisa de ao menos 1 pergunta' });
+    }
+
+    let etapaId = null;
+    if (etapa_id) {
+      const et = await client.query('SELECT id FROM aulas WHERE id = $1 AND curso_id = $2', [etapa_id, req.params.id]);
+      if (et.rows.length === 0) { client.release(); return res.status(400).json({ error: 'Etapa inválida' }); }
+      etapaId = etapa_id;
+    }
+
+    const notaMin = nota_minima !== undefined ? parseFloat(nota_minima) : 60;
+    if (isNaN(notaMin) || notaMin < 0 || notaMin > 100) {
+      client.release();
+      return res.status(400).json({ error: 'nota_minima deve estar entre 0 e 100' });
+    }
+
+    await client.query('BEGIN');
+
+    const prova = await client.query(
+      `INSERT INTO provas (curso_id, etapa_id, titulo, nota_minima) VALUES ($1,$2,$3,$4) RETURNING *`,
+      [req.params.id, etapaId, titulo, notaMin]
+    );
+    const provaId = prova.rows[0].id;
+
+    for (let i = 0; i < perguntas.length; i++) {
+      const pergunta = perguntas[i];
+      if (!pergunta.texto || !Array.isArray(pergunta.alternativas) || pergunta.alternativas.length < 2) {
+        throw new Error('Cada pergunta precisa de texto e pelo menos 2 alternativas.');
+      }
+      const temCorreta = pergunta.alternativas.some(a => a.correta === true);
+      if (!temCorreta) throw new Error('Cada pergunta precisa de uma alternativa correta.');
+
+      const p = await client.query(
+        `INSERT INTO provas_perguntas (prova_id, ordem, texto) VALUES ($1,$2,$3) RETURNING id`,
+        [provaId, i + 1, pergunta.texto]
+      );
+      const perguntaId = p.rows[0].id;
+
+      const letras = ['A', 'B', 'C', 'D', 'E'];
+      for (let j = 0; j < pergunta.alternativas.length; j++) {
+        const alt = pergunta.alternativas[j];
+        if (!alt.texto) throw new Error('Alternativa sem texto.');
+        await client.query(
+          `INSERT INTO provas_alternativas (pergunta_id, letra, texto, correta) VALUES ($1,$2,$3,$4)`,
+          [perguntaId, letras[j] || String.fromCharCode(65 + j), alt.texto, alt.correta === true]
+        );
+      }
+    }
+
+    await client.query('COMMIT');
+    client.release();
+    res.status(201).json({ ...prova.rows[0], total_perguntas: perguntas.length });
+  } catch (err) {
+    await client.query('ROLLBACK').catch(() => {});
+    client.release();
+    console.error('Erro ao criar prova:', err);
+    res.status(500).json({ error: err.message || 'Erro ao criar prova' });
+  }
+});
+
+// PUT /mentor/cursos/:id/provas/:provaId (editar título, nota mínima, etapa)
+router.put('/cursos/:id/provas/:provaId', async (req, res) => {
+  try {
+    const curso = await obterCursoDoMentor(req.params.id, req.usuario.id);
+    if (!curso) return res.status(404).json({ error: 'Curso não encontrado' });
+
+    const prova = await pool.query('SELECT * FROM provas WHERE id = $1 AND curso_id = $2', [req.params.provaId, req.params.id]);
+    if (prova.rows.length === 0) return res.status(404).json({ error: 'Prova não encontrada' });
+
+    const titulo = req.body.titulo !== undefined ? req.body.titulo : prova.rows[0].titulo;
+    const notaMin = req.body.nota_minima !== undefined ? parseFloat(req.body.nota_minima) : prova.rows[0].nota_minima;
+    if (isNaN(notaMin) || notaMin < 0 || notaMin > 100) return res.status(400).json({ error: 'nota_minima deve estar entre 0 e 100' });
+
+    let etapaId = prova.rows[0].etapa_id;
+    if (req.body.etapa_id !== undefined) {
+      if (req.body.etapa_id === null || req.body.etapa_id === '') etapaId = null;
+      else {
+        const et = await pool.query('SELECT id FROM aulas WHERE id = $1 AND curso_id = $2', [req.body.etapa_id, req.params.id]);
+        if (et.rows.length === 0) return res.status(400).json({ error: 'Etapa inválida' });
+        etapaId = req.body.etapa_id;
+      }
+    }
+
+    const r = await pool.query(
+      `UPDATE provas SET titulo = $1, nota_minima = $2, etapa_id = $3 WHERE id = $4 AND curso_id = $5 RETURNING *`,
+      [titulo, notaMin, etapaId, req.params.provaId, req.params.id]
+    );
+    res.json(r.rows[0]);
+  } catch (err) {
+    console.error('Erro ao atualizar prova:', err);
+    res.status(500).json({ error: 'Erro ao atualizar prova' });
+  }
+});
+
+// DELETE /mentor/cursos/:id/provas/:provaId
+router.delete('/cursos/:id/provas/:provaId', async (req, res) => {
+  try {
+    const curso = await obterCursoDoMentor(req.params.id, req.usuario.id);
+    if (!curso) return res.status(404).json({ error: 'Curso não encontrado' });
+    await pool.query('DELETE FROM provas WHERE id = $1 AND curso_id = $2', [req.params.provaId, req.params.id]);
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Erro ao excluir prova:', err);
+    res.status(500).json({ error: 'Erro ao excluir prova' });
+  }
+});
+
+module.exports = router;

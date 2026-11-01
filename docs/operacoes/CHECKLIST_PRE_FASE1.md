@@ -26,6 +26,9 @@ Estes itens foram executados e atestados formalmente pelo **OPERADOR DA VPS**:
 - [x] **4. Inventário EasyPanel Gerado na VPS pelo Operador:** Arquivo `/root/INVENTARIO_EASYPANEL.md` gerado no host `srv845644` e incorporado ao workspace, detalhando os 4 serviços (Cursos-API, PostgreSQL 17, Redis 7, PocketBase) sem qualquer secret em texto puro.
 - [x] **5. Confirmação dos Caminhos de Vídeo:** Mapeamento validado entre Host (`/srv/cursos/videos/`) e Container (`/app/videos/`).
 - [x] **6. Backup dos Dados do Redis Confirmado (RESOLVIDO):** Snapshot RDB gerado e validado pelo operador via `redis-check-rdb` em `/root/backups/cursos/20261031_195147/redis-dump.rdb`: arquivo válido, checksum OK, zero chaves, zero expirações. Pendência de backup do Redis **RESOLVIDA**.
+- [x] **7. Runtime Node Confirmado pelo Operador (Node v20.20.2):** Container real em execução `cursos-api_cursos-api.1.jsmxpl7rmip278eajgb5f5ms4`. Referências a Node 18 em Dockerfile e documentação estão desatualizadas (correção do Dockerfile agendada para Fase 1, sem alteração agora).
+- [x] **8. PostgreSQL e Migrations Confirmadas Aplicadas pelo Operador:** Container `cursos-api_postgres.1.mpp4zqgnifgzjkh2y0hz9f4hm`. A tabela `cursos` já possui todas as colunas (`video_url`, `video_type`, `video_public_id`, `thumbnail_url`, `confirmed_author`, `ia_score`, `matriz_curricular`, `subcategoria`). Migration já aplicada: **NÃO executar `migration.sql` novamente**. Duplicidade de `matriz_curricular` será corrigida apenas no arquivo da migration na Fase 1, sem tocar banco.
+- [x] **9. Arquivo `src/routes/provas.js` Recebido e Analisado:** Código completo examinado e documentado. Mapeadas rotas GET/POST/PUT/DELETE, proteção `apenasMentor`, transação atômica BEGIN/COMMIT/ROLLBACK, validações de negócio, riscos de segurança e funcionalidades a preservar.
 
 ---
 
@@ -38,22 +41,16 @@ Estes itens foram executados e atestados formalmente pelo **OPERADOR DA VPS**:
 
 ---
 
-## 3. AS 5 PENDÊNCIAS RESTANTES PRÉ-FASE 1 (BLOQUEADORAS DO INÍCIO DA FASE 1)
+## 3. AS EXATAMENTE 2 PENDÊNCIAS RESTANTES PRÉ-FASE 1 (BLOQUEADORAS DO INÍCIO DA FASE 1)
 
-A transição da Fase 0 para a Fase 1 continua **BLOQUEADA** até a conclusão das seguintes **5 pendências restantes**:
+Com a resolução e confirmação pelo operador do **Runtime Node v20.20.2**, do **PostgreSQL com Migrations aplicadas** e o recebimento/análise técnica de **`src/routes/provas.js`**, a transição para a Fase 1 depende agora de **EXATAMENTE 2 PENDÊNCIAS MANDATÓRIAS**:
 
-- [ ] **1. Rotação do Token EasyPanel Exposto:** O operador deve rotacionar no painel do EasyPanel na VPS o token de deploy/API que apareceu em comunicações técnicas anteriores (`[TOKEN_REMOVIDO_E_ROTACIONADO]`).
-- [ ] **2. Análise de `src/routes/provas.js`:** Arquivo real a ser enviado pelo operador para que a lógica de avaliações seja analisada antes da reescrita (arquivo ainda não recebido; nada de provas foi inventado ou assumido).
-- [ ] **3. Screenshots Desktop e Celular do Player de Referência:** Capturas de tela da área de membros do player de referência (Adapta) a serem enviadas pelo operador para guiar o visual definitivo.
-- [ ] **4. Confirmação da Versão Real do Node.js (ou Runtime):** Esclarecer a falha `OCI runtime exec failed: exec: "node": executable file not found in $PATH` (runtime pode não ser Node) rodando no container ativo:
-  ```bash
-  docker exec <container> sh -c "which node || which bun || which deno; cat /etc/os-release"
-  ```
-- [ ] **5. Confirmação sobre Migrations do PostgreSQL:** Confirmar na VPS se os comandos DDL contidos em `migration.sql` (raiz do projeto) já foram rodados manualmente no PostgreSQL ou se requerem script idempotente.
+- [ ] **1. Rotação do Token EasyPanel Exposto:** O operador deve rotacionar no painel do EasyPanel na VPS o token de deploy/API que apareceu em relatórios anteriores deste projeto (marcador: `[TOKEN_REMOVIDO_E_ROTACIONADO]`, status: `EXPOSTO - ROTACIONAR`).
+- [ ] **2. Screenshots Desktop e Celular do Player de Referência:** Capturas de tela da área de membros do player de referência (Adapta) a serem enviadas pelo operador para guiar o visual definitivo e responsivo.
 
 ---
 
-## 4. TERMO DE AUTORIZAÇÃO DA FASE 1 (A PREENCHER APÓS AS 5 PENDÊNCIAS)
+## 4. TERMO DE AUTORIZAÇÃO DA FASE 1 (A PREENCHER APÓS AS 2 PENDÊNCIAS)
 
 ```text
 [ ] FASE 1 FORMALMENTE AUTORIZADA PELO RESPONSÁVEL DO PROJETO
@@ -62,9 +59,11 @@ Responsável: __________________________________________________
 Data e Hora: __________________________________________________
 Snapshot de Backup Validado: /root/backups/cursos/20261031_195147 (SHA-256 OK, Redis RDB OK)
 Token EasyPanel Rotacionado: [ ] SIM  [ ] NÃO
-Runtime Confirmado: [ ] Node 18  [ ] Node 20  [ ] Bun  [ ] Outro: ________
-Arquivo provas.js Recebido e Analisado: [ ] SIM  [ ] NÃO
 Screenshots do Player Recebidos: [ ] SIM  [ ] NÃO
-Alinhamento de Migrations Confirmado: [ ] SIM  [ ] NÃO
-Backup Redis RDB Validado: [x] SIM (redis-dump.rdb, zero chaves, zero expirações)
+
+--- VALIDAÇÕES PRÉVIAS JÁ CONCLUÍDAS PELO OPERADOR E AUDITORIA ---
+Runtime Node.js: [x] CONFIRMADO Node v20.20.2 (container cursos-api_cursos-api.1.jsmxpl7rmip278eajgb5f5ms4)
+PostgreSQL & Migrations: [x] CONFIRMADO tabela cursos completa, migration aplicada; não reexecutar migration.sql
+Arquivo provas.js: [x] RECEBIDO E ANALISADO (rotas GET/POST/PUT/DELETE, apenasMentor, transação BEGIN/COMMIT)
+Backup Redis RDB: [x] CONFIRMADO (redis-dump.rdb, zero chaves, zero expirações)
 ```

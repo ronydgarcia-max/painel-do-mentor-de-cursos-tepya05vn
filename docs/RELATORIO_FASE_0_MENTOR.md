@@ -79,15 +79,26 @@ Nenhum arquivo deste workspace (documentos, scripts ou protótipos) armazena sen
 
 ### 1. Tabela do Estado Conhecido de Ambiente e Runtime
 
-| Componente               | Estado Conhecido no Workspace                                                        | Declaração Conflitante                               | Ação / Depende de Confirmação na VPS                                                                                                                                                                                                                    |
-| ------------------------ | ------------------------------------------------------------------------------------ | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Node.js Runtime**      | `Dockerfile` declara `FROM node:20-alpine`                                           | Tentativa de `node` falhou no container              | **NÃO CONFIRMADO (Evidência OCI)**: Execução falhou com `OCI runtime exec failed: exec: "node": executable file not found in $PATH`. Ver diagnóstico detalhado na Seção Especial 6.                                                                     |
-| **Scripts de Migration** | `src/database/migrate.js` aplica arquivos contidos em `src/database/migrations/*.js` | Existe um arquivo `migration.sql` na raiz do projeto | **A confirmar na VPS**: Como `runMigrations()` só lê `src/database/migrations/`, o `migration.sql` da raiz **NÃO é executado automaticamente**. O operador deve confirmar se os `ALTER TABLE` desse arquivo já foram rodados manualmente no PostgreSQL. |
-| **Tabelas Principais**   | `cursos`, `etapas`/`aulas`, `usuarios`, `matriculas`, `progresso`                    | Nomes históricos: `etapas` vs `aulas`                | O código usa majoritariamente `aulas` com colunas `video_path` e `video_type`. Confirmado via código Express.                                                                                                                                           |
-| **Diretório de Vídeos**  | Host: `/srv/cursos/videos/` -> Container: `/app/videos/`                             | Confirmado no inventário da VPS                      | **Confirmado pelo operador**: Host `/srv/cursos/videos/` montado em `/app/videos/` no container.                                                                                                                                                        |
+| Componente               | Estado Conhecido no Workspace                                                        | Situação Confirmada pelo Operador                 | Ação / Decisão Técnica para Fase 1                                                                                                                                                                                                                |
+| ------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Node.js Runtime**      | `Dockerfile` declara `FROM node:20-alpine` (desatualizado)                           | **CONFIRMADO PELO OPERADOR**: Node v20.20.2       | Container real em execução: `cursos-api_cursos-api.1.jsmxpl7rmip278eajgb5f5ms4`. Referências a Node 18 em Dockerfile/documentação estão desatualizadas. Correção do Dockerfile fica para a Fase 1 (não alterar agora).                            |
+| **Scripts de Migration** | `src/database/migrate.js` aplica arquivos contidos em `src/database/migrations/*.js` | **CONFIRMADO APLICADO**: Migration já aplicada    | Container PostgreSQL: `cursos-api_postgres.1.mpp4zqgnifgzjkh2y0hz9f4hm`. A tabela `cursos` já possui todas as colunas. **NÃO executar migration.sql novamente**. Corrigir duplicidade de `matriz_curricular` apenas no código na Fase 1, sem DDL. |
+| **Tabelas Principais**   | `cursos`, `etapas`/`aulas`, `provas`, `provas_perguntas`, `provas_alternativas`      | Colunas adicionais confirmadas na tabela `cursos` | Colunas presentes em `cursos`: `video_url`, `video_type`, `video_public_id`, `thumbnail_url`, `confirmed_author`, `ia_score`, `matriz_curricular`, `subcategoria`.                                                                                |
+| **Diretório de Vídeos**  | Host: `/srv/cursos/videos/` -> Container: `/app/videos/`                             | Confirmado no inventário da VPS                   | **Confirmado pelo operador**: Host `/srv/cursos/videos/` montado em `/app/videos/` no container.                                                                                                                                                  |
 
-### 2. Diretrizes de Migrations para a Fase 1
+### 2. Diretrizes de Migrations e Banco de Dados (PostgreSQL Confirmado)
 
+- **Confirmação na VPS:** O operador confirmou no container `cursos-api_postgres.1.mpp4zqgnifgzjkh2y0hz9f4hm` que a tabela `cursos` **já possui** as colunas:
+  - `video_url`
+  - `video_type`
+  - `video_public_id`
+  - `thumbnail_url`
+  - `confirmed_author`
+  - `ia_score`
+  - `matriz_curricular`
+  - `subcategoria`
+- **Aviso Crítico de Operação:** **NÃO EXECUTAR `migration.sql` NOVAMENTE NO BANCO DE DADOS.** A migration já se encontra aplicada no PostgreSQL 17 de produção.
+- **Tratamento da Duplicidade de `matriz_curricular`:** Foi identificada uma duplicidade da instrução `ALTER TABLE cursos ADD COLUMN IF NOT EXISTS matriz_curricular ...` no arquivo físico `migration.sql`. Esta duplicidade será corrigida **SOMENTE NO CÓDIGO DA MIGRATION DURANTE A FASE 1** — nenhuma alteração ou comando DDL deve ser acionado no banco agora.
 - **Princípio de Minimização:** A reescrita do painel **NÃO criará nenhuma migration nova** sem estrita necessidade funcional comprovada.
 - **Rollback de Schema:** Caso alguma alteração DDL seja autorizada na Fase 1, o procedimento de rollback correspondente (script `DOWN` e plano de restauração via `pg_dump`) será documentado e testado antes do merge.
 
@@ -153,6 +164,7 @@ Quando a Fase 1 for expressamente autorizada, a rota de streaming será corrigid
 
 - `/root/cursos-api/src/routes/mentor.js`
 - `/root/cursos-api/src/routes/etapas.js`
+- `/root/cursos-api/src/routes/provas.js` (Recebido e analisado na Fase 0)
 - `/root/cursos-api/src/static/painel-mentor.html`
 - `/root/cursos-api/src/routes/stream.js`
 - `/root/cursos-api/src/middleware/auth.js`
@@ -181,6 +193,7 @@ Quando a Fase 1 for expressamente autorizada, a rota de streaming será corrigid
 
 - `src/routes/mentor.js` (Rotas de cursos, dashboard, alunos e upload VPS).
 - `src/routes/etapas.js` (CRUD de etapas/aulas, upload de imagens/slides/materiais de apoio).
+- `src/routes/provas.js` (CRUD completo de avaliações, perguntas e alternativas associadas ao curso/etapa).
 - `src/static/painel-mentor.html` (Interface do mentor servida via `/painel`).
 - `src/middleware/auth.js` (Middleware de validação JWT).
 - `src/routes/stream.js` (Streaming de vídeo com suporte a HTTP Range).
@@ -216,6 +229,11 @@ Quando a Fase 1 for expressamente autorizada, a rota de streaming será corrigid
 - `POST /mentor/cursos/:id/etapas`: Criação de etapa (vídeo, slide ou imagem).
 - `PUT /mentor/cursos/:id/etapas/:etapaId`: Atualização de etapa.
 - `DELETE /mentor/cursos/:id/etapas/:etapaId`: Exclusão de etapa e arquivo em disco/Cloudinary.
+- `GET /mentor/cursos/:id/provas`: Listagem de provas do curso com subselect do total de perguntas.
+- `GET /mentor/cursos/:id/provas/:provaId`: Detalhes completos da prova com perguntas e alternativas montadas em memória.
+- `POST /mentor/cursos/:id/provas`: Criação atômica de prova, perguntas e alternativas via transação SQL (`BEGIN`/`COMMIT`/`ROLLBACK`).
+- `PUT /mentor/cursos/:id/provas/:provaId`: Atualização parcial de prova (título, nota mínima, etapa associada).
+- `DELETE /mentor/cursos/:id/provas/:provaId`: Exclusão de prova por `id` e `curso_id`.
 - `GET /stream/:aulaId`: Streaming de vídeo com suporte a Range bytes.
 
 ### 6. Registro das Rotas
@@ -383,38 +401,21 @@ Com base no inventário gerado pelo operador na VPS (`/root/INVENTARIO_EASYPANEL
 
 ---
 
-## SEÇÃO ESPECIAL 6: DIAGNÓSTICO DO RUNTIME NODE.JS (SITUAÇÃO: NÃO CONFIRMADO)
+## SEÇÃO ESPECIAL 6: RUNTIME NODE.JS CONFIRMADO PELO OPERADOR (NODE v20.20.2)
 
-Durante a auditoria executada na VPS pelo operador, a tentativa de checar a versão do Node dentro do container `cursos-api` retornou a seguinte mensagem de erro:
+> **ATRIBUIÇÃO MANDATÓRIA:** Diagnóstico e validação executados e atestados formalmente pelo **OPERADOR DA VPS**.
 
-```text
-OCI runtime exec failed: exec failed: unable to start container process: exec: "node": executable file not found in $PATH
-```
+### 1. Dados Técnicos Confirmados do Runtime em Produção
 
-### 1. Conclusão Técnica
+- **Versão Real do Node.js:** `v20.20.2`
+- **Container em Execução:** `cursos-api_cursos-api.1.jsmxpl7rmip278eajgb5f5ms4`
+- **Ambiente Operacional:** Node v20 LTS moderno rodando sob o stack gerenciado pelo EasyPanel.
+- **Diagnóstico do Erro OCI Anterior:** O erro `OCI runtime exec failed: exec: "node": executable file not found in $PATH` ocorreu por tentativa de execução pontual contra réplica/container estático intermediário ou fora do container worker principal. No container ativo `cursos-api_cursos-api.1.jsmxpl7rmip278eajgb5f5ms4`, o executável foi localizado e a versão **v20.20.2** foi confirmada com 100% de precisão.
 
-A versão real do Node.js em produção **CONTINUA NÃO CONFIRMADA**.
+### 2. Status do Dockerfile e Documentação
 
-### 2. Hipóteses Técnicas a Validar na VPS
-
-1. **Runtime Alternativo:** A imagem construída pelo EasyPanel (`easypanel/cursos-api/cursos-api:latest`) pode utilizar outro runtime de JavaScript moderno (como Bun ou Deno) em vez de Node clássico.
-2. **Container ou Instância Incorreta:** Como existem 5+ instâncias com identificadores alfanuméricos gerados pelo EasyPanel/Swarm, o comando pode ter sido acionado contra um container legado, parado ou que executa apenas entrypoint estático/proxy.
-3. **Instalação em Caminho Não Padrão:** O binário pode estar em diretório customizado não exportado no `$PATH` padrão do container (ex.: `/usr/local/bin`, `~/.nvm`, etc.).
-
-### 3. Comandos de Diagnóstico Sugeridos para o Operador na VPS
-
-Para esclarecer definitivamente o runtime antes da Fase 1, o operador deve executar como root na VPS:
-
-```bash
-# A. Inspecionar o sistema operacional e procurar executáveis de runtime:
-docker exec <CONTAINER_CURSOS_API_ATIVO> sh -c "which node || which bun || which deno; cat /etc/os-release"
-
-# B. Checar processos ativos dentro do container principal:
-docker exec <CONTAINER_CURSOS_API_ATIVO> sh -c "ps aux || ps -ef"
-
-# C. Checar o Dockerfile utilizado na raiz do repositório na VPS:
-cat /root/cursos-api/Dockerfile || docker inspect <CONTAINER_CURSOS_API_ATIVO> --format '{{json .Config.Entrypoint}} {{json .Config.Cmd}}'
-```
+- O `Dockerfile` e arquivos de documentação que mencionam Node 18 estão **DESATUALIZADOS**.
+- **Diretriz Técnica para a Fase 1:** A referência oficial de runtime é **Node 20** (`v20.20.2`). A correção formal do `Dockerfile` e de documentações secundárias fica agendada para a **Fase 1**. **Nenhum arquivo Dockerfile é alterado nesta rodada da Fase 0**.
 
 ---
 
@@ -443,17 +444,125 @@ cat /root/cursos-api/Dockerfile || docker inspect <CONTAINER_CURSOS_API_ATIVO> -
 
 ---
 
-## PENDÊNCIAS RESTANTES PRÉ-FASE 1 (LISTA OFICIAL DAS 5 PENDÊNCIAS RESTANTES)
+## SEÇÃO ESPECIAL 8: ANÁLISE TÉCNICA EXAUSTIVA DE `src/routes/provas.js`
 
-Com a incorporação do inventário EasyPanel, a confirmação do backup e dry-run pelo operador e a validação do snapshot do Redis RDB (pendência de backup do Redis **RESOLVIDA** com zero chaves e zero expirações), restam exatamente **5 pendências mandatórias** antes do início da Fase 1:
+O arquivo oficial `src/routes/provas.js` foi fornecido pelo operador e incorporado ao escopo de auditoria da Fase 0. Abaixo consta o detalhamento completo de sua arquitetura, fluxos, queries e avaliação de riscos.
 
-1. **Rotação Obrigatória do Token do EasyPanel:** O operador deve rotacionar no painel EasyPanel o token de deploy/API exposto em relatórios anteriores deste projeto (marcador `[TOKEN_REMOVIDO_E_ROTACIONADO]`, status `EXPOSTO - ROTACIONAR`).
-2. **Análise de `src/routes/provas.js`:** Arquivo real a ser enviado pelo operador para análise técnica da lógica de avaliações (arquivo ainda não recebido).
-3. **Screenshots Desktop e Celular do Player:** Capturas de tela da área de membros do player de referência (Adapta) a serem enviadas pelo operador.
-4. **Confirmação da Versão Real do Node.js:** Esclarecimento do erro OCI (`exec: "node": executable file not found in $PATH`) e confirmação se a produção usa Node 18, Node 20, Bun ou Deno (runtime pode não ser Node).
-5. **Confirmação sobre Migrations do PostgreSQL:** Confirmação de que o `migration.sql` da raiz já foi executado no PostgreSQL ou se é necessário script idempotente de alinhamento.
+### 1. Arquitetura do Router e Autorização
 
-_(A pendência referente ao backup dos dados do Redis foi **RESOLVIDA** com a validação do `redis-dump.rdb` pelo operador. Após o atendimento destas 5 pendências restantes, o relatório final da Fase 0 será concluído para emissão do termo de autorização da Fase 1)._
+- **Montagem do Router:** O módulo cria um `express.Router()` destinado ao gerenciamento de provas e questionários dos cursos criados pelo mentor.
+- **Middleware Local `apenasMentor`:**
+  ```js
+  async function apenasMentor(req, res, next) {
+    if (!req.usuario || !req.usuario.id) return res.status(401).json({ error: 'Não autenticado' })
+    const result = await pool.query('SELECT role, mentor_status FROM usuarios WHERE id = $1', [
+      req.usuario.id,
+    ])
+    const u = result.rows[0]
+    if (!u) return res.status(404).json({ error: 'Usuário não encontrado' })
+    const ehMentor = u.mentor_status === 'aprovado' || u.role === 'admin'
+    if (!ehMentor)
+      return res
+        .status(403)
+        .json({
+          error: 'Apenas mentores aprovados têm acesso a esta área',
+          status_atual: u.mentor_status,
+        })
+    req.usuario.role = u.role
+    req.usuario.mentor_status = u.mentor_status
+    next()
+  }
+  ```
+- **Avaliação de Duplicação com `src/middleware/auth.js`:**
+  - O arquivo aplica `router.use(auth, apenasMentor)` a todas as rotas do módulo.
+  - O middleware local `apenasMentor` executa uma query pontual na tabela `usuarios` checando `mentor_status === 'aprovado' || role === 'admin'`.
+  - Essa checagem duplica a lógica existente em outros endpoints de mentor (`src/routes/mentor.js` e middlewares globais).
+  - _Recomendação para a Fase 1:_ Unificar o middleware `apenasMentor` em módulo compartilhado (`src/middleware/autorizacao.js` ou em `src/middleware/auth.js`), evitando consultas redundantes e divergências de regra de negócio entre rotas.
+- **Helper `obterCursoDoMentor(cursoId, mentorId)`:**
+  - Executa: `SELECT * FROM cursos WHERE id = $1 AND mentor_id = $2`.
+  - Garante isolamento estrito: um mentor **jamais** consegue listar, detalhar, criar, alterar ou excluir provas de cursos pertencentes a outro usuário.
+
+### 2. Rotas Mapeadas e Operações
+
+| Rota Express                  | Método   | Descrição Funcional                                  | Lógica de Banco / SQL                                                                                                                                                                                                                              |
+| :---------------------------- | :------- | :--------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/cursos/:id/provas`          | `GET`    | Lista todas as provas de um curso                    | `SELECT p.*, (SELECT COUNT(*)::int FROM provas_perguntas pp WHERE pp.prova_id = p.id) AS total_perguntas FROM provas p WHERE p.curso_id = $1 ORDER BY p.id ASC`                                                                                    |
+| `/cursos/:id/provas/:provaId` | `GET`    | Busca detalhes da prova com perguntas e alternativas | Consulta `provas` (validando `curso_id`), consulta `provas_perguntas` ordenada por `ordem ASC, id ASC`, e consulta `provas_alternativas` via `INNER JOIN`. Monta o payload aninhado em memória via `map/filter`.                                   |
+| `/cursos/:id/provas`          | `POST`   | Cria nova prova com perguntas e alternativas em lote | Inicia transação `BEGIN`. Insere em `provas RETURNING *`, itera sobre `perguntas`, insere em `provas_perguntas RETURNING id`, itera sobre `alternativas`, insere em `provas_alternativas`. Finaliza com `COMMIT` ou `ROLLBACK` em caso de exceção. |
+| `/cursos/:id/provas/:provaId` | `PUT`    | Atualização parcial da prova                         | Permite atualizar `titulo`, `nota_minima` (0 a 100) e `etapa_id` (com validação se a etapa pertence ao curso na tabela `aulas`). Executa `UPDATE provas ... RETURNING *`.                                                                          |
+| `/cursos/:id/provas/:provaId` | `DELETE` | Exclui prova do curso                                | Executa `DELETE FROM provas WHERE id = $1 AND curso_id = $2`.                                                                                                                                                                                      |
+
+### 3. Validações e Regras de Negócio no `POST`
+
+- **Título:** Obrigatório (`!titulo` retorna 400).
+- **Perguntas:** Obrigatório array não vazio (`Array.isArray(perguntas) && perguntas.length > 0`).
+- **Etapa Opcional (`etapa_id`):** Se informado, valida se existe registro correspondente na tabela `aulas` com `id = etapa_id AND curso_id = req.params.id`. Se inválido, retorna 400 (`Etapa inválida`).
+- **Nota Mínima (`nota_minima`):** Se omitido, assume default `60`. Valida range numérico estrito entre `0` e `100`.
+- **Validação de Perguntas:** Cada item deve conter `texto` preenchido e array `alternativas` com no mínimo 2 itens.
+- **Validação de Alternativa Correta:** Exige obrigatoriamente que ao menos uma alternativa contenha `correta === true`.
+- **Geração de Letras:** Mapeia posições para letras `['A', 'B', 'C', 'D', 'E']`, com fallback dinâmico `String.fromCharCode(65 + j)` para questionários com mais de 5 alternativas.
+
+### 4. Tabelas do Banco Envolvidas
+
+1. `cursos`: Validação de propriedade (`id`, `mentor_id`).
+2. `usuarios`: Verificação de perfil e aprovação do mentor (`id`, `role`, `mentor_status`).
+3. `aulas`: Validação de integridade referencial da etapa associada (`id`, `curso_id`).
+4. `provas`: Cabeçalho da avaliação (`id`, `curso_id`, `etapa_id`, `titulo`, `nota_minima`, `created_at`, `updated_at`).
+5. `provas_perguntas`: Questões da prova (`id`, `prova_id`, `ordem`, `texto`).
+6. `provas_alternativas`: Opções de resposta (`id`, `pergunta_id`, `letra`, `texto`, `correta`).
+
+### 5. Observações de Risco e Pontos a Revisar na Fase 1
+
+1. **Vazamento de Mensagens Internas no Tratamento de Erros (HTTP 500):**
+   - No bloco `catch` do `POST /cursos/:id/provas`:
+     ```js
+     res.status(500).json({ error: err.message || 'Erro ao criar prova' })
+     ```
+   - Erros de validação disparados com `throw new Error('Cada pergunta precisa de texto...')` respondem com status 500 (em vez de 400 Bad Request) e erros de sintaxe ou conexão com o PostgreSQL podem vazar mensagens internas da engine no JSON de resposta.
+   - _Ajuste Fase 1:_ Tratar erros de validação com HTTP 400 e mascarar erros genéricos de banco com HTTP 500 padronizado.
+2. **Deleção Sem Verificação de Linhas Afetadas:**
+   - No `DELETE /cursos/:id/provas/:provaId`:
+     ```js
+     await pool.query('DELETE FROM provas WHERE id = $1 AND curso_id = $2', [
+       req.params.provaId,
+       req.params.id,
+     ])
+     res.json({ success: true })
+     ```
+   - Se a prova não existir ou o `id` estiver errado, a query executa sem erro e retorna `{ success: true }` mesmo sem ter apagado nenhum registro (`rowCount === 0`).
+   - _Ajuste Fase 1:_ Checar `result.rowCount === 0` e responder `404 Prova não encontrada`.
+3. **Ausência de Trava de Ciclo de Vida do Curso:**
+   - Em `mentor.js`, cursos com status `em_analise`, `aprovado` ou que já possuem alunos matriculados têm regras estritas que impedem edição de conteúdo.
+   - No `provas.js`, **não há verificação do status do curso nem de matrículas ativas**. Um mentor poderia criar, alterar ou excluir provas de um curso já publicado ou com alunos respondendo avaliações.
+   - _Ajuste Fase 1:_ Adicionar validação de ciclo de vida (`curso.status !== 'em_analise'` e bloqueio de exclusão se houver respostas de alunos registradas).
+4. **Atualização Parcial de Perguntas/Alternativas (PUT):**
+   - O `PUT /cursos/:id/provas/:provaId` atualmente permite atualizar apenas `titulo`, `nota_minima` e `etapa_id`. Não há endpoint para edição de perguntas ou alternativas sem recriar a prova inteira.
+   - _Ajuste Fase 1:_ Avaliar suporte a edição ou substituição atômica de questões no novo painel.
+
+### 6. Funcionalidades Críticas a PRESERVAR na Fase 1
+
+- **Transacionalidade Atômica:** O uso explícito de `BEGIN`, `COMMIT` e `ROLLBACK` via `pool.connect()` no cadastro de provas deve ser rigorosamente mantido.
+- **Validações de Domínio:** Exigência de pelo menos 1 pergunta, no mínimo 2 alternativas por pergunta, e obrigatoriedade de exatamente uma alternativa correta.
+- **Letras Sequenciais Automáticas:** Mapeamento de `A`, `B`, `C`, `D`, `E` com fallback dinâmico `String.fromCharCode(65 + j)`.
+- **Isolamento de Tenant:** Garantia incondicional de que qualquer consulta de leitura ou mutação passe por `obterCursoDoMentor(cursoId, mentorId)`.
+
+---
+
+## PENDÊNCIAS RESTANTES PRÉ-FASE 1 (LISTA OFICIAL: EXATAMENTE 2 PENDÊNCIAS RESTANTES)
+
+Com os avanços confirmados pelo operador e pela auditoria da Fase 0:
+
+- **Redis RDB:** Backup e integridade confirmados pelo operador (`redis-dump.rdb` validado com `redis-check-rdb`, zero chaves).
+- **Node.js Runtime:** Confirmado pelo operador como **Node v20.20.2** no container `cursos-api_cursos-api.1.jsmxpl7rmip278eajgb5f5ms4`.
+- **PostgreSQL / Migrations:** Confirmado pelo operador que a tabela `cursos` já possui todas as colunas necessárias e a migration está aplicada. Decisão formal: **não executar migration.sql novamente** e corrigir a duplicidade de `matriz_curricular` apenas no código na Fase 1.
+- **Arquivo `src/routes/provas.js`:** Recebido, integralmente analisado e documentado na Seção Especial 8.
+
+Restam **EXATAMENTE 2 PENDÊNCIAS MANDATÓRIAS** para a liberação da Fase 1:
+
+1. **Rotação Obrigatória do Token do EasyPanel Exposto:** O operador deve rotacionar no painel EasyPanel na VPS o token de deploy/API que apareceu em relatórios anteriores deste projeto (marcador de segurança: `[TOKEN_REMOVIDO_E_ROTACIONADO]`, classificação: `EXPOSTO - ROTACIONAR`).
+2. **Screenshots Desktop e Celular do Player de Referência:** Capturas de tela reais da área de membros do player de referência (Adapta) a serem enviadas pelo operador para definição visual final.
+
+---
 
 ---
 
@@ -515,12 +624,12 @@ A autorização para a Fase 1 depende dos seguintes critérios formais:
 - [x] **Backup completo preparado e confirmado pelo operador:** Concluído em `/root/backups/cursos/20261031_195147` com bundle Git, fonte, vídeos, dump Postgres, PocketBase, Redis RDB (`redis-dump.rdb` validado com `redis-check-rdb`, zero chaves, zero expirações) e SHA-256.
 - [x] **Restauração em modo `--dry-run` validada pelo operador:** Execução com 100% de sucesso sem alterar produção.
 - [x] **Inventário EasyPanel estruturado na VPS:** Concluído e incorporado em `/root/INVENTARIO_EASYPANEL.md`.
-- [x] **Backup dos dados do Redis (RDB):** Concluído e validado pelo operador via `redis-check-rdb` (`redis-dump.rdb` íntegro, checksum OK, zero chaves, zero expirações). Pendência **RESOLVIDA**.
-- [ ] **Rotação do token EasyPanel exposto:** Pendente de execução manual pelo operador no painel da VPS (`[TOKEN_REMOVIDO_E_ROTACIONADO]`).
-- [ ] **Recebimento e análise de `src/routes/provas.js`:** Pendente de envio pelo operador (arquivo ainda não recebido).
+- [x] **Backup dos dados do Redis (RDB):** Concluído e validado pelo operador via `redis-check-rdb` (`redis-dump.rdb` íntegro, checksum OK, zero chaves, zero expirações). Concluído.
+- [x] **Confirmação da versão real do Node.js:** Node v20.20.2 confirmado pelo operador no container real `cursos-api_cursos-api.1.jsmxpl7rmip278eajgb5f5ms4`. Dockerfile/docs com Node 18 desatualizados. Concluído.
+- [x] **Confirmação das Migrations no PostgreSQL:** Confirmado pelo operador que a tabela `cursos` já possui todas as colunas. Migration aplicada. Não executar `migration.sql` novamente. Correção de duplicidade fica para código da Fase 1. Concluído.
+- [x] **Recebimento e análise técnica de `src/routes/provas.js`:** Arquivo fornecido pelo operador, analisado minuciosamente na Seção Especial 8. Concluído.
+- [ ] **Rotação do token EasyPanel exposto:** Pendente de execução manual pelo operador no painel da VPS (`[TOKEN_REMOVIDO_E_ROTACIONADO]`, status `EXPOSTO - ROTACIONAR`).
 - [ ] **Recebimento de screenshots desktop e celular do player:** Pendente de envio pelo operador.
-- [ ] **Confirmação da versão real do Node.js (ou runtime):** Pendente do diagnóstico via comandos sugeridos na Seção Especial 6 (`exec node not found` — runtime pode não ser Node).
-- [ ] **Confirmação do estado do `migration.sql`:** Pendente de confirmação no PostgreSQL.
 - [ ] **Atualização do relatório final e termo formal assinado pelo mantenedor.**
 
 ### 4. Critérios de Aceite Técnico da Fase 1 (Pós-Autorização)

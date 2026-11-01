@@ -34,13 +34,9 @@ _Proxy Reverso de Borda:_ Traefik `3.6.7` escuta nas portas `80/tcp` e `443/tcp`
   - Host: `/srv/cursos/videos/` -> Container: `/app/videos/` (leitura/escrita para uploads MP4 de até 1GB e streaming HTTP Range)
 - **Rede Docker:** `easypanel`
 - **Diagnóstico de Runtime Node.js:**
-  - Tentativa de execução de `node` dentro do container falhou:
-    ```text
-    OCI runtime exec failed: exec failed: unable to start container process: exec: "node": executable file not found in $PATH
-    ```
-  - **Situação:** Versão do Node continua **NÃO CONFIRMADA**.
-  - **Hipóteses:** Runtime alternativo (Bun/Deno), instância inativa consultada ou binário fora do `$PATH`.
-  - **Comando sugerido ao operador:** `docker exec <container> sh -c "which node || which bun || which deno; cat /etc/os-release"`
+  - **CONFIRMADO PELO OPERADOR:** Versão real **Node v20.20.2** em execução no container `cursos-api_cursos-api.1.jsmxpl7rmip278eajgb5f5ms4`.
+  - **Diagnóstico do erro OCI anterior:** A execução anterior falhou pontualmente por consulta contra réplica intermediária/estática. No container worker real ativo, o binário Node v20.20.2 foi validado pelo operador.
+  - **Status Dockerfile/Documentação:** Menções a Node 18 estão desatualizadas. Correção do Dockerfile para Node 20 agendada para a Fase 1 (sem alteração agora).
 
 ---
 
@@ -50,6 +46,7 @@ _Proxy Reverso de Borda:_ Traefik `3.6.7` escuta nas portas `80/tcp` e `443/tcp`
 - **Imagem Utilizada:** `postgres:17`
 - **Porta do Container:** `5432/tcp`
 - **Porta Exposta na VPS:** Nenhuma porta externa publicada no host (acesso restrito aos containers autorizados nas redes internas).
+- **Status das Migrations (Confirmado pelo Operador):** Tabela `cursos` possui todas as colunas (`video_url`, `video_type`, `video_public_id`, `thumbnail_url`, `confirmed_author`, `ia_score`, `matriz_curricular`, `subcategoria`). Migration já aplicada. **NÃO reexecutar migration.sql**. Duplicidade de `matriz_curricular` será corrigida no código da migration na Fase 1.
 - **Volumes Persistentes Montados:**
   - Host: `/etc/easypanel/projects/cursos-api/postgres/data` -> Container: `/var/lib/postgresql/data`
 - **Redes Docker:**

@@ -81,7 +81,8 @@ export default function Index() {
           </h1>
           <p className="text-slate-400 text-sm mt-1">
             Governança rigorosa: Inventário EasyPanel da VPS incorporado, Backup e Dry-Run atestados
-            pelo operador, diagnóstico do runtime e checklist das 5 pendências restantes.
+            pelo operador, Node v20.20.2 e Migrations confirmados, análise de provas.js concluída e
+            exatamente 2 pendências restantes.
           </p>
         </div>
 
@@ -115,8 +116,8 @@ export default function Index() {
               <strong>OPERADOR</strong>.
             </p>
             <p className="text-xs text-amber-300/80 font-mono">
-              A Fase 1 permanece bloqueada aguardando as 5 pendências restantes e a autorização
-              formal.
+              A Fase 1 permanece bloqueada aguardando exatamente as 2 pendências restantes (rotação
+              de token e screenshots) e a autorização formal.
             </p>
           </AlertDescription>
         </Alert>
@@ -158,13 +159,13 @@ export default function Index() {
           <Card className="bg-slate-900 border-slate-800">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium text-slate-400">
-                Diagnóstico Node Runtime
+                Runtime Node Confirmado
               </CardTitle>
-              <Cpu className="w-4 h-4 text-amber-400" />
+              <Cpu className="w-4 h-4 text-emerald-400" />
             </CardHeader>
             <CardContent>
-              <div className="text-xl font-bold text-amber-400">NÃO Confirmado</div>
-              <p className="text-xs text-slate-400 mt-1">Erro OCI: node not found in $PATH</p>
+              <div className="text-xl font-bold text-emerald-400">Node v20.20.2 ✓</div>
+              <p className="text-xs text-slate-400 mt-1 font-mono">cursos-api.1.jsmxpl7rmip...</p>
             </CardContent>
           </Card>
 
@@ -204,18 +205,25 @@ export default function Index() {
               Backup Confirmado (Operador)
             </TabsTrigger>
             <TabsTrigger
+              value="provas_analise"
+              className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white font-semibold flex items-center gap-1.5"
+            >
+              <FileText className="w-4 h-4" />
+              Análise de provas.js
+            </TabsTrigger>
+            <TabsTrigger
               value="node_migrations"
               className="data-[state=active]:bg-amber-600 data-[state=active]:text-white font-semibold flex items-center gap-1.5"
             >
               <Cpu className="w-4 h-4" />
-              Node &amp; Migrations (Diagnóstico)
+              Node &amp; Migrations (Confirmados)
             </TabsTrigger>
             <TabsTrigger
               value="checklist_fase1"
               className="data-[state=active]:bg-blue-600 data-[state=active]:text-white font-semibold flex items-center gap-1.5"
             >
               <ListChecks className="w-4 h-4" />
-              Checklist das 5 Pendências
+              Checklist das 2 Pendências
             </TabsTrigger>
             <TabsTrigger
               value="commits_seguranca"
@@ -320,8 +328,9 @@ export default function Index() {
                       </div>
                       <div>
                         <strong className="text-slate-400">Situação Node:</strong>{' '}
-                        <span className="text-amber-400 font-semibold">NÃO confirmado</span> (erro
-                        OCI ao tentar rodar node)
+                        <span className="text-emerald-400 font-semibold">
+                          Node v20.20.2 Confirmado ✓
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -575,113 +584,346 @@ export default function Index() {
             </Card>
           </TabsContent>
 
-          {/* Aba: Node & Migrations (Diagnóstico) */}
-          <TabsContent value="node_migrations" className="space-y-6 mt-6">
+          {/* Aba Nova: Análise de src/routes/provas.js */}
+          <TabsContent value="provas_analise" className="space-y-6 mt-6">
             <Card className="bg-slate-900 border-slate-800">
               <CardHeader>
                 <div className="flex items-center justify-between flex-wrap gap-2">
                   <div>
-                    <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/30 mb-2">
-                      Diagnóstico Obrigatório Pré-Fase 1
+                    <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 mb-2">
+                      Arquivo Recebido &amp; Auditado na Fase 0
                     </Badge>
                     <CardTitle className="text-lg text-white flex items-center gap-2">
-                      <Cpu className="w-5 h-5 text-amber-400" />
-                      Situação do Runtime Node.js e Migrations do PostgreSQL
+                      <FileText className="w-5 h-5 text-emerald-400" />
+                      Análise Técnica de src/routes/provas.js
                     </CardTitle>
                     <CardDescription className="text-slate-400 text-xs mt-1">
-                      Registro explícito do erro OCI obtido e plano de resolução pelo operador.
+                      Mapeamento de rotas, controle de acesso apenasMentor, transação SQL, tabelas
+                      envolvidas, riscos e pontos a preservar.
                     </CardDescription>
                   </div>
                   <Badge
-                    variant="destructive"
-                    className="bg-red-500/20 text-red-300 border-red-500/30 text-xs font-mono"
+                    variant="outline"
+                    className="border-emerald-500/40 text-emerald-300 bg-emerald-500/10 text-xs font-mono"
                   >
-                    Node: NÃO Confirmado
+                    Status: Analisado ✓
                   </Badge>
                 </div>
               </CardHeader>
               <CardContent className="space-y-5 text-xs">
-                {/* Bloco Node OCI */}
-                <div className="p-3 bg-red-950/20 border border-red-800/40 rounded space-y-2">
-                  <div className="font-semibold text-red-300 flex items-center gap-1.5">
-                    <AlertTriangle className="w-4 h-4 text-red-400" />
-                    Evidência do Erro OCI no Container Cursos-API:
+                {/* Destaque de Arquitetura e Autorização */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="p-3.5 bg-slate-950 rounded border border-slate-800 space-y-2">
+                    <h4 className="font-semibold text-white flex items-center gap-1.5 text-sm">
+                      <ShieldCheck className="w-4 h-4 text-blue-400" />
+                      1. Autorização &amp; Middleware apenasMentor
+                    </h4>
+                    <p className="text-slate-300 text-[11px]">
+                      O router aplica{' '}
+                      <code className="text-cyan-300">router.use(auth, apenasMentor)</code> a todas
+                      as rotas. O middleware consulta{' '}
+                      <code className="text-slate-200">usuarios</code> checando:
+                    </p>
+                    <div className="p-2 bg-black/60 rounded font-mono text-[11px] text-amber-300">
+                      mentor_status === 'aprovado' || role === 'admin'
+                    </div>
+                    <p className="text-slate-400 text-[11px]">
+                      <strong>Avaliação de duplicação:</strong> Esta lógica duplica a checagem
+                      presente em outros módulos de mentor e em{' '}
+                      <code className="text-slate-300">src/middleware/auth.js</code>. Na Fase 1,
+                      recomenda-se unificar o middleware de autorização em módulo compartilhado.
+                    </p>
+                    <div className="pt-1">
+                      <strong className="text-slate-300">Helper de Isolamento:</strong>
+                      <p className="font-mono text-emerald-400 text-[10px] mt-0.5">
+                        SELECT * FROM cursos WHERE id = $1 AND mentor_id = $2
+                      </p>
+                      <span className="text-slate-400 text-[10px]">
+                        Garante que mentores acessem somente seus próprios cursos.
+                      </span>
+                    </div>
                   </div>
-                  <pre className="p-2.5 bg-black/60 rounded font-mono text-red-300 text-[11px] overflow-x-auto whitespace-pre-wrap">
-                    OCI runtime exec failed: exec failed: unable to start container process: exec:
-                    "node": executable file not found in $PATH
-                  </pre>
-                  <p className="text-slate-300 text-[11px]">
-                    <strong>Conclusão Técnica:</strong> A versão real do Node em produção continua{' '}
-                    <strong>NÃO confirmada</strong>.
-                  </p>
+
+                  <div className="p-3.5 bg-slate-950 rounded border border-slate-800 space-y-2">
+                    <h4 className="font-semibold text-white flex items-center gap-1.5 text-sm">
+                      <Database className="w-4 h-4 text-purple-400" />
+                      2. Tabelas do Banco Envolvidas
+                    </h4>
+                    <div className="grid grid-cols-2 gap-2 text-[11px]">
+                      <div className="p-2 bg-black/40 rounded border border-slate-800/80">
+                        <strong className="text-purple-300 font-mono">provas</strong>
+                        <p className="text-slate-400 text-[10px]">
+                          id, curso_id, etapa_id, titulo, nota_minima
+                        </p>
+                      </div>
+                      <div className="p-2 bg-black/40 rounded border border-slate-800/80">
+                        <strong className="text-purple-300 font-mono">provas_perguntas</strong>
+                        <p className="text-slate-400 text-[10px]">id, prova_id, ordem, texto</p>
+                      </div>
+                      <div className="p-2 bg-black/40 rounded border border-slate-800/80">
+                        <strong className="text-purple-300 font-mono">provas_alternativas</strong>
+                        <p className="text-slate-400 text-[10px]">
+                          id, pergunta_id, letra, texto, correta
+                        </p>
+                      </div>
+                      <div className="p-2 bg-black/40 rounded border border-slate-800/80">
+                        <strong className="text-purple-300 font-mono">aulas</strong>
+                        <p className="text-slate-400 text-[10px]">
+                          Validação se etapa_id pertence ao curso
+                        </p>
+                      </div>
+                      <div className="p-2 bg-black/40 rounded border border-slate-800/80">
+                        <strong className="text-purple-300 font-mono">cursos</strong>
+                        <p className="text-slate-400 text-[10px]">
+                          Checagem de mentor_id = req.usuario.id
+                        </p>
+                      </div>
+                      <div className="p-2 bg-black/40 rounded border border-slate-800/80">
+                        <strong className="text-purple-300 font-mono">usuarios</strong>
+                        <p className="text-slate-400 text-[10px]">
+                          Checagem de mentor_status e role
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
+                {/* Rotas Mapeadas */}
+                <div className="p-3.5 bg-slate-950 rounded border border-slate-800 space-y-3">
+                  <h4 className="font-semibold text-white text-sm flex items-center gap-1.5">
+                    <Terminal className="w-4 h-4 text-cyan-400" />
+                    3. Rotas Express Implementadas em src/routes/provas.js
+                  </h4>
+                  <div className="space-y-2">
+                    {[
+                      {
+                        method: 'GET',
+                        path: '/cursos/:id/provas',
+                        desc: 'Lista provas do curso com subselect do total de perguntas.',
+                        sql: 'SELECT p.*, (SELECT COUNT(*)::int FROM provas_perguntas pp WHERE pp.prova_id = p.id) AS total_perguntas FROM provas p WHERE p.curso_id = $1 ORDER BY p.id ASC',
+                      },
+                      {
+                        method: 'GET',
+                        path: '/cursos/:id/provas/:provaId',
+                        desc: 'Busca prova completa com perguntas ordenadas e alternativas vinculadas via INNER JOIN, montadas em memória via map/filter.',
+                        sql: 'SELECT * FROM provas + SELECT * FROM provas_perguntas + INNER JOIN provas_alternativas',
+                      },
+                      {
+                        method: 'POST',
+                        path: '/cursos/:id/provas',
+                        desc: 'Criação transacional com BEGIN/COMMIT. Valida título, array de perguntas, etapa_id em aulas do curso, nota_minima (0-100, default 60), ao menos 2 alternativas por pergunta, exatamente 1 correta e letras A-E com fallback.',
+                        sql: 'BEGIN -> INSERT INTO provas -> loop INSERT INTO provas_perguntas -> loop INSERT INTO provas_alternativas -> COMMIT / ROLLBACK',
+                      },
+                      {
+                        method: 'PUT',
+                        path: '/cursos/:id/provas/:provaId',
+                        desc: 'Edição parcial: atualiza titulo, nota_minima (0-100) e etapa_id (com validação na tabela aulas). Não permite edição granular de perguntas neste endpoint.',
+                        sql: 'UPDATE provas SET titulo=$1, nota_minima=$2, etapa_id=$3 WHERE id=$4 AND curso_id=$5 RETURNING *',
+                      },
+                      {
+                        method: 'DELETE',
+                        path: '/cursos/:id/provas/:provaId',
+                        desc: 'Exclui a prova pelo id e curso_id. OBS: delete simples, sem verificação se rowCount > 0.',
+                        sql: 'DELETE FROM provas WHERE id = $1 AND curso_id = $2',
+                      },
+                    ].map((r, i) => (
+                      <div
+                        key={i}
+                        className="p-2.5 rounded bg-black/40 border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-2"
+                      >
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2">
+                            <Badge
+                              className={`text-[10px] font-mono ${
+                                r.method === 'GET'
+                                  ? 'bg-blue-500/20 text-blue-300'
+                                  : r.method === 'POST'
+                                    ? 'bg-emerald-500/20 text-emerald-300'
+                                    : r.method === 'PUT'
+                                      ? 'bg-amber-500/20 text-amber-300'
+                                      : 'bg-red-500/20 text-red-300'
+                              }`}
+                            >
+                              {r.method}
+                            </Badge>
+                            <span className="font-mono text-white text-[12px]">{r.path}</span>
+                          </div>
+                          <p className="text-slate-400 text-[11px]">{r.desc}</p>
+                        </div>
+                        <div className="text-[10px] font-mono text-slate-500 max-w-xs md:text-right shrink-0">
+                          {r.sql}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Riscos Observados e Funcionalidades a Preservar */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="p-3 bg-slate-950 rounded border border-slate-800 space-y-2">
-                    <h4 className="font-semibold text-white flex items-center gap-1.5">
-                      <Info className="w-4 h-4 text-blue-400" />
-                      Hipóteses Técnicas a Validar na VPS:
+                  <div className="p-3.5 bg-red-950/20 rounded border border-red-900/40 space-y-2">
+                    <h4 className="font-semibold text-red-300 flex items-center gap-1.5 text-sm">
+                      <AlertTriangle className="w-4 h-4 text-red-400" />
+                      4. Observações de Risco (Revisar na Fase 1)
                     </h4>
-                    <ul className="list-disc pl-4 space-y-1 text-slate-400 text-[11px]">
+                    <ul className="list-disc pl-4 space-y-1.5 text-slate-300 text-[11px]">
                       <li>
-                        <strong className="text-slate-300">Runtime Alternativo:</strong> A imagem do
-                        EasyPanel pode utilizar Bun ou Deno em vez de Node clássico.
+                        <strong className="text-red-300">DELETE sem validação de rowCount:</strong>{' '}
+                        Retorna <code>&#123; success: true &#125;</code> mesmo que nenhum registro
+                        tenha sido excluído. Tratar na Fase 1 com 404 se não houver match.
                       </li>
                       <li>
-                        <strong className="text-slate-300">Instância Consultada:</strong> Como há 5+
-                        containers com IDs gerados pelo Swarm/EasyPanel, o comando pode ter sido
-                        executado contra réplica inativa ou proxy.
+                        <strong className="text-red-300">Vazamento em Erros 500 no POST:</strong> O
+                        catch responde 500 com <code>err.message</code> para falhas de validação de
+                        negócio (deveria ser 400 Bad Request) e pode vazar erros internos do banco.
                       </li>
                       <li>
-                        <strong className="text-slate-300">Caminho $PATH:</strong> O executável pode
-                        estar em caminho não padrão (ex.: NVM ou /usr/local/bin).
+                        <strong className="text-red-300">
+                          Sem Trava de Ciclo de Vida do Curso:
+                        </strong>{' '}
+                        Ao contrário de <code>mentor.js</code>, provas não verificam se o curso está
+                        em status <code>em_analise</code>, <code>aprovado</code> ou se possui
+                        matrículas ativas.
+                      </li>
+                      <li>
+                        <strong className="text-red-300">Sem Edição de Perguntas no PUT:</strong>{' '}
+                        Apenas campos de cabeçalho podem ser atualizados no PUT.
                       </li>
                     </ul>
                   </div>
 
-                  <div className="p-3 bg-slate-950 rounded border border-slate-800 space-y-2">
-                    <h4 className="font-semibold text-white flex items-center gap-1.5">
-                      <Terminal className="w-4 h-4 text-emerald-400" />
-                      Comandos Sugeridos para o Operador:
+                  <div className="p-3.5 bg-emerald-950/20 rounded border border-emerald-900/40 space-y-2">
+                    <h4 className="font-semibold text-emerald-300 flex items-center gap-1.5 text-sm">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                      5. Funcionalidades a PRESERVAR na Fase 1
                     </h4>
-                    <p className="text-slate-400 text-[11px]">
-                      Executar no container Cursos-API ativo na VPS:
-                    </p>
-                    <pre className="p-2 bg-black/60 rounded font-mono text-[11px] text-emerald-300 overflow-x-auto">
-                      {`docker exec <container> sh -c "which node || which bun || which deno; cat /etc/os-release"`}
-                    </pre>
-                    <p className="text-slate-400 text-[11px]">
-                      E verificar o Dockerfile real do projeto:
-                    </p>
-                    <pre className="p-2 bg-black/60 rounded font-mono text-[11px] text-cyan-300 overflow-x-auto">
-                      {`cat /root/cursos-api/Dockerfile`}
-                    </pre>
+                    <ul className="list-disc pl-4 space-y-1.5 text-slate-300 text-[11px]">
+                      <li>
+                        <strong className="text-emerald-300">Transacionalidade Atômica:</strong>{' '}
+                        Manter obrigatoriamente a transação SQL com <code>BEGIN</code>,{' '}
+                        <code>COMMIT</code> e <code>ROLLBACK</code> na criação de provas e
+                        alternativas.
+                      </li>
+                      <li>
+                        <strong className="text-emerald-300">Validações de Domínio:</strong>{' '}
+                        Exigência de título, ao menos 1 pergunta, mínimo de 2 alternativas por
+                        questão e exatamente uma alternativa correta.
+                      </li>
+                      <li>
+                        <strong className="text-emerald-300">Geração de Letras A–E:</strong>{' '}
+                        Preservar a rotulagem automática de alternativas com fallback{' '}
+                        <code>String.fromCharCode(65 + j)</code>.
+                      </li>
+                      <li>
+                        <strong className="text-emerald-300">Isolamento de Tenant:</strong> Manter
+                        estritamente o filtro por <code>mentor_id = req.usuario.id</code> em todas
+                        as consultas.
+                      </li>
+                    </ul>
                   </div>
-                </div>
-
-                {/* Bloco Migrations */}
-                <div className="p-3 bg-slate-950 rounded border border-slate-800 space-y-2">
-                  <h4 className="font-semibold text-white flex items-center gap-1.5">
-                    <Database className="w-4 h-4 text-amber-400" />
-                    Situação das Migrations do PostgreSQL (Postgres 17):
-                  </h4>
-                  <p className="text-slate-300 text-[11px]">
-                    O runner <code>src/database/migrate.js</code> executa apenas os arquivos
-                    contidos em <code>src/database/migrations/*.js</code>. O arquivo{' '}
-                    <code>migration.sql</code> presente na raiz do projeto{' '}
-                    <strong>NÃO é executado automaticamente</strong>.
-                  </p>
-                  <p className="text-slate-400 text-[11px]">
-                    <strong>Ação do Operador:</strong> Confirmar se as instruções SQL da raiz já
-                    foram aplicadas manualmente no banco antes do início da Fase 1.
-                  </p>
                 </div>
               </CardContent>
             </Card>
           </TabsContent>
 
-          {/* Aba: Checklist das 5 Pendências Restantes */}
+          {/* Aba: Node & Migrations (Confirmados pelo Operador) */}
+          <TabsContent value="node_migrations" className="space-y-6 mt-6">
+            <Card className="bg-slate-900 border-slate-800">
+              <CardHeader>
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                  <div>
+                    <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 mb-2">
+                      Evidências Reais Confirmadas pelo Operador na VPS
+                    </Badge>
+                    <CardTitle className="text-lg text-white flex items-center gap-2">
+                      <Cpu className="w-5 h-5 text-emerald-400" />
+                      Situação do Runtime Node.js e Migrations do PostgreSQL
+                    </CardTitle>
+                    <CardDescription className="text-slate-400 text-xs mt-1">
+                      Node v20.20.2 e tabela cursos completa confirmados pelo operador. Nenhuma
+                      migration pendente.
+                    </CardDescription>
+                  </div>
+                  <Badge
+                    variant="outline"
+                    className="border-emerald-500/40 text-emerald-300 bg-emerald-500/10 text-xs font-mono"
+                  >
+                    Node v20.20.2 &bull; Migrations OK
+                  </Badge>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-5 text-xs">
+                {/* Bloco Node Confirmado */}
+                <div className="p-3.5 bg-emerald-950/20 border border-emerald-800/40 rounded space-y-2">
+                  <div className="font-semibold text-emerald-300 flex items-center justify-between">
+                    <span className="flex items-center gap-1.5 text-sm">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                      Runtime Node.js Confirmado pelo Operador: Node v20.20.2
+                    </span>
+                    <span className="font-mono text-emerald-400 text-xs">CONFIRMADO ✓</span>
+                  </div>
+                  <div className="p-2.5 bg-black/60 rounded font-mono text-emerald-300 text-[11px] overflow-x-auto">
+                    Container Real: cursos-api_cursos-api.1.jsmxpl7rmip278eajgb5f5ms4 &bull; Node
+                    v20.20.2
+                  </div>
+                  <p className="text-slate-300 text-[11px]">
+                    <strong>Aviso de Documentação:</strong> O <code>Dockerfile</code> e arquivos que
+                    mencionam Node 18 estão <strong>DESATUALIZADOS</strong>. A referência oficial
+                    para a Fase 1 é Node 20. O <code>Dockerfile</code> será atualizado na Fase 1
+                    (sem alteração agora).
+                  </p>
+                </div>
+
+                {/* Bloco Migrations Confirmadas */}
+                <div className="p-3.5 bg-slate-950 rounded border border-slate-800 space-y-3">
+                  <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                    <h4 className="font-semibold text-white flex items-center gap-1.5 text-sm">
+                      <Database className="w-4 h-4 text-emerald-400" />
+                      PostgreSQL: Tabela cursos Completa e Migration Já Aplicada
+                    </h4>
+                    <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30 text-[10px]">
+                      Container cursos-api_postgres.1.mpp4zqgnifgzjkh2y0hz9f4hm
+                    </Badge>
+                  </div>
+
+                  <div className="p-2.5 bg-red-950/30 border border-red-800/40 rounded text-amber-200 text-[11px]">
+                    <strong>AVISO MANDATÓRIO DO OPERADOR:</strong>{' '}
+                    <strong>NÃO EXECUTAR `migration.sql` NOVAMENTE NO BANCO.</strong> A migration já
+                    está aplicada na VPS. A duplicidade da coluna <code>matriz_curricular</code> no
+                    arquivo físico será corrigida unicamente no código da migration durante a Fase 1
+                    — nenhuma alteração de banco deve ocorrer agora.
+                  </div>
+
+                  <div>
+                    <span className="font-semibold text-slate-300">
+                      Colunas Confirmadas Existentes na Tabela cursos:
+                    </span>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2">
+                      {[
+                        'video_url',
+                        'video_type',
+                        'video_public_id',
+                        'thumbnail_url',
+                        'confirmed_author',
+                        'ia_score',
+                        'matriz_curricular',
+                        'subcategoria',
+                      ].map((col, idx) => (
+                        <div
+                          key={idx}
+                          className="p-2 rounded bg-black/40 border border-slate-800 flex items-center gap-1.5"
+                        >
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                          <span className="font-mono text-emerald-300 text-[11px]">{col}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Aba: Checklist das EXATAMENTE 2 Pendências Restantes */}
           <TabsContent value="checklist_fase1" className="space-y-6 mt-6">
             <Card className="bg-slate-900 border-slate-800">
               <CardHeader>
@@ -692,11 +934,11 @@ export default function Index() {
                     </Badge>
                     <CardTitle className="text-lg text-white flex items-center gap-2">
                       <ListChecks className="w-5 h-5 text-blue-400" />
-                      Checklist: O que Foi Confirmado vs. As 5 Pendências Restantes
+                      Checklist: Validações Concluídas vs. EXATAMENTE 2 Pendências Restantes
                     </CardTitle>
                     <CardDescription className="text-slate-400 text-xs mt-1">
-                      Separação transparente entre validações concluídas pelo operador (incluindo
-                      Redis RDB) e os 5 bloqueadores restantes da Fase 1.
+                      Com Node, Migrations e provas.js concluídos, restam unicamente a rotação do
+                      token exposto e as screenshots do player.
                     </CardDescription>
                   </div>
                   <Button
@@ -711,11 +953,11 @@ export default function Index() {
                 </div>
               </CardHeader>
               <CardContent className="space-y-6 text-xs">
-                {/* Grupo 1: Confirmado pelo Operador */}
+                {/* Grupo 1: Confirmado e Concluído */}
                 <div>
                   <h4 className="font-semibold text-emerald-400 mb-2 flex items-center gap-1.5 text-sm">
                     <CheckCircle2 className="w-4 h-4" />
-                    1. Confirmado e Concluído pelo Operador na VPS:
+                    1. Validações Concluídas pelo Operador e Auditoria da Fase 0:
                   </h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-slate-300">
                     {[
@@ -725,6 +967,9 @@ export default function Index() {
                       'Restauração em modo --dry-run validada sem erros',
                       'Inventário EasyPanel gerado no host srv845644 e incorporado',
                       'Caminhos de vídeo confirmados: /srv/cursos/videos/ -> /app/videos/',
+                      'Runtime Node v20.20.2 CONFIRMADO no container cursos-api_cursos-api.1.jsmxpl7rmip...',
+                      'PostgreSQL: tabela cursos possui todas as 8 colunas; migration aplicada; NÃO reexecutar migration.sql',
+                      'src/routes/provas.js recebido e integralmente analisado (rotas, transação BEGIN/COMMIT, riscos)',
                       'Nenhuma alteração feita na produção durante a Fase 0',
                     ].map((item, idx) => (
                       <div
@@ -738,54 +983,45 @@ export default function Index() {
                   </div>
                 </div>
 
-                {/* Grupo 2: As 5 Pendências Restantes */}
+                {/* Grupo 2: EXATAMENTE 2 Pendências Restantes */}
                 <div>
                   <h4 className="font-semibold text-amber-400 mb-2 flex items-center gap-1.5 text-sm">
                     <AlertTriangle className="w-4 h-4" />
-                    2. As 5 Pendências Restantes Pré-Fase 1 (Bloqueadoras da Fase 1):
+                    2. As EXATAMENTE 2 Pendências Restantes Pré-Fase 1 (Bloqueadoras):
                   </h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-slate-300">
                     {[
                       {
-                        title: '1. Rotação do Token EasyPanel',
-                        desc: 'Rotacionar no painel EasyPanel o token exposto ([TOKEN_REMOVIDO_E_ROTACIONADO]).',
-                        badge: 'Pendente Operador',
+                        title: '1. Rotação do Token EasyPanel Exposto',
+                        desc: 'O operador deve rotacionar no painel EasyPanel o token de deploy/API que apareceu em relatórios anteriores deste projeto (marcador: [TOKEN_REMOVIDO_E_ROTACIONADO]).',
+                        badge: 'EXPOSTO - ROTACIONAR',
+                        variant: 'destructive' as const,
                       },
                       {
-                        title: '2. Análise de src/routes/provas.js',
-                        desc: 'Operador enviará o arquivo real de provas (arquivo ainda não recebido) para análise.',
+                        title: '2. Screenshots Desktop e Celular do Player',
+                        desc: 'Capturas de tela reais da área de membros de referência (Adapta) a serem enviadas pelo operador para guiar o visual definitivo e responsivo.',
                         badge: 'Aguardando Envio',
-                      },
-                      {
-                        title: '3. Screenshots Desktop e Celular do Player',
-                        desc: 'Capturas de tela da área de membros de referência (Adapta) a serem enviadas.',
-                        badge: 'Aguardando Envio',
-                      },
-                      {
-                        title: '4. Confirmação da Versão Real do Node',
-                        desc: 'Esclarecer falha OCI (exec node not found — runtime pode não ser Node) na VPS.',
-                        badge: 'Pendente Diagnóstico',
-                      },
-                      {
-                        title: '5. Confirmação sobre Migrations PostgreSQL',
-                        desc: 'Validar se comandos de migration.sql da raiz já foram rodados no Postgres 17.',
-                        badge: 'Pendente Confirmação',
+                        variant: 'outline' as const,
                       },
                     ].map((item, idx) => (
                       <div
                         key={idx}
-                        className="p-3 rounded bg-slate-950/80 border border-amber-900/40 space-y-1"
+                        className="p-3.5 rounded bg-slate-950/80 border border-amber-900/40 space-y-2"
                       >
                         <div className="flex items-center justify-between">
-                          <strong className="text-white">{item.title}</strong>
+                          <strong className="text-white text-sm">{item.title}</strong>
                           <Badge
-                            variant="outline"
-                            className="text-[10px] border-amber-500/40 text-amber-300 shrink-0"
+                            variant={item.variant}
+                            className={`text-[10px] shrink-0 ${
+                              item.variant === 'destructive'
+                                ? 'bg-red-500/20 text-red-300 border-red-500/30'
+                                : 'border-amber-500/40 text-amber-300'
+                            }`}
                           >
                             {item.badge}
                           </Badge>
                         </div>
-                        <p className="text-slate-400 text-[11px]">{item.desc}</p>
+                        <p className="text-slate-400 text-[11px] leading-relaxed">{item.desc}</p>
                       </div>
                     ))}
                   </div>
