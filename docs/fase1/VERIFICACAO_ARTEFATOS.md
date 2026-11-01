@@ -18,13 +18,13 @@ O operador da VPS exige as somas de verificação SHA-256 completas dos **6 arqu
 ──────────────────────────────────────────────────────────────────────────────────────────────────
 HASH SHA-256                                                      ARQUIVO
 ──────────────────────────────────────────────────────────────────────────────────────────────────
-(conferir via sha256sum na VPS / Seção 1.1)                       docs/fase1/stream.js (com guard READ_ONLY_TEST)
+2be71f49646bde330ec0c822ff611be9e173e44c2057d23f381c81ef94e1e07b  docs/fase1/stream.js (com guard READ_ONLY_TEST)
 3d9501a300d8b4e7a3ec11cc0a66d548f7663e6e87f2e1a47321e06fa536f0e4  docs/fase1/NOVO_PAINEL/painel-mentor.html
 168e37dc0bd59a16f272a8c3d8e578ba33cd7c768991fa9a7ffccbe5b9bc5d11  docs/fase1/INTEGRACAO_FASE1.md
 e9b2513de5553e1e40eb617b7b15a6b5a3e1438fa5a48483f3e27150a294f4a3  docs/fase1/PROPOSTA_PROVAS.md
 3312c1404c0429fec033bd2f27ddc54aa5017e2978931dc150c95029a502f664  docs/fase1/REVISAO_FASE1.md
-(ver comando sha256sum na Seção 1.1)                              docs/fase1/TESTE_PRE_HOMOLOGACAO_VPS.md
-(ver comando sha256sum na Seção 1.1)                              docs/operacoes/testar-fase1-vps.sh
+38a6ec1552a46e1074e50d536cf0ba7493eef250bc44618e7751c8a14ec7a59a  docs/fase1/TESTE_PRE_HOMOLOGACAO_VPS.md
+e927c9c054238e55eefea2b27429bb7b05cdcd5d1ec5ce1e6e0261c470196253  docs/operacoes/testar-fase1-vps.sh
 ──────────────────────────────────────────────────────────────────────────────────────────────────
 ```
 
