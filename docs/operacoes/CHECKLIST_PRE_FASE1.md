@@ -42,11 +42,25 @@ Estes itens foram executados e atestados formalmente pelo **OPERADOR DA VPS**:
 
 ---
 
-## 3. A ÚNICA PENDÊNCIA EXTERNA RESTANTE PRÉ-FASE 1 (EXATAMENTE 1 ITEM RESTANTE)
+## 3. SITUAÇÃO DAS PENDÊNCIAS EXTERNAS (SUBSTITUIÇÃO DE SCREENSHOTS PELO MOCK APROVADO)
 
-Com a resolução e confirmação pelo operador do **Backup e Dry-Run**, do **Redis RDB**, do **Inventário EasyPanel**, da **Rotação da Chave API do EasyPanel**, do **Runtime Node v20.20.2**, do **PostgreSQL com Migrations aplicadas** e o recebimento/análise técnica de **`src/routes/provas.js`**, resta agora **EXATAMENTE 1 PENDÊNCIA EXTERNA**:
+Com a resolução e confirmação pelo operador do **Backup e Dry-Run**, do **Redis RDB**, do **Inventário EasyPanel**, da **Rotação da Chave API do EasyPanel**, do **Runtime Node v20.20.2**, do **PostgreSQL com Migrations aplicadas**, o recebimento/análise técnica de **`src/routes/provas.js`** e a **aprovação formal do mock visual do player pelo operador**:
 
-- [ ] **1. Screenshots Desktop e Celular do Player de Referência:** Capturas de tela REAIS da área de membros do player de referência (`https://alunos.adapta.org/area/conteudo/aula/7869245` — os screenshots enviados anteriormente exibiam apenas o painel do EasyPanel de API keys, não o player). O operador deve enviar capturas reais mostrando: organização visual, posição do player, lista de módulos, aula atual, progresso, navegação, materiais, responsividade, estados de carregamento, erro de reprodução e conclusão da aula (e, se disponíveis, módulos abertos e progresso/conclusão). **NUNCA copiar código, imagens, textos, scripts, estilos ou identidade visual**.
+- [x] **1. Referência Visual do Player Aprovada pelo Operador (CONCLUÍDA):**  
+      A pendência de screenshots externos da plataforma Adapta fica formal e integralmente **SUBSTITUÍDA pelo mock conceitual aprovado pelo operador** no workspace do GoSkip.  
+      O operador declarou: _"O mock enviado deve ser considerado a referência visual desejada para o novo player do painel/aluno de Cursos."_  
+      Elementos aprovados: player principal à esquerda; matriz curricular à direita com progresso percentual; lista de aulas com duração; aula atual destacada; botões anterior e próxima aula; materiais de apoio; indicação de quiz; suporte visual para vídeo local VPS, YouTube e OneDrive.  
+      **7 Ressalvas do Operador Registradas:**
+  1. O mock é conceitual.
+  2. O mock foi produzido no workspace do GoSkip.
+  3. O mock não representa uma captura real da página externa.
+  4. A implementação deverá usar os dados e rotas reais do projeto Cursos.
+  5. O player deverá preservar /stream/{id}, video_path, vídeos locais, YouTube, Cloudinary e OneDrive.
+  6. O player deverá funcionar em desktop e celular.
+  7. O progresso, módulos, duração, materiais e navegação deverão vir dos dados reais do backend.  
+     _Diretriz:_ Considerar esta referência visual suficiente para planejar a Fase 1, mas não iniciar a Fase 1 sem autorização expressa do operador.
+
+- **Pendências Externas Restantes:** **NENHUMA**. Todas as pendências técnicas da Fase 0 estão resolvidas.
 
 ---
 
@@ -70,7 +84,8 @@ Data e Hora: __________________________________________________
 Frase Exata Enviada: "Autorizo iniciar a Fase 1 da reescrita do painel do mentor."
 Snapshot de Backup Validado: /root/backups/cursos/20261031_195147 (SHA-256 OK, Redis RDB OK)
 Token EasyPanel Rotacionado: [x] SIM (Revogado e recriado pelo operador; marcador [TOKEN_REMOVIDO_E_ROTACIONADO])
-Screenshots Reais do Player Recebidos: [ ] SIM  [ ] NÃO
+Referência Visual do Player: [x] APROVADA PELO OPERADOR (Mock conceitual aprovado; screenshots externos substituídos)
+Pendências Externas Restantes: NENHUMA (Aguardando apenas autorização expressa com a frase exata acima)
 
 --- VALIDAÇÕES PRÉVIAS JÁ CONCLUÍDAS PELO OPERADOR E AUDITORIA ---
 Runtime Node.js: [x] CONFIRMADO Node v20.20.2 (container cursos-api_cursos-api.1.jsmxpl7rmip278eajgb5f5ms4)
@@ -78,4 +93,5 @@ PostgreSQL & Migrations: [x] CONFIRMADO tabela cursos completa, migration aplica
 Arquivo provas.js: [x] RECEBIDO E ANALISADO (rotas GET/POST/PUT/DELETE, apenasMentor, transação BEGIN/COMMIT; não alterar)
 Backup Redis RDB: [x] CONFIRMADO (redis-dump.rdb, zero chaves, zero expirações)
 Token EasyPanel: [x] CONFIRMADO ROTACIONADO (chave antiga revogada, nova criada; [TOKEN_REMOVIDO_E_ROTACIONADO])
+Referência Visual Player: [x] APROVADA (Mock conceitual do workspace com as 7 ressalvas literais do operador)
 ```

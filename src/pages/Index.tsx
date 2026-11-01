@@ -82,8 +82,8 @@ export default function Index() {
           <p className="text-slate-400 text-sm mt-1">
             Governança rigorosa: Inventário EasyPanel da VPS incorporado, Backup e Dry-Run atestados
             pelo operador, Token EasyPanel rotacionado, Node v20.20.2 e Migrations confirmados,
-            análise de provas.js concluída e EXATAMENTE 1 pendência externa restante (Screenshots do
-            player).
+            análise de provas.js concluída e Referência Visual do Player APROVADA pelo operador
+            (Zero pendências externas).
           </p>
         </div>
 
@@ -117,8 +117,9 @@ export default function Index() {
               <strong>OPERADOR</strong>.
             </p>
             <p className="text-xs text-amber-300/80 font-mono">
-              A Fase 1 permanece bloqueada aguardando exatamente a ÚNICA pendência externa restante
-              (screenshots reais do player) e o envio da frase exata de autorização pelo operador.
+              A Fase 1 permanece bloqueada aguardando exclusivamente a autorização expressa do
+              operador com o envio da frase exata: &ldquo;Autorizo iniciar a Fase 1 da reescrita do
+              painel do mentor.&rdquo;
             </p>
           </AlertDescription>
         </Alert>
@@ -224,7 +225,7 @@ export default function Index() {
               className="data-[state=active]:bg-blue-600 data-[state=active]:text-white font-semibold flex items-center gap-1.5"
             >
               <ListChecks className="w-4 h-4" />
-              Checklist &bull; 1 Pendência Restante
+              Checklist Pré-Fase 1
             </TabsTrigger>
             <TabsTrigger
               value="commits_seguranca"
@@ -256,10 +257,10 @@ export default function Index() {
             </TabsTrigger>
             <TabsTrigger
               value="player"
-              className="data-[state=active]:bg-slate-800 data-[state=active]:text-white flex items-center gap-1.5"
+              className="data-[state=active]:bg-blue-600 data-[state=active]:text-white font-semibold flex items-center gap-1.5"
             >
               <Play className="w-4 h-4" />
-              Mock Player (Adapta)
+              Player — Referência Aprovada
             </TabsTrigger>
           </TabsList>
 
@@ -935,12 +936,12 @@ export default function Index() {
                     </Badge>
                     <CardTitle className="text-lg text-white flex items-center gap-2">
                       <ListChecks className="w-5 h-5 text-blue-400" />
-                      Checklist: Validações Concluídas vs. EXATAMENTE 1 Pendência Externa Restante
+                      Checklist: Validações Concluídas &bull; Zero Pendências Externas
                     </CardTitle>
                     <CardDescription className="text-slate-400 text-xs mt-1">
-                      Backup, Redis, Inventário, Token EasyPanel, Node v20.20.2, Migrations e
-                      provas.js concluídos. Resta unicamente o envio dos screenshots reais do
-                      player.
+                      Backup, Redis, Inventário, Token EasyPanel, Node v20.20.2, Migrations,
+                      provas.js e Referência Visual do Player aprovados. Aguardando apenas
+                      autorização expressa.
                     </CardDescription>
                   </div>
                   <Button
@@ -973,6 +974,7 @@ export default function Index() {
                       'PostgreSQL: tabela cursos possui todas as 8 colunas; migration aplicada; NÃO reexecutar migration.sql',
                       'src/routes/provas.js recebido e integralmente analisado (5 rotas, transação BEGIN/COMMIT; NÃO alterar)',
                       'Branch correcao-fluxo-cursos e commit base 47aa7b1 inalterados; commits GoSkip segregados (não publicar)',
+                      'Referência Visual do Player APROVADA: mock conceitual aprovado com 7 ressalvas; screenshots externos substituídos',
                     ].map((item, idx) => (
                       <div
                         key={idx}
@@ -985,39 +987,34 @@ export default function Index() {
                   </div>
                 </div>
 
-                {/* Grupo 2: A ÚNICA Pendência Externa Restante */}
+                {/* Grupo 2: Referência Visual Aprovada (Substituição de Screenshots) */}
                 <div>
-                  <h4 className="font-semibold text-amber-400 mb-2 flex items-center gap-1.5 text-sm">
-                    <AlertTriangle className="w-4 h-4" />
-                    2. A ÚNICA Pendência Externa Restante Pré-Fase 1 (Bloqueadora):
+                  <h4 className="font-semibold text-emerald-400 mb-2 flex items-center gap-1.5 text-sm">
+                    <CheckCircle2 className="w-4 h-4" />
+                    2. Situação das Pendências Externas (Zero Pendências Restantes):
                   </h4>
-                  <div className="p-3.5 rounded bg-slate-950/80 border border-amber-900/40 space-y-2">
+                  <div className="p-3.5 rounded bg-slate-950/80 border border-emerald-900/40 space-y-2">
                     <div className="flex items-center justify-between">
                       <strong className="text-white text-sm">
-                        1. Screenshots Desktop e Celular do Player de Referência (Adapta)
+                        Referência Visual do Player: MOCK CONCEITUAL APROVADO PELO OPERADOR
                       </strong>
-                      <Badge
-                        variant="outline"
-                        className="text-[10px] shrink-0 border-amber-500/40 text-amber-300"
-                      >
-                        Aguardando Envio pelo Operador
+                      <Badge className="text-[10px] shrink-0 bg-emerald-500/20 text-emerald-300 border-emerald-500/30">
+                        Aprovado pelo Operador ✓
                       </Badge>
                     </div>
-                    <p className="text-slate-400 text-[11px] leading-relaxed">
-                      Capturas de tela REAIS da área de membros do player de referência (
-                      <span className="text-slate-300 font-mono">
-                        https://alunos.adapta.org/area/conteudo/aula/7869245
-                      </span>
-                      ) a serem enviadas pelo operador. Os screenshots anteriores mostravam apenas o
-                      EasyPanel da chave API, não o player. Se disponíveis, enviar também telas com
-                      módulos abertos e progresso/conclusão.
+                    <p className="text-slate-300 text-[11px] leading-relaxed">
+                      O operador declarou:{' '}
+                      <em>
+                        &ldquo;O mock enviado deve ser considerado a referência visual desejada para
+                        o novo player do painel/aluno de Cursos.&rdquo;
+                      </em>{' '}
+                      A pendência de screenshots da página externa foi <strong>SUBSTITUÍDA</strong>{' '}
+                      pelo mock conceitual com as 7 ressalvas literais registradas.
                     </p>
-                    <div className="p-2 bg-black/60 rounded border border-slate-800 text-[11px] text-amber-200">
-                      <strong>Diretriz de Uso da Referência Visual:</strong> Apenas para organização
-                      visual, posição do player, lista de módulos, aula atual, progresso, navegação,
-                      materiais, responsividade, estados de carregamento, erro de reprodução e
-                      conclusão da aula. <strong>NUNCA</strong> copiar código, imagens, textos,
-                      scripts, estilos ou identidade visual da Adapta.
+                    <div className="p-2 bg-black/60 rounded border border-slate-800 text-[11px] text-slate-300">
+                      <strong className="text-amber-300">Pendências Externas Restantes:</strong>{' '}
+                      <span className="text-emerald-400 font-semibold">NENHUMA</span>. O
+                      planejamento da Fase 1 possui referência visual suficiente.
                     </div>
                   </div>
                 </div>
@@ -1535,36 +1532,56 @@ export default function Index() {
             </div>
           </TabsContent>
 
-          {/* Aba: Mock Player (Adapta) */}
+          {/* Aba: Player — Referência Aprovada */}
           <TabsContent value="player" className="space-y-6 mt-6">
             <Card className="bg-slate-900 border-slate-800">
               <CardHeader>
                 <div className="flex items-center justify-between flex-wrap gap-2">
                   <div>
+                    <div className="flex items-center gap-2 mb-2 flex-wrap">
+                      <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/40 text-xs font-semibold">
+                        MOCK CONCEITUAL — referência aprovada pelo operador; dados e rotas reais na
+                        Fase 1
+                      </Badge>
+                      <Badge variant="outline" className="border-blue-500/40 text-blue-400 text-xs">
+                        Responsivo: Desktop &bull; Celular
+                      </Badge>
+                    </div>
                     <CardTitle className="text-xl text-white flex items-center gap-2">
                       <Sparkles className="w-5 h-5 text-amber-400" />
-                      Mock do Player Interativo (Inspirado na Referência Adapta)
+                      Player de Cursos &bull; Referência Visual Aprovada (Fase 1)
                     </CardTitle>
-                    <CardDescription className="text-slate-400 mt-1 text-xs">
-                      Declaração de Limitação: Mock conceitual baseado em descrição funcional. Os
-                      screenshots reais do player de referência serão enviados separadamente pelo
-                      operador.
+                    <CardDescription className="text-slate-300 mt-1 text-xs">
+                      Proposta visual oficial aprovada pelo operador para o novo player do
+                      painel/aluno. Player principal à esquerda, matriz curricular à direita,
+                      progresso %, aula destacada, duração, navegação sequencial, materiais de
+                      apoio, indicação de quiz e selos de suporte para vídeo local VPS / YouTube /
+                      OneDrive.
                     </CardDescription>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-xs text-slate-400 font-medium">Fonte de Vídeo:</span>
                     <Button
                       size="sm"
                       variant={selectedVideoSource === 'vps' ? 'default' : 'outline'}
                       onClick={() => setSelectedVideoSource('vps')}
-                      className="text-xs"
+                      className={`text-xs ${
+                        selectedVideoSource === 'vps'
+                          ? 'bg-blue-600 hover:bg-blue-500 text-white'
+                          : 'border-slate-700 bg-slate-950 text-slate-300'
+                      }`}
                     >
-                      Vídeo Local VPS
+                      Vídeo Local VPS (/stream/id)
                     </Button>
                     <Button
                       size="sm"
                       variant={selectedVideoSource === 'youtube' ? 'default' : 'outline'}
                       onClick={() => setSelectedVideoSource('youtube')}
-                      className="text-xs"
+                      className={`text-xs ${
+                        selectedVideoSource === 'youtube'
+                          ? 'bg-red-600 hover:bg-red-500 text-white'
+                          : 'border-slate-700 bg-slate-950 text-slate-300'
+                      }`}
                     >
                       YouTube
                     </Button>
@@ -1572,148 +1589,336 @@ export default function Index() {
                       size="sm"
                       variant={selectedVideoSource === 'onedrive' ? 'default' : 'outline'}
                       onClick={() => setSelectedVideoSource('onedrive')}
-                      className="text-xs"
+                      className={`text-xs ${
+                        selectedVideoSource === 'onedrive'
+                          ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
+                          : 'border-slate-700 bg-slate-950 text-slate-300'
+                      }`}
                     >
                       OneDrive
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant={selectedVideoSource === 'cloudinary' ? 'default' : 'outline'}
+                      onClick={() => setSelectedVideoSource('cloudinary')}
+                      className={`text-xs ${
+                        selectedVideoSource === 'cloudinary'
+                          ? 'bg-purple-600 hover:bg-purple-500 text-white'
+                          : 'border-slate-700 bg-slate-950 text-slate-300'
+                      }`}
+                    >
+                      Cloudinary
                     </Button>
                   </div>
                 </div>
               </CardHeader>
               <CardContent className="space-y-6">
+                {/* Banner de Rótulo e Ressalvas do Operador */}
+                <div className="p-3.5 rounded-lg bg-blue-950/30 border border-blue-800/40 space-y-2">
+                  <div className="flex items-center justify-between flex-wrap gap-2">
+                    <span className="font-bold text-blue-300 text-xs flex items-center gap-1.5 uppercase tracking-wide">
+                      <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                      MOCK CONCEITUAL &bull; REFERÊNCIA VISUAL APROVADA PELO OPERADOR
+                    </span>
+                    <Badge
+                      variant="outline"
+                      className="text-[10px] border-amber-500/40 text-amber-300"
+                    >
+                      Fase 1: Somente com autorização expressa
+                    </Badge>
+                  </div>
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    <em>
+                      &ldquo;O mock enviado deve ser considerado a referência visual desejada para o
+                      novo player do painel/aluno de Cursos.&rdquo;
+                    </em>
+                  </p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 text-[11px] text-slate-300 pt-1">
+                    <div className="p-2 rounded bg-black/40 border border-slate-800">
+                      <strong>1-3.</strong> Mock conceitual produzido no GoSkip (sem captura real de
+                      página externa).
+                    </div>
+                    <div className="p-2 rounded bg-black/40 border border-slate-800">
+                      <strong>4-5.</strong> Dados e rotas reais do projeto Cursos; preserva{' '}
+                      <code>/stream/&#123;id&#125;</code>, <code>video_path</code>, VPS, YouTube,
+                      Cloudinary e OneDrive.
+                    </div>
+                    <div className="p-2 rounded bg-black/40 border border-slate-800">
+                      <strong>6-7.</strong> Suporte desktop e celular; progresso, módulos, duração e
+                      materiais virão do backend real.
+                    </div>
+                  </div>
+                </div>
+
+                {/* Grade Principal do Player: Player à esquerda, Matriz Curricular à direita */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 border border-slate-800 rounded-lg overflow-hidden bg-slate-950 p-4">
+                  {/* Coluna 1 & 2: Player Principal à Esquerda (2 colunas no desktop) */}
                   <div className="lg:col-span-2 space-y-4">
+                    {/* Área do Vídeo 16:9 com Controles e Selo */}
                     <div className="relative aspect-video bg-black rounded-lg overflow-hidden border border-slate-800 flex items-center justify-center group shadow-2xl">
+                      {/* Selo do Formato Ativo no Player */}
+                      <div className="absolute top-3 left-3 z-10 flex items-center gap-1.5 bg-black/80 backdrop-blur px-2.5 py-1 rounded border border-slate-800 text-[11px]">
+                        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                        <span className="text-slate-300 font-medium">
+                          {selectedVideoSource === 'vps' && 'Vídeo Local VPS (/stream/:aulaId)'}
+                          {selectedVideoSource === 'youtube' && 'YouTube Embed Canônico'}
+                          {selectedVideoSource === 'onedrive' && 'Microsoft Graph / OneDrive'}
+                          {selectedVideoSource === 'cloudinary' && 'Cloudinary Stream HLS/MP4'}
+                        </span>
+                      </div>
+
+                      {/* Botão de Tela Cheia / Resolução */}
+                      <div className="absolute top-3 right-3 z-10 flex items-center gap-1 bg-black/80 backdrop-blur px-2 py-1 rounded border border-slate-800 text-[10px] text-slate-300">
+                        <Badge
+                          variant="outline"
+                          className="text-[9px] border-slate-700 text-slate-300 py-0"
+                        >
+                          1080p
+                        </Badge>
+                        <span className="text-slate-400">1.0x</span>
+                      </div>
+
                       {selectedVideoSource === 'vps' && (
                         <div className="text-center p-6 space-y-2">
-                          <Play className="w-12 h-12 text-blue-500 mx-auto opacity-80 group-hover:scale-110 transition-transform" />
+                          <Play className="w-14 h-14 text-blue-500 mx-auto opacity-80 group-hover:scale-110 transition-transform cursor-pointer" />
                           <p className="text-sm font-semibold text-slate-200">
-                            Reprodução de Vídeo Local (VPS /stream/27)
+                            Streaming Local VPS via HTTP Range (206 Partial Content)
                           </p>
-                          <p className="text-xs text-slate-400">
-                            Protocolo HTTP Range (206 Partial Content) &bull; Arquivo:{' '}
-                            <span className="font-mono text-emerald-400">37/aula-27.mp4</span>
+                          <p className="text-xs text-slate-400 font-mono">
+                            Endpoint: <span className="text-blue-400">GET /stream/27</span> &bull;
+                            Caminho VPS:{' '}
+                            <span className="text-emerald-400">/app/videos/37/aula-27.mp4</span>
                           </p>
+                          <div className="flex items-center justify-center gap-2 pt-2">
+                            <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30 text-[10px]">
+                              Range: bytes=0-1048576 ✓
+                            </Badge>
+                            <Badge className="bg-blue-500/20 text-blue-300 border-blue-500/30 text-[10px]">
+                              Mentor Autorizado ✓
+                            </Badge>
+                          </div>
                         </div>
                       )}
 
                       {selectedVideoSource === 'youtube' && (
                         <div className="text-center p-6 space-y-2">
-                          <Video className="w-12 h-12 text-red-500 mx-auto opacity-80" />
+                          <Video className="w-14 h-14 text-red-500 mx-auto opacity-80 group-hover:scale-110 transition-transform cursor-pointer" />
                           <p className="text-sm font-semibold text-slate-200">
-                            Embed Oficial YouTube
+                            Embed Oficial YouTube sem Distrações
                           </p>
-                          <p className="text-xs text-slate-400">
-                            Suporte a ID e URL canônica com player limpo
+                          <p className="text-xs text-slate-400 font-mono">
+                            ID: <span className="text-red-400">dQw4w9WgXcQ</span> &bull; Parâmetros:{' '}
+                            <span className="text-slate-300">rel=0&amp;modestbranding=1</span>
                           </p>
+                          <div className="flex items-center justify-center gap-2 pt-2">
+                            <Badge className="bg-red-500/20 text-red-300 border-red-500/30 text-[10px]">
+                              IFrame API Oficial
+                            </Badge>
+                          </div>
                         </div>
                       )}
 
                       {selectedVideoSource === 'onedrive' && (
                         <div className="text-center p-6 space-y-2">
-                          <ExternalLink className="w-12 h-12 text-cyan-500 mx-auto opacity-80" />
+                          <ExternalLink className="w-14 h-14 text-cyan-500 mx-auto opacity-80 group-hover:scale-110 transition-transform cursor-pointer" />
                           <p className="text-sm font-semibold text-slate-200">
-                            Streaming Microsoft Graph / OneDrive
+                            Streaming Autenticado Microsoft Graph / OneDrive
                           </p>
-                          <p className="text-xs text-slate-400">
-                            Pipe de stream autenticado via Graph Client
+                          <p className="text-xs text-slate-400 font-mono">
+                            DriveItem ID: <span className="text-cyan-400">01ABCDEF123456789</span>{' '}
+                            &bull; Token Seguro
                           </p>
+                          <div className="flex items-center justify-center gap-2 pt-2">
+                            <Badge className="bg-cyan-500/20 text-cyan-300 border-cyan-500/30 text-[10px]">
+                              MS Graph Client Pipe
+                            </Badge>
+                          </div>
+                        </div>
+                      )}
+
+                      {selectedVideoSource === 'cloudinary' && (
+                        <div className="text-center p-6 space-y-2">
+                          <Sparkles className="w-14 h-14 text-purple-500 mx-auto opacity-80 group-hover:scale-110 transition-transform cursor-pointer" />
+                          <p className="text-sm font-semibold text-slate-200">
+                            Cloudinary Video Delivery (HLS / MP4 Otimizado)
+                          </p>
+                          <p className="text-xs text-slate-400 font-mono">
+                            Public ID: <span className="text-purple-400">cursos/aulas/aula-27</span>
+                          </p>
+                          <div className="flex items-center justify-center gap-2 pt-2">
+                            <Badge className="bg-purple-500/20 text-purple-300 border-purple-500/30 text-[10px]">
+                              Adaptive Bitrate Streaming
+                            </Badge>
+                          </div>
                         </div>
                       )}
                     </div>
 
-                    <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+                    {/* Barra de Ações Imediatas: Título da Aula e Navegação Anterior / Próxima */}
+                    <div className="flex items-center justify-between border-b border-slate-800 pb-4 flex-wrap gap-2">
                       <div>
-                        <span className="text-xs font-semibold text-blue-400 uppercase tracking-wider">
-                          Módulo 1 &bull; Aula 27
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-semibold text-blue-400 uppercase tracking-wider">
+                            Módulo 1 &bull; Aula 27 (Atual)
+                          </span>
+                          <Badge className="bg-blue-500/20 text-blue-300 border-blue-500/30 text-[10px]">
+                            Duração: 14:20
+                          </Badge>
+                        </div>
                         <h2 className="text-lg font-bold text-white mt-1">
-                          Introdução à Liderança e Fundamentos
+                          27. Introdução à Liderança e Fundamentos Ministeriais
                         </h2>
                       </div>
-                      <div className="flex gap-2">
+                      <div className="flex items-center gap-2">
                         <Button
                           size="sm"
                           variant="outline"
-                          className="border-slate-700 bg-slate-900 text-xs"
+                          className="border-slate-700 bg-slate-900 hover:bg-slate-800 text-slate-200 text-xs"
                         >
-                          Anterior
+                          &larr; Aula Anterior
                         </Button>
-                        <Button size="sm" className="bg-blue-600 hover:bg-blue-500 text-xs">
-                          Próxima Aula
+                        <Button
+                          size="sm"
+                          className="bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold"
+                        >
+                          Próxima Aula &rarr;
                         </Button>
                       </div>
                     </div>
 
-                    <div className="bg-slate-900/60 p-4 rounded-lg border border-slate-800">
-                      <h4 className="text-sm font-semibold text-slate-200 mb-2 flex items-center gap-2">
-                        <FileText className="w-4 h-4 text-amber-400" />
-                        Materiais de Apoio (PDF Complementar)
-                      </h4>
-                      <div className="flex items-center justify-between p-2.5 rounded bg-slate-950 border border-slate-800 text-xs">
-                        <span className="text-slate-300 font-medium">
-                          Apostila_Modulo_1_Lideranca.pdf (4.2 MB)
-                        </span>
+                    {/* Seção de Materiais de Apoio */}
+                    <div className="bg-slate-900/60 p-4 rounded-lg border border-slate-800 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <h4 className="text-sm font-semibold text-slate-200 flex items-center gap-2">
+                          <FileText className="w-4 h-4 text-amber-400" />
+                          Materiais de Apoio da Aula
+                        </h4>
+                        <Badge
+                          variant="outline"
+                          className="text-[10px] border-slate-700 text-slate-400"
+                        >
+                          1 Arquivo Disponível
+                        </Badge>
+                      </div>
+                      <div className="flex items-center justify-between p-3 rounded bg-slate-950 border border-slate-800 text-xs">
+                        <div className="flex items-center gap-2">
+                          <FileText className="w-4 h-4 text-red-400 shrink-0" />
+                          <div>
+                            <span className="text-slate-200 font-medium block">
+                              Apostila_Modulo_1_Lideranca_Fundamentos.pdf
+                            </span>
+                            <span className="text-[10px] text-slate-400">
+                              PDF complementar &bull; 4.2 MB
+                            </span>
+                          </div>
+                        </div>
                         <Button
                           size="sm"
                           variant="ghost"
-                          className="text-blue-400 hover:text-blue-300 h-7 text-xs"
+                          className="text-blue-400 hover:text-blue-300 hover:bg-blue-950/40 h-8 text-xs font-semibold"
                         >
-                          Download
+                          Download PDF
                         </Button>
                       </div>
                     </div>
                   </div>
 
+                  {/* Coluna 3: Painel de Matriz Curricular à Direita */}
                   <div className="border border-slate-800 rounded-lg p-4 bg-slate-900/80 space-y-4">
-                    <div className="flex items-center justify-between">
-                      <h3 className="font-bold text-sm text-white flex items-center gap-2">
-                        <Layers className="w-4 h-4 text-blue-400" />
-                        Matriz Curricular
-                      </h3>
-                      <Badge
-                        variant="outline"
-                        className="text-[10px] border-emerald-500/40 text-emerald-400"
-                      >
-                        85% Concluído
-                      </Badge>
-                    </div>
-
-                    <div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
-                      <div className="bg-blue-500 h-full w-[85%]" />
-                    </div>
-
-                    <div className="space-y-1.5 text-xs">
-                      <div className="p-2.5 rounded bg-blue-950/40 border border-blue-500/30 text-white flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                          <span className="font-medium">27. Introdução à Liderança</span>
-                        </div>
-                        <span className="text-[10px] text-blue-300 font-mono">14:20</span>
+                    {/* Cabeçalho da Matriz com Progresso Percentual */}
+                    <div className="space-y-2 border-b border-slate-800 pb-3">
+                      <div className="flex items-center justify-between">
+                        <h3 className="font-bold text-sm text-white flex items-center gap-2">
+                          <Layers className="w-4 h-4 text-blue-400" />
+                          Matriz Curricular
+                        </h3>
+                        <Badge
+                          variant="outline"
+                          className="text-[11px] border-emerald-500/40 text-emerald-400 font-mono font-bold"
+                        >
+                          85% Concluído
+                        </Badge>
                       </div>
 
-                      <div className="p-2.5 rounded bg-slate-950/50 hover:bg-slate-900 border border-slate-800 text-slate-300 flex items-center justify-between cursor-pointer">
+                      <div className="space-y-1">
+                        <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                          <div className="bg-emerald-500 h-full w-[85%] rounded-full transition-all" />
+                        </div>
+                        <div className="flex justify-between text-[10px] text-slate-400">
+                          <span>3 de 4 aulas concluídas</span>
+                          <span>1 Quiz pendente</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Lista Sequencial de Aulas */}
+                    <div className="space-y-2 text-xs">
+                      {/* Aula 27: Ativa / Destacada */}
+                      <div className="p-3 rounded-lg bg-blue-950/50 border-2 border-blue-500/60 text-white shadow-md space-y-1">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <span className="w-2 h-2 rounded-full bg-blue-400 animate-ping" />
+                            <span className="font-bold text-blue-200">
+                              27. Introdução à Liderança
+                            </span>
+                          </div>
+                          <Badge className="bg-blue-500/30 text-blue-200 border-blue-400/40 text-[9px] uppercase">
+                            Em Reprodução
+                          </Badge>
+                        </div>
+                        <div className="flex items-center justify-between text-[11px] text-slate-300 pl-4">
+                          <span className="flex items-center gap-1 text-slate-400">
+                            <Clock className="w-3 h-3 text-slate-400" /> 14:20
+                          </span>
+                          <span className="text-emerald-400 font-medium">Vídeo Local VPS</span>
+                        </div>
+                      </div>
+
+                      {/* Aula 28: Concluída */}
+                      <div className="p-2.5 rounded-lg bg-slate-950/50 hover:bg-slate-900 border border-slate-800 text-slate-300 flex items-center justify-between cursor-pointer transition-colors">
                         <div className="flex items-center gap-2">
                           <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                          <span>28. Comunicação Pastoral Eficaz</span>
+                          <span className="font-medium">28. Comunicação Pastoral Eficaz</span>
                         </div>
                         <span className="text-[10px] text-slate-500 font-mono">18:45</span>
                       </div>
 
-                      <div className="p-2.5 rounded bg-slate-950/50 hover:bg-slate-900 border border-slate-800 text-slate-300 flex items-center justify-between cursor-pointer">
+                      {/* Aula 29: Concluída */}
+                      <div className="p-2.5 rounded-lg bg-slate-950/50 hover:bg-slate-900 border border-slate-800 text-slate-300 flex items-center justify-between cursor-pointer transition-colors">
                         <div className="flex items-center gap-2">
-                          <Clock className="w-4 h-4 text-slate-500 shrink-0" />
-                          <span>29. Planejamento Estratégico</span>
+                          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                          <span className="font-medium">29. Planejamento Estratégico</span>
                         </div>
                         <span className="text-[10px] text-slate-500 font-mono">22:10</span>
                       </div>
 
-                      <div className="p-2.5 rounded bg-slate-950/50 hover:bg-slate-900 border border-slate-800 text-slate-300 flex items-center justify-between cursor-pointer">
+                      {/* Aula 30: Indicação de Quiz / Avaliação */}
+                      <div className="p-2.5 rounded-lg bg-amber-950/20 hover:bg-amber-950/30 border border-amber-800/40 text-slate-200 flex items-center justify-between cursor-pointer transition-colors">
                         <div className="flex items-center gap-2">
-                          <FileText className="w-4 h-4 text-amber-500 shrink-0" />
-                          <span>30. Avaliação e Prova do Módulo</span>
+                          <FileText className="w-4 h-4 text-amber-400 shrink-0" />
+                          <div>
+                            <span className="font-medium block text-amber-200">
+                              30. Prova do Módulo 1
+                            </span>
+                            <span className="text-[10px] text-slate-400">
+                              5 perguntas &bull; Nota mín. 60
+                            </span>
+                          </div>
                         </div>
-                        <span className="text-[10px] text-amber-400 font-medium">Quiz</span>
+                        <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/30 text-[10px] uppercase font-bold">
+                          Quiz
+                        </Badge>
                       </div>
+                    </div>
+
+                    {/* Nota de Governança sobre a Matriz */}
+                    <div className="p-2.5 rounded bg-slate-950/60 border border-slate-800 text-[10px] text-slate-400 space-y-1">
+                      <p className="font-semibold text-slate-300">Integração Real na Fase 1:</p>
+                      <p>
+                        Módulos, aulas, duração, progresso percentual e status de conclusão serão
+                        carregados das rotas <code>/aluno/cursos/:id/progresso</code> e{' '}
+                        <code>/mentor/cursos/:id/etapas</code>.
+                      </p>
                     </div>
                   </div>
                 </div>

@@ -15,7 +15,7 @@ Este documento registra a análise técnica completa, estruturada e exaustiva da
    - Backend Express (`src/routes/mentor.js`, `src/routes/etapas.js`, `src/routes/stream.js`, `src/routes/auth.js`, `src/routes/sso.js`, `src/routes/bridge-proxy.js`).
    - Frontend legado HTML/JS (`src/static/painel-mentor.html`).
    - Infraestrutura VPS: Armazenamento persistente `/srv/cursos/videos/{curso_id}/` montado no container em `/app/videos/`.
-   - Referência Visual e UX do Novo Player: Adapta Alunos (`https://alunos.adapta.org/area/conteudo/aula/7869245`).
+   - Referência Visual e UX do Novo Player: Mock visual conceitual do player aprovado pelo operador no workspace do GoSkip (substituindo pendência de screenshots da página externa).
 
 2. **Diagnóstico Principal:**
    - O painel legado em HTML/JS possui rotas funcionais para cadastro de cursos e etapas, porém contém vulnerabilidades de segurança (ex: mock codificado fixo da Aula 27 no `stream.js`, ausência de autorização no endpoint `/stream/:aulaId` para o mentor inspecionar seus próprios vídeos, falta de limpeza atômica em falhas de upload local, e duplicação de autenticação).
@@ -287,18 +287,18 @@ Quando a Fase 1 for expressamente autorizada, a rota de streaming será corrigid
 
 ## TABELA DE CLASSIFICAÇÃO DOS ITENS
 
-| Item                                           | Status                   | Justificativa / Observação                                                                                                                                        |
-| ---------------------------------------------- | ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Autenticação JWT e extração de token           | Funcionando              | Suporta Bearer, headers alternativos e query token                                                                                                                |
-| Middleware `apenasMentor`                      | Funcionando              | Checa `mentor_status = 'aprovado'` ou `role = 'admin'`                                                                                                            |
-| Isolamento de cursos por mentor                | Funcionando              | Queries filtram sempre por `mentor_id = req.usuario.id`                                                                                                           |
-| Upload de MP4 local para VPS                   | Funcionando parcialmente | Salva o arquivo e retorna o path, mas em erro de rename pode deixar rastro e falta confirmação de deleção de arquivo órfão                                        |
-| Streaming HTTP Range local                     | Com erro / Incompleto    | Dicionário estático `LOCAL_VIDEO_FILES = { 27: ... }` com path hardcoded para aula 27. Deve ler `aulas.video_path` dinamicamente do banco de dados                |
-| Autorização no `/stream/:aulaId` para o Mentor | Incompleto               | Rota exige que `usuario_id` esteja em `matriculas`. O mentor do curso não consegue pré-visualizar sua própria aula no player do painel sem estar matriculado nele |
-| Exclusão de vídeo local ao deletar etapa       | Inseguro / Parcial       | `path.resolve` é usado, mas falta trava explícita de escape de diretório antes de `fs.unlinkSync`                                                                 |
-| Trava de curso com alunos                      | Funcionando              | Impede edição se `total_matriculas > 0`                                                                                                                           |
-| Player de visualização no painel               | Incompleto               | O painel legado só exibia embed de YouTube em `<iframe>`; vídeos locais, OneDrive e Cloudinary ficavam sem pré-visualização completa                              |
-| UX do Player e Módulos (Referência Adapta)     | Incompleto               | Referência Adapta tem sidebar com lista de aulas, progresso, player centralizado, tabs de materiais e navegação sequencial                                        |
+| Item                                           | Status                   | Justificativa / Observação                                                                                                                                                          |
+| ---------------------------------------------- | ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Autenticação JWT e extração de token           | Funcionando              | Suporta Bearer, headers alternativos e query token                                                                                                                                  |
+| Middleware `apenasMentor`                      | Funcionando              | Checa `mentor_status = 'aprovado'` ou `role = 'admin'`                                                                                                                              |
+| Isolamento de cursos por mentor                | Funcionando              | Queries filtram sempre por `mentor_id = req.usuario.id`                                                                                                                             |
+| Upload de MP4 local para VPS                   | Funcionando parcialmente | Salva o arquivo e retorna o path, mas em erro de rename pode deixar rastro e falta confirmação de deleção de arquivo órfão                                                          |
+| Streaming HTTP Range local                     | Com erro / Incompleto    | Dicionário estático `LOCAL_VIDEO_FILES = { 27: ... }` com path hardcoded para aula 27. Deve ler `aulas.video_path` dinamicamente do banco de dados                                  |
+| Autorização no `/stream/:aulaId` para o Mentor | Incompleto               | Rota exige que `usuario_id` esteja em `matriculas`. O mentor do curso não consegue pré-visualizar sua própria aula no player do painel sem estar matriculado nele                   |
+| Exclusão de vídeo local ao deletar etapa       | Inseguro / Parcial       | `path.resolve` é usado, mas falta trava explícita de escape de diretório antes de `fs.unlinkSync`                                                                                   |
+| Trava de curso com alunos                      | Funcionando              | Impede edição se `total_matriculas > 0`                                                                                                                                             |
+| Player de visualização no painel               | Incompleto               | O painel legado só exibia embed de YouTube em `<iframe>`; vídeos locais, OneDrive e Cloudinary ficavam sem pré-visualização completa                                                |
+| UX do Player e Módulos (Mock Aprovado)         | Referência Aprovada      | Mock conceitual do workspace aprovado pelo operador: player à esquerda, matriz curricular à direita, progresso %, aula destacada, anterior/próxima, materiais, quiz, selos de vídeo |
 
 ---
 
@@ -334,19 +334,55 @@ Quando a Fase 1 for expressamente autorizada, a rota de streaming será corrigid
 
 ---
 
-## ANÁLISE COMPARATIVA: NOVO PLAYER (REFERÊNCIA ADAPTA) E LIMITAÇÕES
+## ANÁLISE COMPARATIVA: NOVO PLAYER E MOCK CONCEITUAL APROVADO PELO OPERADOR
 
-> **DECLARAÇÃO DE LIMITAÇÃO OBRIGATÓRIA (ÚNICA PENDÊNCIA EXTERNA RESTANTE):**  
-> A análise da interface do player é baseada na especificação conceitual da plataforma Adapta Alunos (`https://alunos.adapta.org/area/conteudo/aula/7869245`), **NÃO na página real inspecionada diretamente pelo GoSkip**, uma vez que a URL exige autenticação restrita de aluno ativo.  
-> Os screenshots enviados anteriormente pelo operador mostravam apenas a tela do EasyPanel referente à chave API, e não a área de membros do player.  
-> O envio dos **SCREENSHOTS REAIS DO PLAYER** (desktop e celular; e, se disponíveis, módulos abertos e progresso/conclusão) é a **ÚNICA PENDÊNCIA EXTERNA RESTANTE**.  
-> **Diretrizes Estritas de Uso da Referência Visual:** A referência visual do player Adapta só deve ser utilizada para: organização visual, posição do player, lista de módulos, aula atual, progresso, navegação, materiais, responsividade, estados de carregamento, erro de reprodução e conclusão da aula. **NUNCA copiar código, imagens, textos, scripts, estilos ou identidade visual da Adapta**.
+### 1. Aprovação Formal do Mock pelo Operador como Referência Visual da Fase 1
 
-- **Layout Conceitual:** Estrutura limpa com tema escuro/elegante.
-- **Área Central:** Player em destaque (proporção 16:9) com controles de velocidade, tela cheia, qualidade e volume.
-- **Sidebar Retrátil:** Módulos expansíveis (accordion), checklist de aulas concluídas, ícone do tipo de mídia (vídeo, documento, quiz), duração e indicação da aula ativa.
-- **Abaixo do Player:** Título da aula, botão "Marcar como Concluída", navegação rápida "Aula Anterior" e "Próxima Aula", além de abas para "Descrição", "Materiais de Apoio (PDF)" e "Anotações/Dúvidas".
-- **Adaptação para o Painel do Mentor:** O mentor precisa de um modo de **Pré-visualização do Aluno** dentro do painel para testar suas aulas locais, YouTube, OneDrive e Cloudinary exatamente como o aluno verá, com botão de troca de etapa e teste de streaming.
+O operador da VPS enviou e aprovou o mock visual do novo player como referência de layout e experiência para a Fase 1. Em suas palavras literais:
+
+> _"O mock enviado deve ser considerado a referência visual desejada para o novo player do painel/aluno de Cursos."_
+
+A proposta visual aprovada contém:
+
+- **Player principal à esquerda** (proporção 16:9, controles de reprodução, badges de fonte e metadados).
+- **Painel de matriz curricular à direita** com:
+  - Progresso percentual visual do curso/módulo.
+  - Lista sequencial de aulas com duração informada.
+  - Aula atual destacada com estado ativo.
+  - Indicação clara de itens de quiz/avaliação.
+- **Botão aula anterior** e **botão próxima aula**.
+- **Seção de materiais de apoio** (ex: PDFs complementares para download).
+- **Suporte visual explícito aos formatos de vídeo suportados:**
+  - Vídeo local VPS (`/stream/{id}` e `video_path` com HTTP Range 206).
+  - YouTube (embed oficial).
+  - OneDrive / Microsoft Graph.
+  - Cloudinary.
+
+> **Regra de Propriedade Intelectual e UX:** Usar o mock como referência de layout e experiência, sem copiar código, imagens, textos, scripts ou identidade visual de terceiros.
+
+### 2. As 7 Ressalvas Literais do Operador
+
+A aprovação do mock pelo operador foi concedida com **7 ressalvas literais**, que ficam formalmente registradas e vinculantes para qualquer implementação futura:
+
+1. **O mock é conceitual.**
+2. **O mock foi produzido no workspace do GoSkip.**
+3. **O mock não representa uma captura real da página externa.**
+4. **A implementação deverá usar os dados e rotas reais do projeto Cursos.**
+5. **O player deverá preservar /stream/{id}, video_path, vídeos locais, YouTube, Cloudinary e OneDrive.**
+6. **O player deverá funcionar em desktop e celular.**
+7. **O progresso, módulos, duração, materiais e navegação deverão vir dos dados reais do backend.**
+
+> **Declaração de Suficiência e Trava da Fase 1:**  
+> **"Considerar esta referência visual suficiente para planejar a Fase 1, mas não iniciar a Fase 1 sem autorização expressa do operador."**
+
+### 3. Substituição da Pendência de Screenshots Externos
+
+A pendência prévia de envio de screenshots da referência externa (Adapta) fica formal e integralmente **SUBSTITUÍDA pelo mock aprovado**. A referência visual do projeto passa a ser o mock construído no workspace, não a página externa logada.
+
+Com essa substituição:
+
+- **Pendências Externas Restantes:** **NENHUMA** (todas as pendências técnicas da Fase 0 estão resolvidas: backup validado, dry-run concluído, Redis RDB íntegro, inventário EasyPanel mapeado, token EasyPanel rotacionado e sanitizado, Node v20.20.2 atestado, migrations confirmadas no PostgreSQL, `provas.js` analisado e referência visual do player aprovada).
+- **Condição Única para Iniciar a Fase 1:** Autorização expressa e formal do operador através da frase exata: `"Autorizo iniciar a Fase 1 da reescrita do painel do mentor."`
 
 ---
 
@@ -548,7 +584,7 @@ O arquivo oficial `src/routes/provas.js` foi fornecido pelo operador e incorpora
 
 ---
 
-## PENDÊNCIA RESTANTE PRÉ-FASE 1 (LISTA OFICIAL FINAL: EXATAMENTE 1 PENDÊNCIA EXTERNA RESTANTE)
+## SITUAÇÃO DAS PENDÊNCIAS PRÉ-FASE 1 (ZERO PENDÊNCIAS EXTERNAS RESTANTES)
 
 Com os avanços confirmados e formalmente atestados pelo **OPERADOR DA VPS** e pela auditoria da Fase 0:
 
@@ -560,14 +596,14 @@ Com os avanços confirmados e formalmente atestados pelo **OPERADOR DA VPS** e p
 - **Runtime Node.js:** Confirmado pelo operador como **Node v20.20.2** no container `cursos-api_cursos-api.1.jsmxpl7rmip278eajgb5f5ms4`. Dockerfile e documentações com Node 18 marcados como desatualizados (correção do Dockerfile é tema da Fase 1).
 - **PostgreSQL / Migrations Aplicadas:** Confirmado pelo operador no container `cursos-api_postgres.1.mpp4zqgnifgzjkh2y0hz9f4hm` que a tabela `cursos` já possui as 8 colunas (`video_url`, `video_type`, `video_public_id`, `thumbnail_url`, `confirmed_author`, `ia_score`, `matriz_curricular`, `subcategoria`). **Aviso explícito: NÃO reexecutar `migration.sql`**. Duplicidade de `matriz_curricular` a corrigir somente no código da migration, sem tocar no banco.
 - **Arquivo `src/routes/provas.js`:** Recebido, integralmente analisado e documentado na Seção Especial 8. O arquivo `provas.js` **NÃO deve ser alterado**.
+- **Referência Visual do Player (RESOLVIDA E APROVADA):** A pendência de screenshots externos foi **SUBSTITUÍDA** pelo mock conceitual aprovado pelo operador no workspace do GoSkip, contendo player à esquerda, matriz curricular à direita com progresso %, lista de aulas com duração, aula atual destacada, botões anterior/próxima aula, materiais de apoio, quiz e selos de suporte para vídeo local VPS / YouTube / OneDrive.
 - **Branch Oficial e Commit Base:** Branch exclusiva `correcao-fluxo-cursos` no repositório `github.com/ronydgarcia-max/cursos-api`; commit base estável `47aa7b1` (inalterado). Proibido usar branch `main` sem autorização expressa.
 - **Commits GoSkip de Workspace:** Commits `34df2d6`, `ecf1cc0` e `505e672` são restritos ao protótipo/documentação e **NÃO devem ser publicados na VPS**.
 
-Resta **EXATAMENTE 1 PENDÊNCIA EXTERNA RESTANTE** para a liberação da Fase 1:
+**Pendências Externas Restantes:** **NENHUMA**. Todas as pendências técnicas da Fase 0 estão resolvidas.
 
-1. **Screenshots Desktop e Celular do Player de Referência:** Envio pelo operador das capturas de tela REAIS da área de membros do player de referência (`https://alunos.adapta.org/area/conteudo/aula/7869245` — os screenshots enviados anteriormente exibiam apenas o painel do EasyPanel de API keys, não o player). A referência visual só deve ser usada para: organização visual, posição do player, lista de módulos, aula atual, progresso, navegação, materiais, responsividade, estados de carregamento, erro de reprodução, conclusão da aula — **NUNCA copiar código, imagens, textos, scripts, estilos ou identidade visual**. Se disponíveis, enviar também telas com módulos abertos e progresso/conclusão.
-
----
+> **AUTORIZAÇÃO DA FASE 1:** A Fase 1 permanece bloqueada aguardando **EXCLUSIVAMENTE** a autorização expressa do operador com o envio da frase exata:  
+> `"Autorizo iniciar a Fase 1 da reescrita do painel do mentor."`
 
 ---
 
@@ -581,6 +617,7 @@ Conforme regra estrita do operador, **nenhum código de produção é alterado n
 - `src/routes/etapas.js` (Protegido — inalterado)
 - `src/static/painel-mentor.html` (Protegido — inalterado)
 - `src/routes/stream.js` (Protegido — inalterado)
+- `src/routes/provas.js` (Protegido — inalterado)
 - Banco de dados PostgreSQL e esquemas (Inalterado)
 - Migrations (`migration.sql` e `src/database/migrations/`) (Inalterado)
 - Autenticação e middlewares JWT / Bridge (Inalterado)
@@ -592,7 +629,7 @@ Conforme regra estrita do operador, **nenhum código de produção é alterado n
 
 ### 2. Arquivos Candidatos a Alteração na Fase 1 (Dependem de Autorização Expressa)
 
-Somente após a autorização do operador, do backup confirmado na VPS e do recebimento de `provas.js` e screenshots:
+Somente após a autorização expressa do operador via frase exata:
 
 - `src/routes/stream.js` (Apenas para o streaming dinâmico seguro e autorização do mentor).
 - `src/static/painel-mentor.html` ou novo bundle frontend estático servido na rota do mentor.
@@ -640,7 +677,7 @@ A autorização formal para o início da Fase 1 depende dos seguintes critérios
 - [x] **Branch de trabalho oficial:** `correcao-fluxo-cursos` no repositório `github.com/ronydgarcia-max/cursos-api`. Branch `main` não autorizada.
 - [x] **Commit base estável:** `47aa7b1` (inalterado).
 - [x] **Isolamento de commits de workspace:** `34df2d6`, `ecf1cc0` e `505e672` segregados e NÃO publicados na VPS.
-- [ ] **Recebimento de screenshots desktop e celular do player:** ÚNICA pendência externa restante pré-Fase 1 (aguardando envio pelo operador das telas da área de membros do player de referência Adapta).
+- [x] **Referência visual do player aprovada pelo operador:** Mock visual conceitual do workspace aprovado com as 7 ressalvas literais do operador; pendência de screenshots externos substituída pelo mock; zero pendências externas restantes.
 - [ ] **Envio da frase exata de autorização pelo operador:** "Autorizo iniciar a Fase 1 da reescrita do painel do mentor." — a Fase 1 só começa após o envio exato desta frase.
 
 ### 4. Critérios de Aceite Técnico da Fase 1 (Pós-Autorização)
