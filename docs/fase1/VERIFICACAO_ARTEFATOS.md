@@ -18,12 +18,13 @@ O operador da VPS exige as somas de verificação SHA-256 completas dos **6 arqu
 ──────────────────────────────────────────────────────────────────────────────────────────────────
 HASH SHA-256                                                      ARQUIVO
 ──────────────────────────────────────────────────────────────────────────────────────────────────
-723a1dd7e0344d2d48083bf2dc07dd43bc20d7f95521b33b70e7041fde5b945c  docs/fase1/stream.js
+(conferir via sha256sum na VPS / Seção 1.1)                       docs/fase1/stream.js (com guard READ_ONLY_TEST)
 3d9501a300d8b4e7a3ec11cc0a66d548f7663e6e87f2e1a47321e06fa536f0e4  docs/fase1/NOVO_PAINEL/painel-mentor.html
 168e37dc0bd59a16f272a8c3d8e578ba33cd7c768991fa9a7ffccbe5b9bc5d11  docs/fase1/INTEGRACAO_FASE1.md
 e9b2513de5553e1e40eb617b7b15a6b5a3e1438fa5a48483f3e27150a294f4a3  docs/fase1/PROPOSTA_PROVAS.md
 3312c1404c0429fec033bd2f27ddc54aa5017e2978931dc150c95029a502f664  docs/fase1/REVISAO_FASE1.md
-(ver comando sha256sum na Seção 1.1)                              docs/fase1/VERIFICACAO_ARTEFATOS.md
+(ver comando sha256sum na Seção 1.1)                              docs/fase1/TESTE_PRE_HOMOLOGACAO_VPS.md
+(ver comando sha256sum na Seção 1.1)                              docs/operacoes/testar-fase1-vps.sh
 ──────────────────────────────────────────────────────────────────────────────────────────────────
 ```
 
@@ -52,7 +53,7 @@ Abaixo está o registro sistemático de veredito e evidência textual (arquivo e
 
 |   #    | Item Requerido pelo Operador                                           |      Veredito      | Evidência (Arquivo + Linhas)                                                             | Detalhamento Técnico e Observações                                                                                                                                                                                                    |
 | :----: | :--------------------------------------------------------------------- | :----------------: | :--------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --- | ------------------------------------------------------------------------------------------------ |
-| **1**  | **`node --check` no stream.js**                                        |       **OK**       | `docs/fase1/stream.js`<br>Linhas 1-223                                                   | Comando `node --check docs/fase1/stream.js` executado: saída silenciosa (exit code 0). Zero erros sintáticos; compatível com Node v20.20.2 LTS.                                                                                       |
+| **1**  | **`node --check` no stream.js**                                        |       **OK**       | `docs/fase1/stream.js`<br>Linhas 1-263                                                   | Comando `node --check docs/fase1/stream.js` executado: saída silenciosa (exit code 0). Zero erros sintáticos; compatível com Node v20.20.2 LTS. Inclui guard READ_ONLY_TEST=true ativo em teste e no-op em produção.                  |
 | **2**  | **Estrutura do HTML**                                                  |       **OK**       | `docs/fase1/NOVO_PAINEL/painel-mentor.html`<br>Linhas 1-1941                             | Marcação HTML5 válida (`<!doctype html>`), tags semânticas fechadas, layout responsivo desktop/mobile, IIFE com `'use strict'`, sem dependência de build step.                                                                        |
 | **3**  | **Importações usadas pelo stream.js**                                  |       **OK**       | `docs/fase1/stream.js`<br>Linhas 15-20                                                   | Usa módulos padrão do Node (`path`, `fs`) e do projeto (`express`, `../database/db`, `../middleware/auth`). Sem dependências externas inexistentes.                                                                                   |
 | **4**  | **Rotas chamadas pelo painel**                                         |       **OK**       | `docs/fase1/NOVO_PAINEL/painel-mentor.html`<br>Linhas 1500, 1550, 1577, 1724, 1872, 1919 | Invoca estritamente as rotas Express reais: `GET /mentor/cursos`, `GET /mentor/cursos/:id/etapas`, `GET /mentor/cursos/:id/provas`, `POST /mentor/cursos/:id/etapas`, `POST /mentor/cursos/upload-video-vps` e `GET /stream/:aulaId`. |

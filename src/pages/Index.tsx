@@ -2069,8 +2069,11 @@ export default function Index() {
                         </div>
                         <p className="text-slate-400 text-[11px] pt-1">
                           Streaming dinâmico com HTTP Range 206, trava de path traversal,
-                          autorização aluno/mentor-dono/admin e fallback restrito unicamente à aula
-                          legada 27 (aulas novas retornam 400).
+                          autorização aluno/mentor-dono/admin, fallback restrito à aula 27 e{' '}
+                          <strong className="text-cyan-300">
+                            guard READ_ONLY_TEST=true ativo para porta 3334
+                          </strong>{' '}
+                          (bloqueia POST/PUT/PATCH/DELETE com HTTP 403, no-op em produção).
                         </p>
                       </div>
                       <Button
@@ -2250,102 +2253,199 @@ export default function Index() {
                     </div>
                   </div>
 
-                  {/* Resumo dos 2 Modos */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-                    <div className="p-3 rounded bg-slate-900 border border-slate-800 space-y-2">
-                      <div className="flex items-center justify-between">
-                        <span className="font-bold text-cyan-300 flex items-center gap-1.5">
-                          <ShieldCheck className="w-4 h-4 text-cyan-400" />
-                          MODO A: Estático (Zero Risco)
-                        </span>
-                        <Badge
-                          variant="outline"
-                          className="border-cyan-500/40 text-cyan-400 text-[10px]"
-                        >
-                          Passo Inicial
-                        </Badge>
-                      </div>
-                      <p className="text-slate-300 text-[11px]">
-                        A partir de <code>/tmp/fase1_candidatos/</code>: confere os hashes SHA-256
-                        contra o manifesto, executa <code>node --check</code> no stream.js, valida
-                        estrutura do HTML e gera o diff unificado contra o commit base{' '}
-                        <code>47aa7b1</code> <strong>sem aplicar nada</strong>. Prova final com{' '}
-                        <code>git status</code> 100% limpo no repo real.
-                      </p>
-                      <div className="bg-slate-950 p-2 rounded font-mono text-[11px] text-cyan-200 border border-slate-800">
-                        ./docs/operacoes/testar-fase1-vps.sh estatico
-                      </div>
-                    </div>
-
-                    <div className="p-3 rounded bg-slate-900 border border-slate-800 space-y-2">
-                      <div className="flex items-center justify-between">
-                        <span className="font-bold text-emerald-300 flex items-center gap-1.5">
-                          <Radio className="w-4 h-4 text-emerald-400" />
-                          MODO B: Porta Alternativa (3334)
-                        </span>
-                        <Badge
-                          variant="outline"
-                          className="border-emerald-500/40 text-emerald-400 text-[10px]"
-                        >
-                          Teste Real Isolado
-                        </Badge>
-                      </div>
-                      <p className="text-slate-300 text-[11px]">
-                        Cria cópia descartável em <code>/tmp/fase1_teste/</code> (sem .git),
-                        reutiliza <code>node_modules</code> e conecta ao Postgres lendo o .env do
-                        repo (sem exibir valores). Sobe a app na porta 3334 para testar painel no
-                        navegador e executar bateria com curl. Limpeza com comando parar.
-                      </p>
-                      <div className="bg-slate-950 p-2 rounded font-mono text-[11px] text-emerald-200 border border-slate-800">
-                        ./docs/operacoes/testar-fase1-vps.sh servidor
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* O que NÃO dá para testar antes da homologação */}
-                  <div className="p-3 rounded bg-amber-950/20 border border-amber-800/40 space-y-1.5 text-xs">
-                    <span className="font-bold text-amber-300 flex items-center gap-1.5">
-                      <AlertTriangle className="w-4 h-4 text-amber-400" />
-                      O que NÃO dá para testar antes da aplicação oficial (exclusivo da
-                      homologação):
+                  {/* Alerta Mandatório do Cliente: 3334 não é homologação */}
+                  <div className="p-3 rounded bg-rose-950/30 border border-rose-800/50 space-y-1.5 text-xs">
+                    <span className="font-bold text-rose-300 flex items-center gap-1.5">
+                      <AlertTriangle className="w-4 h-4 text-rose-400" />
+                      Regra Absoluta do Cliente:{' '}
+                      <em>
+                        &quot;Não declarar a Fase 1 homologada apenas porque o serviço iniciou na
+                        porta 3334&quot;
+                      </em>
                     </span>
-                    <ul className="list-disc list-inside space-y-1 text-slate-300 text-[11px]">
-                      <li>
-                        <strong>Rebuild no EasyPanel:</strong> Exige commit/push no GitHub para o
-                        EasyPanel puxar a branch. No pré-teste, nada sobe pro GitHub.
-                      </li>
-                      <li>
-                        <strong>Upload real em /srv/cursos/videos:</strong> Escrita no disco de
-                        produção altera o storage físico. Fica para a homologação autorizada.
-                      </li>
-                      <li>
-                        <strong>Painel servido pela URL oficial de produção:</strong> Permanece
-                        intacto no container de produção até autorização formal.
-                      </li>
-                    </ul>
+                    <p className="text-slate-300 text-[11px]">
+                      A porta alternativa isola o processo mas <strong>não isola o banco</strong>.
+                      Por isso, o teste na porta 3334 roda obrigatoriamente com{' '}
+                      <code>READ_ONLY_TEST=true</code> (somente leitura: POST/PUT/PATCH/DELETE
+                      bloqueados com 403). Testes de escrita exigem a Camada 3 (banco separado a
+                      partir de backup). A homologação oficial ocorre exclusivamente na Camada 4 via
+                      EasyPanel após autorização.
+                    </p>
                   </div>
 
-                  {/* Bateria de Testes com curl */}
+                  {/* As 4 Camadas de Teste e Validação */}
+                  <div className="space-y-2">
+                    <span className="font-semibold text-white text-xs">
+                      Matriz das 4 Camadas de Teste e Validação da Fase 1:
+                    </span>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                      <div className="p-3 rounded bg-slate-900 border border-slate-800 space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="font-bold text-cyan-300 flex items-center gap-1.5">
+                            <ShieldCheck className="w-4 h-4 text-cyan-400" />
+                            [Camada 1] Modo A: Estático (Zero Risco)
+                          </span>
+                          <Badge
+                            variant="outline"
+                            className="border-cyan-500/40 text-cyan-400 text-[10px]"
+                          >
+                            Passo 1
+                          </Badge>
+                        </div>
+                        <p className="text-slate-300 text-[11px]">
+                          A partir de <code>/tmp/fase1_candidatos/</code>: confere hashes SHA-256,
+                          executa <code>node --check</code> no stream.js, valida HTML do painel e
+                          gera diffs unificados contra o commit base <code>47aa7b1</code> sem
+                          aplicar nada. Prova com <code>git status</code> 100% limpo.
+                        </p>
+                        <div className="bg-slate-950 p-2 rounded font-mono text-[11px] text-cyan-200 border border-slate-800">
+                          ./docs/operacoes/testar-fase1-vps.sh estatico
+                        </div>
+                      </div>
+
+                      <div className="p-3 rounded bg-slate-900 border border-slate-800 space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="font-bold text-emerald-300 flex items-center gap-1.5">
+                            <Radio className="w-4 h-4 text-emerald-400" />
+                            [Camada 2] Modo B: Leitura na Porta 3334
+                          </span>
+                          <Badge
+                            variant="outline"
+                            className="border-emerald-500/40 text-emerald-400 text-[10px]"
+                          >
+                            READ_ONLY_TEST=true
+                          </Badge>
+                        </div>
+                        <p className="text-slate-300 text-[11px]">
+                          Processo isolado em <code>/tmp/fase1_teste/</code>. Conecta ao Postgres
+                          com <strong>guard de leitura obrigatório</strong> (mutações rejeitadas com
+                          403). Testa health, autorização, streaming com Range 206 e traversal sem
+                          gravar no banco.
+                        </p>
+                        <div className="bg-slate-950 p-2 rounded font-mono text-[11px] text-emerald-200 border border-slate-800">
+                          ./docs/operacoes/testar-fase1-vps.sh servidor &&
+                          ./docs/operacoes/testar-fase1-vps.sh bateria
+                        </div>
+                      </div>
+
+                      <div className="p-3 rounded bg-slate-900 border border-slate-800 space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="font-bold text-purple-300 flex items-center gap-1.5">
+                            <Terminal className="w-4 h-4 text-purple-400" />
+                            [Camada 3] Homologação: Banco Separado
+                          </span>
+                          <Badge
+                            variant="outline"
+                            className="border-purple-500/40 text-purple-400 text-[10px]"
+                          >
+                            Escrita Isolada
+                          </Badge>
+                        </div>
+                        <p className="text-slate-300 text-[11px]">
+                          Ambiente de escrita sob demanda criado pelo operador a partir do backup{' '}
+                          <code>20261031_195147</code> (Postgres na porta 5433, Redis 6380 e pasta{' '}
+                          <code>/srv/cursos/videos-homologacao/</code>). NUNCA compartilha o banco
+                          real.
+                        </p>
+                        <div className="bg-slate-950 p-2 rounded font-mono text-[11px] text-purple-200 border border-slate-800">
+                          ./docs/operacoes/testar-fase1-vps.sh homologacao
+                        </div>
+                      </div>
+
+                      <div className="p-3 rounded bg-slate-900 border border-slate-800 space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="font-bold text-amber-300 flex items-center gap-1.5">
+                            <Play className="w-4 h-4 text-amber-400" />
+                            [Camada 4] Homologação Oficial EasyPanel
+                          </span>
+                          <Badge
+                            variant="outline"
+                            className="border-amber-500/40 text-amber-400 text-[10px]"
+                          >
+                            Produção Oficial
+                          </Badge>
+                        </div>
+                        <p className="text-slate-300 text-[11px]">
+                          Apenas após autorização formal do operador. Aplica diffs na branch{' '}
+                          <code>correcao-fluxo-cursos</code> (base 47aa7b1), commit, push e rebuild
+                          do container de produção via EasyPanel.
+                        </p>
+                        <div className="bg-slate-950 p-2 rounded font-mono text-[11px] text-amber-200 border border-slate-800">
+                          git push origin correcao-fluxo-cursos &rarr; EasyPanel Redeploy
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Bateria de Testes com curl (13 Itens do Cliente) */}
                   <div className="space-y-2 text-xs">
                     <span className="font-semibold text-white">
-                      Bateria de Testes Automatizada com curl (Saída Esperada Documentada):
+                      Bateria de Testes Automatizada dos 13 Itens Exigidos pelo Cliente:
                     </span>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 text-[11px]">
                       <div className="p-2 rounded bg-slate-900 border border-slate-800">
-                        <span className="text-slate-400 block font-semibold">Health Check</span>
+                        <span className="text-slate-400 block font-semibold">1. Health Check</span>
                         <code className="text-emerald-300">GET /health &rarr; 200 OK</code>
                       </div>
                       <div className="p-2 rounded bg-slate-900 border border-slate-800">
-                        <span className="text-slate-400 block font-semibold">Range HTTP</span>
+                        <span className="text-slate-400 block font-semibold">2. Range HTTP</span>
                         <code className="text-emerald-300">Range: bytes &rarr; 206 Partial</code>
                       </div>
                       <div className="p-2 rounded bg-slate-900 border border-slate-800">
-                        <span className="text-slate-400 block font-semibold">Sem Permissão</span>
-                        <code className="text-amber-300">Usuário estranho &rarr; 403</code>
+                        <span className="text-slate-400 block font-semibold">
+                          3. Stream sem Range
+                        </span>
+                        <code className="text-emerald-300">GET /stream/:id &rarr; 200 OK</code>
                       </div>
                       <div className="p-2 rounded bg-slate-900 border border-slate-800">
-                        <span className="text-slate-400 block font-semibold">Path Traversal</span>
-                        <code className="text-rose-300">../../etc/passwd &rarr; 403</code>
+                        <span className="text-slate-400 block font-semibold">4. Sem Relação</span>
+                        <code className="text-amber-300">Sem matrícula/dono &rarr; 403</code>
+                      </div>
+                      <div className="p-2 rounded bg-slate-900 border border-slate-800">
+                        <span className="text-slate-400 block font-semibold">5. Sem Token</span>
+                        <code className="text-amber-300">Anônimo &rarr; 401 Unauthorized</code>
+                      </div>
+                      <div className="p-2 rounded bg-slate-900 border border-slate-800">
+                        <span className="text-slate-400 block font-semibold">
+                          6. Fallback Aula 27
+                        </span>
+                        <code className="text-cyan-300">Apenas ID 27 legado</code>
+                      </div>
+                      <div className="p-2 rounded bg-slate-900 border border-slate-800">
+                        <span className="text-slate-400 block font-semibold">
+                          7. Aula Nova sem Vídeo
+                        </span>
+                        <code className="text-amber-300">ID 99999 &rarr; 400 Erro Claro</code>
+                      </div>
+                      <div className="p-2 rounded bg-slate-900 border border-slate-800">
+                        <span className="text-slate-400 block font-semibold">
+                          8. Path Traversal
+                        </span>
+                        <code className="text-rose-300">../../etc/passwd &rarr; 403 Bloqueado</code>
+                      </div>
+                      <div className="p-2 rounded bg-slate-900 border border-slate-800">
+                        <span className="text-slate-400 block font-semibold">
+                          9. Guard READ_ONLY_TEST
+                        </span>
+                        <code className="text-emerald-300">POST/PUT/DEL &rarr; 403 Bloqueado</code>
+                      </div>
+                      <div className="p-2 rounded bg-slate-900 border border-slate-800">
+                        <span className="text-slate-400 block font-semibold">
+                          10. Storage /srv/cursos
+                        </span>
+                        <code className="text-emerald-300">Upload rejeitado &rarr; Intocado</code>
+                      </div>
+                      <div className="p-2 rounded bg-slate-900 border border-slate-800">
+                        <span className="text-slate-400 block font-semibold">
+                          11. Token por Env Var
+                        </span>
+                        <code className="text-cyan-300">Apenas $TEST_TOKEN_* no shell</code>
+                      </div>
+                      <div className="p-2 rounded bg-slate-900 border border-slate-800">
+                        <span className="text-slate-400 block font-semibold">
+                          12 e 13. Sem Token em Disco/Log
+                        </span>
+                        <code className="text-emerald-300">Zero vazamento em /tmp e log</code>
                       </div>
                     </div>
                   </div>

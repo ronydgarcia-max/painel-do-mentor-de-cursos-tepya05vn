@@ -20,6 +20,46 @@ const pool = require('../database/db')
 const auth = require('../middleware/auth')
 
 /**
+ * GUARD DE SEGURANÇA PARA TESTE PRÉ-HOMOLOGAÇÃO (MODO B - SOMENTE LEITURA)
+ *
+ * Exigência expressa do cliente:
+ * "O teste na porta 3334 só poderá usar o mesmo PostgreSQL se estiver em modo somente leitura.
+ * A porta alternativa isola o processo, mas não isola o banco."
+ *
+ * Quando READ_ONLY_TEST=true:
+ * - Rejeita sumariamente qualquer requisição com método de mutação (POST, PUT, PATCH, DELETE)
+ *   retornando HTTP 403 Forbidden ou HTTP 405 Method Not Allowed.
+ * - Bloqueia tentativas de upload, substituição de vídeo, publicação, criação/edição de curso,
+ *   criação/edição de etapas e alteração de provas.
+ * - Garante que nenhuma gravação ocorra no PostgreSQL real, PocketBase real, Redis real ou /srv/cursos/videos/.
+ * - Permite exclusivamente: health, login controlado, leitura, autorização, streaming, HTTP Range,
+ *   path traversal, arquivo inexistente, video_path e video_type.
+ * - Em produção (READ_ONLY_TEST ausente ou 'false'): é estritamente NO-OP, preservando 100% o comportamento
+ *   autorizado do painel e do stream.
+ */
+const IS_READ_ONLY_TEST = process.env.READ_ONLY_TEST === 'true'
+
+// Middleware de proteção de escrita aplicado quando em modo de teste somente leitura
+router.use((req, res, next) => {
+  if (IS_READ_ONLY_TEST) {
+    const metodosMutacao = ['POST', 'PUT', 'PATCH', 'DELETE']
+    if (metodosMutacao.includes(req.method.toUpperCase())) {
+      console.warn(
+        `[READ_ONLY_TEST GUARD] Mutação bloqueada na porta de teste: ${req.method} ${req.originalUrl || req.url}`,
+      )
+      return res.status(403).json({
+        error:
+          'Operação de escrita rejeitada: o serviço de teste na porta alternativa está configurado em MODO SOMENTE LEITURA (READ_ONLY_TEST=true). Nenhuma alteração é permitida no banco de dados de produção.',
+        read_only_test: true,
+        method_blocked: req.method,
+        status: 403,
+      })
+    }
+  }
+  next()
+})
+
+/**
  * Fallback estático exclusivo da Aula 27 para retrocompatibilidade
  * caso a aula 27 no banco de dados ainda não possua o campo video_path preenchido.
  */
