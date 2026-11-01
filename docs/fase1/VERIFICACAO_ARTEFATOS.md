@@ -10,9 +10,9 @@
 
 ---
 
-## 1. MANIFESTO CRIPTOGRÁFICO SHA-256 DOS 6 ARTEFATOS DA FASE 1
+## 1. MANIFESTO CRIPTOGRÁFICO SHA-256 DOS ARTEFATOS DA FASE 1
 
-O operador da VPS exige as somas de verificação SHA-256 completas dos **6 arquivos oficiais** da Fase 1 antes de qualquer transferência ou homologação na VPS:
+O operador da VPS exige as somas de verificação SHA-256 completas dos arquivos oficiais da Fase 1 antes de qualquer transferência ou homologação na VPS:
 
 ```
 ──────────────────────────────────────────────────────────────────────────────────────────────────
@@ -25,6 +25,7 @@ e9b2513de5553e1e40eb617b7b15a6b5a3e1438fa5a48483f3e27150a294f4a3  docs/fase1/PRO
 3312c1404c0429fec033bd2f27ddc54aa5017e2978931dc150c95029a502f664  docs/fase1/REVISAO_FASE1.md
 38a6ec1552a46e1074e50d536cf0ba7493eef250bc44618e7751c8a14ec7a59a  docs/fase1/TESTE_PRE_HOMOLOGACAO_VPS.md
 e927c9c054238e55eefea2b27429bb7b05cdcd5d1ec5ce1e6e0261c470196253  docs/operacoes/testar-fase1-vps.sh
+c93f06b9968452309ec95ba8d133038a8e1e7bd66ff852b86a8ff39fa1cf8743  docs/operacoes/aplicar-fase1-vps.sh
 ──────────────────────────────────────────────────────────────────────────────────────────────────
 ```
 
@@ -36,6 +37,8 @@ sha256sum docs/fase1/stream.js \
           docs/fase1/INTEGRACAO_FASE1.md \
           docs/fase1/PROPOSTA_PROVAS.md \
           docs/fase1/REVISAO_FASE1.md \
+          docs/operacoes/testar-fase1-vps.sh \
+          docs/operacoes/aplicar-fase1-vps.sh \
           docs/fase1/VERIFICACAO_ARTEFATOS.md
 ```
 

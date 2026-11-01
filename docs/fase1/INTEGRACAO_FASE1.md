@@ -222,7 +222,78 @@ cd /root
 
 ---
 
-## 10. CRITÉRIO DE APROVAÇÃO FINAL
+## 10. EXECUÇÃO AUTOMATIZADA VIA SCRIPT OPERACIONAL NA VPS (`aplicar-fase1-vps.sh`)
+
+Para atender à necessidade do operador de automatizar com máxima segurança todo o passo a passo de aplicação, foi disponibilizado o script interativo `docs/operacoes/aplicar-fase1-vps.sh`.
+
+### 10.1. Princípio de Segurança e Auditoria Visual
+
+> ⚠️ **REGRA INEGOCIÁVEL:**  
+> O GoSkip **NÃO possui acesso à VPS**. O script é fornecido como artefato para ser copiado e executado pelo operador **DENTRO DA VPS**.  
+> Além disso, o script **NUNCA executa ações destrutivas ou irreversíveis sem confirmação explícita do operador** (prompt `confirmar? [s/N]` com abort padrão).  
+> **O passo do diff permanece como AUDITORIA VISUAL do operador**: o script gera e exibe os diffs unificados contra `47aa7b1`, mas quem analisa e aprova a modificação antes da substituição é o operador humano.
+
+### 10.2. A Ordem Exata dos 9 Passos Automatizados
+
+O script estrutura a operação exatamente na sequência requerida:
+
+| Passo | Subcomando                          | Ação Executada                                                                                                                    | Nível de Risco e Salvaguarda                                                         |
+| :---: | :---------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------- |
+| **1** | `./aplicar-fase1-vps.sh verificar`  | Valida acesso a `/root/cursos-api`, branch `correcao-fluxo-cursos`, base estável `47aa7b1`, `git status` e presença de candidatos | Somente leitura / Validação prévia                                                   |
+| **2** | `./aplicar-fase1-vps.sh copiar`     | Prepara `/tmp/fase1_candidatos/src/routes` e `/tmp/fase1_candidatos/src/static` com os candidatos da Fase 1                       | Isolado em `/tmp` (produção intocada)                                                |
+| **3** | `./aplicar-fase1-vps.sh diff`       | Gera diffs contra `47aa7b1` em `/tmp/diff_fase1_*.patch` e exibe resumo de linhas alteradas                                       | **AUDITORIA VISUAL DO OPERADOR** (aprovação humana)                                  |
+| **4** | `./aplicar-fase1-vps.sh substituir` | Cria backups locais `.bak.fase1` dos originais e copia candidatos de `/tmp` para `src/`                                           | **Ação Destrutiva: Exige confirmação explícita [s/N]**                               |
+| **5** | `./aplicar-fase1-vps.sh validar`    | Executa `node --check src/routes/stream.js` e confere hashes SHA-256 contra o manifesto                                           | Aborta imediatamente em erro de sintaxe                                              |
+| **6** | `./aplicar-fase1-vps.sh commit`     | `git add` restrito aos 2 arquivos, commit rastreável e `git push origin correcao-fluxo-cursos`                                    | **Trava rígida: NUNCA faz push para `main`; aborta fora de `correcao-fluxo-cursos`** |
+| **7** | `./aplicar-fase1-vps.sh redeploy`   | Dispara Rebuild no EasyPanel via API com token mascarado ou documenta alternativa manual                                          | **Token lido exclusivamente de variável de ambiente `$EASYPANEL_TOKEN`**             |
+| **8** | `./aplicar-fase1-vps.sh testes`     | Executa a bateria dos 8 testes pós-deploy (auth, mentor, upload, Range, stream sem 403, traversal, Groq, publicação)              | Tokens só por variável de ambiente, mascarados                                       |
+| **9** | `./aplicar-fase1-vps.sh rollback`   | Reverte os 2 arquivos via `.bak.fase1` ou `git checkout 47aa7b1`, commita reversão e mede tempo                                   | **Mede e imprime tempo gasto (meta < 3 min)**; aponta snapshot                       |
+
+### 10.3. Modo Guiado Completo
+
+Para executar o fluxo sequencial passo a passo com confirmação interativa antes de cada etapa de substituição, commit ou redeploy:
+
+```bash
+cd /root/cursos-api
+./docs/operacoes/aplicar-fase1-vps.sh tudo
+```
+
+### 10.4. Execução de Subcomandos Independentes
+
+O operador pode executar qualquer subcomando isoladamente:
+
+```bash
+# 1. Verificar ambiente
+./docs/operacoes/aplicar-fase1-vps.sh verificar
+
+# 2. Copiar candidatos para /tmp
+./docs/operacoes/aplicar-fase1-vps.sh copiar
+
+# 3. Gerar diffs para auditoria visual
+./docs/operacoes/aplicar-fase1-vps.sh diff
+
+# 4. Substituir arquivos reais (após auditar o diff)
+./docs/operacoes/aplicar-fase1-vps.sh substituir
+
+# 5. Validar sintaxe Node.js e hashes
+./docs/operacoes/aplicar-fase1-vps.sh validar
+
+# 6. Commit e Push na branch autorizada
+./docs/operacoes/aplicar-fase1-vps.sh commit
+
+# 7. Redeploy EasyPanel (token nunca salvo em disco)
+EASYPANEL_TOKEN="[TOKEN_ROTACIONADO]" ./docs/operacoes/aplicar-fase1-vps.sh redeploy
+
+# 8. Bateria dos 8 testes
+TEST_TOKEN_MENTOR="[TOKEN_MENTOR]" ./docs/operacoes/aplicar-fase1-vps.sh testes
+
+# 9. Rollback rápido em menos de 3 minutos
+./docs/operacoes/aplicar-fase1-vps.sh rollback
+```
+
+---
+
+## 11. CRITÉRIO DE APROVAÇÃO FINAL
 
 A homologação da Fase 1 será considerada formalmente **APROVADA** quando, e somente quando:
 

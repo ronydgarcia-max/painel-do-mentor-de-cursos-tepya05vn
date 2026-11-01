@@ -2237,7 +2237,7 @@ export default function Index() {
                       </h4>
                     </div>
                     <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/40 text-[10px]">
-                      8 Itens Monitorados &bull; 100% Coerente
+                      9 Itens Monitorados &bull; 100% Coerente
                     </Badge>
                   </div>
                   <p className="text-xs text-slate-400">
@@ -2531,6 +2531,232 @@ export default function Index() {
                     >
                       <Copy className="w-3.5 h-3.5 mr-1" /> Copiar
                       docs/operacoes/testar-fase1-vps.sh
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Card Especial: Aplicação Automatizada na VPS (aplicar-fase1-vps.sh) */}
+                <div className="p-4 rounded-lg bg-slate-950 border-2 border-emerald-800/60 space-y-4">
+                  <div className="flex items-center justify-between flex-wrap gap-2 border-b border-slate-800 pb-3">
+                    <div className="flex items-center gap-2">
+                      <div className="p-1.5 rounded bg-emerald-500/20 text-emerald-400">
+                        <Terminal className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-white text-sm flex items-center gap-2">
+                          Aplicação Automatizada na VPS (Script Interativo Seguro)
+                        </h4>
+                        <p className="text-slate-400 text-xs mt-0.5">
+                          Automatização dos 9 passos do operador na VPS com confirmação explícita a
+                          cada etapa destrutiva.
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/40 text-[10px]">
+                        9 Subcomandos
+                      </Badge>
+                      <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/40 text-[10px]">
+                        Confirmação s/N Obrigatória
+                      </Badge>
+                    </div>
+                  </div>
+
+                  {/* Alerta de Segurança e Isolamento */}
+                  <div className="p-3 rounded bg-amber-950/30 border border-amber-800/50 space-y-1.5 text-xs">
+                    <span className="font-bold text-amber-300 flex items-center gap-1.5">
+                      <ShieldCheck className="w-4 h-4 text-amber-400" />
+                      Regra Absoluta: O GoSkip NÃO Executa Nada na VPS
+                    </span>
+                    <p className="text-slate-300 text-[11px]">
+                      O GoSkip entrega o script como artefato de automação. Cabe exclusivamente ao{' '}
+                      <strong>operador humano</strong> copiá-lo para a VPS e disparar a execução.
+                      Nenhuma etapa que substitui arquivos, faz commit/push ou dispara redeploy roda
+                      sem o operador digitar explicitamente <code>s</code>. O diff permanece como{' '}
+                      <strong>auditoria visual</strong> do operador antes de qualquer substituição.
+                    </p>
+                  </div>
+
+                  {/* Grade dos 9 Subcomandos */}
+                  <div className="space-y-2 text-xs">
+                    <span className="font-semibold text-white">
+                      Os 9 Subcomandos Disponíveis no Script:
+                    </span>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 text-[11px]">
+                      <div className="p-2.5 rounded bg-slate-900 border border-slate-800 space-y-1">
+                        <div className="flex items-center justify-between">
+                          <code className="text-cyan-300 font-bold">1. verificar</code>
+                          <Badge
+                            variant="outline"
+                            className="text-[9px] border-slate-700 text-slate-400"
+                          >
+                            Leitura
+                          </Badge>
+                        </div>
+                        <p className="text-slate-400 text-[10px]">
+                          Checa branch <code>correcao-fluxo-cursos</code>, commit{' '}
+                          <code>47aa7b1</code>, git status e presença dos candidatos.
+                        </p>
+                      </div>
+
+                      <div className="p-2.5 rounded bg-slate-900 border border-slate-800 space-y-1">
+                        <div className="flex items-center justify-between">
+                          <code className="text-cyan-300 font-bold">2. copiar</code>
+                          <Badge
+                            variant="outline"
+                            className="text-[9px] border-cyan-700 text-cyan-400"
+                          >
+                            Isolado
+                          </Badge>
+                        </div>
+                        <p className="text-slate-400 text-[10px]">
+                          Monta <code>/tmp/fase1_candidatos/</code> com os arquivos sem tocar em
+                          produção.
+                        </p>
+                      </div>
+
+                      <div className="p-2.5 rounded bg-slate-900 border border-slate-800 space-y-1">
+                        <div className="flex items-center justify-between">
+                          <code className="text-purple-300 font-bold">3. diff</code>
+                          <Badge
+                            variant="outline"
+                            className="text-[9px] border-purple-700 text-purple-400"
+                          >
+                            Visual
+                          </Badge>
+                        </div>
+                        <p className="text-slate-400 text-[10px]">
+                          Gera diffs contra <code>47aa7b1</code> em <code>/tmp</code>. Auditoria
+                          visual obrigatória do operador.
+                        </p>
+                      </div>
+
+                      <div className="p-2.5 rounded bg-slate-900 border border-slate-800 space-y-1">
+                        <div className="flex items-center justify-between">
+                          <code className="text-amber-300 font-bold">4. substituir</code>
+                          <Badge
+                            variant="outline"
+                            className="text-[9px] border-amber-700 text-amber-400"
+                          >
+                            Destrutivo
+                          </Badge>
+                        </div>
+                        <p className="text-slate-400 text-[10px]">
+                          Gera backups <code>.bak.fase1</code> e copia para <code>src/</code>{' '}
+                          somente após confirmação <code>[s/N]</code>.
+                        </p>
+                      </div>
+
+                      <div className="p-2.5 rounded bg-slate-900 border border-slate-800 space-y-1">
+                        <div className="flex items-center justify-between">
+                          <code className="text-emerald-300 font-bold">5. validar</code>
+                          <Badge
+                            variant="outline"
+                            className="text-[9px] border-emerald-700 text-emerald-400"
+                          >
+                            Sintaxe
+                          </Badge>
+                        </div>
+                        <p className="text-slate-400 text-[10px]">
+                          Executa <code>node --check</code> no stream.js e afere SHA-256 contra o
+                          manifesto.
+                        </p>
+                      </div>
+
+                      <div className="p-2.5 rounded bg-slate-900 border border-slate-800 space-y-1">
+                        <div className="flex items-center justify-between">
+                          <code className="text-rose-300 font-bold">6. commit</code>
+                          <Badge
+                            variant="outline"
+                            className="text-[9px] border-rose-700 text-rose-400"
+                          >
+                            Push
+                          </Badge>
+                        </div>
+                        <p className="text-slate-400 text-[10px]">
+                          <code>git add</code> só dos 2 arquivos + push exclusivo em{' '}
+                          <code>correcao-fluxo-cursos</code> (NUNCA main).
+                        </p>
+                      </div>
+
+                      <div className="p-2.5 rounded bg-slate-900 border border-slate-800 space-y-1">
+                        <div className="flex items-center justify-between">
+                          <code className="text-blue-300 font-bold">7. redeploy</code>
+                          <Badge
+                            variant="outline"
+                            className="text-[9px] border-blue-700 text-blue-400"
+                          >
+                            EasyPanel
+                          </Badge>
+                        </div>
+                        <p className="text-slate-400 text-[10px]">
+                          Dispara rebuild via API com <code>$EASYPANEL_TOKEN</code> mascarado (ou
+                          guia manual).
+                        </p>
+                      </div>
+
+                      <div className="p-2.5 rounded bg-slate-900 border border-slate-800 space-y-1">
+                        <div className="flex items-center justify-between">
+                          <code className="text-emerald-300 font-bold">8. testes</code>
+                          <Badge
+                            variant="outline"
+                            className="text-[9px] border-emerald-700 text-emerald-400"
+                          >
+                            Pós-Deploy
+                          </Badge>
+                        </div>
+                        <p className="text-slate-400 text-[10px]">
+                          Bateria dos 8 testes de negócio e segurança (Range, mentor 403, traversal,
+                          upload, Groq).
+                        </p>
+                      </div>
+
+                      <div className="p-2.5 rounded bg-slate-900 border border-slate-800 space-y-1">
+                        <div className="flex items-center justify-between">
+                          <code className="text-amber-300 font-bold">9. rollback</code>
+                          <Badge
+                            variant="outline"
+                            className="text-[9px] border-amber-700 text-amber-400"
+                          >
+                            &lt; 3 min
+                          </Badge>
+                        </div>
+                        <p className="text-slate-400 text-[10px]">
+                          Restaura <code>.bak.fase1</code> ou <code>47aa7b1</code>, mede tempo gasto
+                          e aponta snapshot seguro.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Comando do Modo Guiado */}
+                  <div className="p-3 rounded bg-slate-900 border border-slate-800 space-y-1.5 text-xs">
+                    <span className="font-semibold text-white">
+                      Modo Guiado Sequencial (Recomendado):
+                    </span>
+                    <div className="bg-slate-950 p-2 rounded font-mono text-[11px] text-emerald-300 border border-slate-800 flex items-center justify-between">
+                      <span>./docs/operacoes/aplicar-fase1-vps.sh tudo</span>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => handleCopyPath('./docs/operacoes/aplicar-fase1-vps.sh tudo')}
+                        className="h-5 px-2 text-[10px] text-slate-400 hover:text-white"
+                      >
+                        <Copy className="w-3 h-3 mr-1" /> Copiar
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Botão de Cópia do Script */}
+                  <div className="flex items-center gap-2 pt-1 flex-wrap">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleCopyPath('docs/operacoes/aplicar-fase1-vps.sh')}
+                      className="text-xs border-emerald-800 bg-emerald-950/30 text-emerald-300 hover:bg-emerald-900/40"
+                    >
+                      <Copy className="w-3.5 h-3.5 mr-1" /> Copiar Caminho
+                      docs/operacoes/aplicar-fase1-vps.sh
                     </Button>
                   </div>
                 </div>

@@ -100,6 +100,17 @@ export const MANIFESTO_ARTEFATOS_FASE1: ArtefatoFase1[] = [
     tipo: 'script',
   },
   {
+    id: 'script-aplicar',
+    nome: 'aplicar-fase1-vps.sh (Aplicação Automatizada)',
+    caminhoWorkspace: 'docs/operacoes/aplicar-fase1-vps.sh',
+    destinoVps: 'docs/operacoes/aplicar-fase1-vps.sh',
+    sha256: 'c93f06b9968452309ec95ba8d133038a8e1e7bd66ff852b86a8ff39fa1cf8743',
+    descricao:
+      'Script interativo único com 9 passos: verificar, copiar, diff (auditoria visual), substituir (confirmação s/N), validar sintaxe, commit/push exclusivo correcao-fluxo-cursos (nunca main), redeploy EasyPanel (token só por env var mascarado), testes pós-deploy e rollback medido em menos de 3 minutos.',
+    camada: 'Operações e Aplicação VPS (Interativo)',
+    tipo: 'script',
+  },
+  {
     id: 'verificacao-artefatos',
     nome: 'VERIFICACAO_ARTEFATOS.md',
     caminhoWorkspace: 'docs/fase1/VERIFICACAO_ARTEFATOS.md',
