@@ -1941,20 +1941,23 @@ export default function Index() {
                   <div>
                     <div className="flex items-center gap-2 mb-2 flex-wrap">
                       <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/40 text-xs font-semibold">
-                        FASE 1 EXECUTADA NO WORKSPACE &bull; PRONTA PARA CÓPIA NA VPS
+                        FASE 1 — REVISÃO PRÉ-HOMOLOGAÇÃO CONCLUÍDA
                       </Badge>
                       <Badge variant="outline" className="border-blue-500/40 text-blue-400 text-xs">
                         Branch: correcao-fluxo-cursos &bull; Base: 47aa7b1
                       </Badge>
+                      <Badge className="bg-purple-500/20 text-purple-300 border-purple-500/40 text-xs">
+                        17 Itens Auditados &bull; SHA-256 Validados
+                      </Badge>
                     </div>
                     <CardTitle className="text-xl text-white flex items-center gap-2">
                       <Sparkles className="w-5 h-5 text-emerald-400" />
-                      Fase 1 — Entregáveis &amp; Guia de Integração do Operador
+                      Fase 1 — Entregáveis &amp; Revisão Pré-Homologação
                     </CardTitle>
                     <CardDescription className="text-slate-300 mt-1 text-xs">
-                      Todos os artefatos da Fase 1 foram produzidos no diretório{' '}
-                      <code>docs/fase1/</code> deste workspace, prontos para cópia manual na VPS
-                      pelo operador. O GoSkip não possui acesso à VPS nem ao GitHub.
+                      Todos os artefatos e relatórios de auditoria foram consolidados em{' '}
+                      <code>docs/fase1/</code>. O manifesto SHA-256, os endurecimentos de segurança
+                      e o guia final estão prontos para cópia manual na VPS pelo operador.
                     </CardDescription>
                   </div>
                   <Button
@@ -1999,7 +2002,7 @@ export default function Index() {
                     <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                     Inventário dos 4 Entregáveis no Workspace (docs/fase1/)
                   </h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-xs">
                     {/* Entregável 1: painel-mentor.html */}
                     <div className="p-4 rounded-lg bg-slate-950 border border-slate-800 space-y-3">
                       <div className="flex items-center justify-between border-b border-slate-800 pb-2">
@@ -2007,29 +2010,27 @@ export default function Index() {
                           <Play className="w-4 h-4 text-blue-400" />
                           1. painel-mentor.html
                         </span>
-                        <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/30 text-[10px]">
-                          Pendente de Homologação na VPS
+                        <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30 text-[10px]">
+                          Endurecido &bull; SHA-256 OK
                         </Badge>
                       </div>
                       <div className="space-y-1.5 text-slate-300">
                         <div>
-                          <strong className="text-slate-400">Caminho Workspace:</strong>{' '}
+                          <strong className="text-slate-400">Caminho:</strong>{' '}
                           <code className="text-cyan-300 font-mono">
                             docs/fase1/NOVO_PAINEL/painel-mentor.html
                           </code>
                         </div>
                         <div>
-                          <strong className="text-slate-400">Destino na VPS:</strong>{' '}
+                          <strong className="text-slate-400">Destino VPS:</strong>{' '}
                           <code className="text-slate-200 font-mono">
-                            /root/cursos-api/src/static/painel-mentor.html
+                            src/static/painel-mentor.html
                           </code>
                         </div>
                         <p className="text-slate-400 text-[11px] pt-1">
-                          Arquivo único estático (sem build step), player 16:9 à esquerda, matriz
-                          curricular à direita, progresso percentual, lista de aulas com duração,
-                          aula destacada, anterior/próxima, materiais PDF, indicação de quiz,
-                          suporte aos 4 formatos (VPS Range, YouTube, OneDrive, Cloudinary) e as 7
-                          ressalvas literais.
+                          Arquivo estático autônomo com player 16:9, matriz curricular lateral,
+                          suporte aos 4 formatos de vídeo e tratamento seguro de token em query
+                          string (validação JWT + replaceState + sem logs).
                         </p>
                       </div>
                       <Button
@@ -2049,26 +2050,23 @@ export default function Index() {
                           <Radio className="w-4 h-4 text-emerald-400" />
                           2. stream.js (Streaming Seguro)
                         </span>
-                        <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/30 text-[10px]">
-                          Pendente de Homologação na VPS
+                        <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30 text-[10px]">
+                          Endurecido &bull; SHA-256 OK
                         </Badge>
                       </div>
                       <div className="space-y-1.5 text-slate-300">
                         <div>
-                          <strong className="text-slate-400">Caminho Workspace:</strong>{' '}
+                          <strong className="text-slate-400">Caminho:</strong>{' '}
                           <code className="text-cyan-300 font-mono">docs/fase1/stream.js</code>
                         </div>
                         <div>
-                          <strong className="text-slate-400">Destino na VPS:</strong>{' '}
-                          <code className="text-slate-200 font-mono">
-                            /root/cursos-api/src/routes/stream.js
-                          </code>
+                          <strong className="text-slate-400">Destino VPS:</strong>{' '}
+                          <code className="text-slate-200 font-mono">src/routes/stream.js</code>
                         </div>
                         <p className="text-slate-400 text-[11px] pt-1">
-                          Implementa os 6 pilares aprovados: consulta dinâmica de{' '}
-                          <code>video_path</code> no banco, trava estrita contra path traversal com
-                          log de alerta, checagem física de arquivo (404), fallback retrocompatível
-                          para aula 27, autorização para mentor-dono/admin e HTTP Range 206.
+                          Streaming dinâmico com HTTP Range 206, trava de path traversal,
+                          autorização aluno/mentor-dono/admin e fallback restrito unicamente à aula
+                          legada 27 (aulas novas retornam 400).
                         </p>
                       </div>
                       <Button
@@ -2089,21 +2087,20 @@ export default function Index() {
                           3. INTEGRACAO_FASE1.md
                         </span>
                         <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30 text-[10px]">
-                          Entregue / Pronto para o Operador
+                          Versão Final Atualizada
                         </Badge>
                       </div>
                       <div className="space-y-1.5 text-slate-300">
                         <div>
-                          <strong className="text-slate-400">Caminho Workspace:</strong>{' '}
+                          <strong className="text-slate-400">Caminho:</strong>{' '}
                           <code className="text-cyan-300 font-mono">
                             docs/fase1/INTEGRACAO_FASE1.md
                           </code>
                         </div>
                         <p className="text-slate-400 text-[11px] pt-1">
-                          Manual operacional passo a passo para o operador: branch{' '}
-                          <code>correcao-fluxo-cursos</code> sobre base <code>47aa7b1</code>,
-                          commit, push, rebuild no EasyPanel, verificação de logs, checklist dos 8
-                          testes e plano de rollback sem segredos.
+                          Manual operacional completo: backup /root/backups/cursos/20261031_195147,
+                          arquivos substituídos, comandos de cópia, node -c, rebuild EasyPanel,
+                          health check, 8 testes e rollback.
                         </p>
                       </div>
                       <Button
@@ -2124,20 +2121,19 @@ export default function Index() {
                           4. PROPOSTA_PROVAS.md
                         </span>
                         <Badge className="bg-blue-500/20 text-blue-300 border-blue-500/30 text-[10px]">
-                          Proposta Documentada (Sem Aplicar)
+                          Documentação Pura
                         </Badge>
                       </div>
                       <div className="space-y-1.5 text-slate-300">
                         <div>
-                          <strong className="text-slate-400">Caminho Workspace:</strong>{' '}
+                          <strong className="text-slate-400">Caminho:</strong>{' '}
                           <code className="text-cyan-300 font-mono">
                             docs/fase1/PROPOSTA_PROVAS.md
                           </code>
                         </div>
                         <p className="text-slate-400 text-[11px] pt-1">
-                          Documentação dos 4 achados de <code>provas.js</code> com trechos
-                          sugeridos. Marcação expressa de que a aplicação exige confirmação separada
-                          do operador; o arquivo de produção permanece intocado.
+                          Documentação dos 4 achados de provas.js sem aplicar no código de produção
+                          (permanece protegido e inalterado).
                         </p>
                       </div>
                       <Button
@@ -2147,6 +2143,74 @@ export default function Index() {
                         className="w-full text-xs border-slate-700 bg-slate-900 text-slate-300"
                       >
                         <Copy className="w-3.5 h-3.5 mr-1" /> Copiar Proposta de Provas
+                      </Button>
+                    </div>
+
+                    {/* Entregável 5: REVISAO_FASE1.md */}
+                    <div className="p-4 rounded-lg bg-slate-950 border border-slate-800 space-y-3">
+                      <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                        <span className="font-bold text-white text-sm flex items-center gap-1.5">
+                          <ShieldCheck className="w-4 h-4 text-cyan-400" />
+                          5. REVISAO_FASE1.md
+                        </span>
+                        <Badge className="bg-cyan-500/20 text-cyan-300 border-cyan-500/30 text-[10px]">
+                          17 Pontos Auditados
+                        </Badge>
+                      </div>
+                      <div className="space-y-1.5 text-slate-300">
+                        <div>
+                          <strong className="text-slate-400">Caminho:</strong>{' '}
+                          <code className="text-cyan-300 font-mono">
+                            docs/fase1/REVISAO_FASE1.md
+                          </code>
+                        </div>
+                        <p className="text-slate-400 text-[11px] pt-1">
+                          Revisão ponto a ponto com veredito (15 OK, 2 ajustados), evidências com
+                          linha de arquivo, rotas reais do backend e compatibilidade com os 4 tipos
+                          de vídeo.
+                        </p>
+                      </div>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleCopyPath('docs/fase1/REVISAO_FASE1.md')}
+                        className="w-full text-xs border-slate-700 bg-slate-900 text-slate-300"
+                      >
+                        <Copy className="w-3.5 h-3.5 mr-1" /> Copiar Relatório de Revisão
+                      </Button>
+                    </div>
+
+                    {/* Entregável 6: VERIFICACAO_ARTEFATOS.md */}
+                    <div className="p-4 rounded-lg bg-slate-950 border border-slate-800 space-y-3">
+                      <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                        <span className="font-bold text-white text-sm flex items-center gap-1.5">
+                          <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                          6. VERIFICACAO_ARTEFATOS.md
+                        </span>
+                        <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30 text-[10px]">
+                          Manifesto Criptográfico
+                        </Badge>
+                      </div>
+                      <div className="space-y-1.5 text-slate-300">
+                        <div>
+                          <strong className="text-slate-400">Caminho:</strong>{' '}
+                          <code className="text-cyan-300 font-mono">
+                            docs/fase1/VERIFICACAO_ARTEFATOS.md
+                          </code>
+                        </div>
+                        <p className="text-slate-400 text-[11px] pt-1">
+                          Manifesto SHA-256 dos 4 arquivos, resultado dos testes de sintaxe (node
+                          --check), varredura de segredos (zero vazamentos) e comando exato para git
+                          diff 47aa7b1 no repositório real.
+                        </p>
+                      </div>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleCopyPath('docs/fase1/VERIFICACAO_ARTEFATOS.md')}
+                        className="w-full text-xs border-slate-700 bg-slate-900 text-slate-300"
+                      >
+                        <Copy className="w-3.5 h-3.5 mr-1" /> Copiar Manifesto SHA-256
                       </Button>
                     </div>
                   </div>

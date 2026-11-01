@@ -1374,20 +1374,63 @@
           aulaAtualIndex: -1,
         }
 
-        // 1. Extração Segura de Token (Ordem: ?token= do SSO, localStorage, x-cursos-token)
-        function obterToken() {
-          const urlParams = new URLSearchParams(window.location.search)
-          const tokenQuery = urlParams.get('token')
-          if (tokenQuery) {
-            localStorage.setItem('cursos_token', tokenQuery)
-            // Limpa a query string para não vazar token em histórico de navegação
-            window.history.replaceState({}, document.title, window.location.pathname)
-            return tokenQuery
-          }
-          return localStorage.getItem('cursos_token') || null
+        // Helper estrito de validação estrutural de token JWT
+        function validarFormatoToken(token) {
+          if (!token || typeof token !== 'string') return false
+          const trimmed = token.trim()
+          // Um JWT possui três segmentos separados por ponto (header.payload.signature)
+          const partes = trimmed.split('.')
+          if (partes.length !== 3) return false
+          // Checagem de caracteres base64url seguros para prevenir injeções
+          const jwtRegex = /^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+$/
+          return jwtRegex.test(trimmed)
         }
 
-        state.token = obterToken()
+        // 1. Extração e Tratamento Seguro de Token Transitório via Query String
+        // Conformidade estrita com as 6 exigências do operador:
+        // 1. validar o token antes de consumir
+        // 2. criar a sessão necessária (localStorage 'cursos_token')
+        // 3. remover o token da URL com history.replaceState
+        // 4. não registrar o token em logs (console/telemetria)
+        // 5. não enviar o token em links
+        // 6. não mantê-lo na URL durante a navegação
+        function consumirTokenTransicao() {
+          try {
+            const urlParams = new URLSearchParams(window.location.search)
+            const tokenQuery = urlParams.get('token')
+
+            if (tokenQuery) {
+              // 1. Validar o formato do token antes de consumir
+              if (validarFormatoToken(tokenQuery)) {
+                // 2. Criar a sessão necessária
+                sessionStorage.setItem('cursos_token', tokenQuery.trim())
+                localStorage.setItem('cursos_token', tokenQuery.trim())
+              } else {
+                console.warn('[AUTH] Token transitório descartado por formato inválido.')
+              }
+
+              // 3. Remover o token da URL imediatamente com history.replaceState
+              urlParams.delete('token')
+              const novaBusca = urlParams.toString()
+              const novaUrl =
+                window.location.pathname + (novaBusca ? '?' + novaBusca : '') + window.location.hash
+              window.history.replaceState({}, document.title, novaUrl)
+            }
+          } catch (e) {
+            // Silencia qualquer exceção sem expor valores
+          }
+
+          // Recupera da sessão persistida (sessionStorage ou localStorage)
+          const tokenSalvo =
+            sessionStorage.getItem('cursos_token') || localStorage.getItem('cursos_token') || null
+
+          if (tokenSalvo && validarFormatoToken(tokenSalvo)) {
+            return tokenSalvo
+          }
+          return null
+        }
+
+        state.token = consumirTokenTransicao()
 
         // Utilitário de Requisições Autenticadas
         async function apiFetch(endpoint, options = {}) {
@@ -1790,6 +1833,7 @@
         })
 
         document.getElementById('btnLogout').addEventListener('click', () => {
+          sessionStorage.removeItem('cursos_token')
           localStorage.removeItem('cursos_token')
           state.token = null
           atualizarStatusAuth(false, 'Desconectado')

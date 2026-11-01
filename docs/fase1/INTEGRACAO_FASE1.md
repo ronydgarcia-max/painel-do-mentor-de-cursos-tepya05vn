@@ -1,4 +1,4 @@
-# GUIA DE INTEGRAÇÃO DA FASE 1 NA VPS — CURSOS-API
+# GUIA DE INTEGRAÇÃO DA FASE 1 NA VPS — CURSOS-API (VERSÃO FINAL)
 
 **Documento:** `docs/fase1/INTEGRACAO_FASE1.md`  
 **Repositório Oficial:** `github.com/ronydgarcia-max/cursos-api`  
@@ -10,28 +10,39 @@
 
 ---
 
-## 1. AVISOS MANDATÓRIOS E ISOLAMENTO DO WORKSPACE
+## 1. AVISO VINCULANTE: HOMOLOGAÇÃO CONJUNTA E REVISÃO PRÉVIA DE CÓDIGO
 
-1. **O GoSkip não tem acesso à VPS nem ao GitHub:** Todo o procedimento descrito abaixo é **100% manual e executado exclusivamente pelo operador humano**.
-2. **Branch `main` protegida:** Não utilize a branch `main`. Todo o commit e push deve ser direcionado exclusivamente para a branch `correcao-fluxo-cursos`.
-3. **Commits do workspace segregados:** Commits gerados neste workspace de prévia são puramente documentais e não devem ser enviados ao GitHub.
-4. **Backup prévio confirmado:** O snapshot `/root/backups/cursos/20261031_195147` possui SHA-256 e Redis RDB validados; o rollback NUNCA depende de arquivos dentro do container.
-5. **Ordem de deploy vinculada:** Os dois arquivos centrais (`painel-mentor.html` e `stream.js`) **devem ser aplicados e deployados JUNTOS**, para que o novo player no painel consiga reproduzir os vídeos locais sem erro 403.
-
----
-
-## 2. ARQUIVOS ENTREGUES NO WORKSPACE PRONTOS PARA CÓPIA
-
-| Arquivo no Workspace                        | Destino no Repositório Real (`/root/cursos-api`) | Papel Técnico                                                                                    |
-| :------------------------------------------ | :----------------------------------------------- | :----------------------------------------------------------------------------------------------- |
-| `docs/fase1/stream.js`                      | `src/routes/stream.js`                           | Substituto com consulta dinâmica, trava de path traversal, auth mentor/admin e fallback aula 27  |
-| `docs/fase1/NOVO_PAINEL/painel-mentor.html` | `src/static/painel-mentor.html`                  | Novo painel estático completo em arquivo único com o layout do mock, responsivo e sem build step |
-| `docs/fase1/PROPOSTA_PROVAS.md`             | `docs/fase1/PROPOSTA_PROVAS.md`                  | Documentação técnica dos 4 achados de `provas.js` (sem aplicar no código)                        |
-| `docs/fase1/INTEGRACAO_FASE1.md`            | `docs/fase1/INTEGRACAO_FASE1.md`                 | Este guia operacional passo a passo                                                              |
+> ⚠️ **AVISO OBRIGATÓRIO DO OPERADOR:**
+>
+> 1. **Homologação Conjunta Obrigatória:** O novo painel estático (`src/static/painel-mentor.html`) e o módulo de streaming (`src/routes/stream.js`) **DEVEM SER HOMOLOGADOS E APLICADOS JUNTOS**. Aplicar apenas o painel sem o stream fará com que os vídeos locais do novo player falhem com erro 403 para o mentor.
+> 2. **Revisão de Código Precedente:** A aplicação na VPS só pode ocorrer **DEPOIS que o operador revisar integralmente os arquivos de código entregues**, seus respectivos hashes SHA-256 e o relatório de auditoria `docs/fase1/REVISAO_FASE1.md`.
+> 3. **Ambiente GoSkip Isolado:** O GoSkip não possui acesso SSH à VPS nem credenciais de push no GitHub. Toda a aplicação é 100% manual e de inteira responsabilidade do operador humano.
+> 4. **Branch `main` Protegida:** NUNCA faça commit ou push na branch `main`. Utilize exclusivamente a branch `correcao-fluxo-cursos` baseada no commit `47aa7b1`.
 
 ---
 
-## 3. PASSO A PASSO DA APLICAÇÃO NA VPS
+## 2. BACKUP UTILIZADO E PONTO DE RESTAURAÇÃO
+
+- **Caminho Físico no Host da VPS:** `/root/backups/cursos/20261031_195147`
+- **Validação Prévia Realizada:** Dry-run concluído com 100% de sucesso, somas SHA-256 atestadas via `SHA256SUMS.txt`, dump do banco `postgres.sql` íntegro e snapshot `redis-dump.rdb` validado com utilitário oficial `redis-check-rdb`.
+- **Independência de Containers:** O ponto de restauração não depende de volumes efêmeros nem de arquivos dentro de containers Docker.
+
+---
+
+## 3. ARQUIVOS QUE SERÃO SUBSTITUÍDOS
+
+| Arquivo no Workspace                        | Destino no Repositório Real (`/root/cursos-api`) | Papel Técnico                                                                                     |
+| :------------------------------------------ | :----------------------------------------------- | :------------------------------------------------------------------------------------------------ |
+| `docs/fase1/stream.js`                      | `src/routes/stream.js`                           | Substituto com consulta dinâmica, trava de path traversal, auth aluno/mentor/admin e Range 206    |
+| `docs/fase1/NOVO_PAINEL/painel-mentor.html` | `src/static/painel-mentor.html`                  | Novo painel estático em arquivo único, UX baseada no mock conceitual, responsivo e sem build step |
+| `docs/fase1/PROPOSTA_PROVAS.md`             | `docs/fase1/PROPOSTA_PROVAS.md`                  | Documentação técnica dos 4 achados de `provas.js` (**DOCUMENTAÇÃO PURA — código inalterado**)     |
+| `docs/fase1/INTEGRACAO_FASE1.md`            | `docs/fase1/INTEGRACAO_FASE1.md`                 | Este guia operacional final de integração e homologação                                           |
+| `docs/fase1/REVISAO_FASE1.md`               | `docs/fase1/REVISAO_FASE1.md`                    | Relatório ponto a ponto dos 17 itens exigidos pelo operador                                       |
+| `docs/fase1/VERIFICACAO_ARTEFATOS.md`       | `docs/fase1/VERIFICACAO_ARTEFATOS.md`            | Manifesto SHA-256, testes locais, comandos exatos, varredura de segredos e diff                   |
+
+---
+
+## 4. COMANDOS DE CÓPIA E APLICAÇÃO NA VPS
 
 ### Passo 1: Acessar a VPS e navegar até o repositório
 
@@ -40,18 +51,13 @@ ssh root@<IP_DA_VPS>
 cd /root/cursos-api
 ```
 
-### Passo 2: Garantir que está na branch correta sobre a base `47aa7b1`
+### Passo 2: Garantir que está na branch autorizada sobre a base `47aa7b1`
 
 ```bash
-# Verificar status atual
 git status
-
-# Garantir checkout da branch homologada
 git checkout correcao-fluxo-cursos
-
-# Confirmar que a base é 47aa7b1
 git log -1 --oneline
-# Deve exibir commit base 47aa7b1
+# Deve confirmar que a base direta é o commit 47aa7b1
 ```
 
 ### Passo 3: Criar cópias de segurança locais antes de sobrescrever
@@ -61,111 +67,102 @@ cp src/routes/stream.js src/routes/stream.js.bak.fase1
 cp src/static/painel-mentor.html src/static/painel-mentor.html.bak.fase1
 ```
 
-### Passo 4: Aplicar os arquivos entregues
+### Passo 4: Transferir e copiar os novos arquivos
 
-Copiar os arquivos gerados no workspace para os caminhos correspondentes:
+Copiar o conteúdo dos artefatos do workspace para as respectivas pastas no repositório real:
 
-- Copiar o conteúdo de `docs/fase1/stream.js` para `/root/cursos-api/src/routes/stream.js`.
-- Copiar o conteúdo de `docs/fase1/NOVO_PAINEL/painel-mentor.html` para `/root/cursos-api/src/static/painel-mentor.html`.
+- `docs/fase1/stream.js` ➔ `/root/cursos-api/src/routes/stream.js`
+- `docs/fase1/NOVO_PAINEL/painel-mentor.html` ➔ `/root/cursos-api/src/static/painel-mentor.html`
+- Manter uma pasta `docs/fase1/` no repositório com os relatórios de auditoria para fins de rastreabilidade.
 
-### Passo 5: Testar sintaxe Node.js localmente na VPS
+---
+
+## 5. VALIDAÇÃO SINTÁTICA LOCAL NA VPS
+
+Antes de commitar ou acionar rebuild, valide a sintaxe do arquivo JavaScript substituído:
 
 ```bash
+# Validação sintática do arquivo Node.js
 node -c src/routes/stream.js
-# Deve retornar silenciosamente sem erros de sintaxe (Exit code 0)
+# Saída esperada: Silenciosa (Exit code 0). Qualquer erro de sintaxe interrompe o processo aqui.
+
+# Validação do checksum SHA-256 (opcional, para conferir integridade da transferência)
+sha256sum src/routes/stream.js src/static/painel-mentor.html
 ```
 
-### Passo 6: Criar commit semântico e rastreável
+---
+
+## 6. COMMIT, PUSH E REBUILD DO CURSOS-API NO EASYPANEL
+
+### Passo 1: Commit e Push na branch de trabalho
 
 ```bash
 git add src/routes/stream.js src/static/painel-mentor.html
 git commit -m "feat(mentor): implementa novo painel estatico e streaming dinamico seguro (Fase 1)"
-```
-
-### Passo 7: Enviar para o GitHub na branch autorizada
-
-```bash
 git push origin correcao-fluxo-cursos
-# NUNCA fazer push para a branch main
+# NUNCA ENVIAR PARA A BRANCH MAIN
 ```
 
-### Passo 8: Rebuild do serviço Cursos-API no EasyPanel
+### Passo 2: Rebuild do serviço Cursos-API no EasyPanel
 
-1. Acessar o EasyPanel no navegador (`https://<EASYPANEL_HOST>`).
+1. Acessar o painel do EasyPanel (`https://<EASYPANEL_HOST>:3000`).
 2. Abrir o projeto `cursos-api`.
-3. Selecionar o serviço `Cursos-API`.
-4. Clicar no botão **Rebuild / Redeploy** utilizando a branch `correcao-fluxo-cursos`.
+3. Selecionar o serviço de aplicação `Cursos-API`.
+4. Disparar o comando **Rebuild / Redeploy** utilizando a branch `correcao-fluxo-cursos`.
+5. Aguardar o build da imagem Docker e o reinício das réplicas.
 
-### Passo 9: Acompanhar logs e executar Health Check
+---
+
+## 7. HEALTH CHECK E TESTES FUNCIONAIS
+
+### 7.1. Health Check Imediato
 
 ```bash
-# Acompanhar logs do container no host
-docker logs -f --tail 100 $(docker ps --format '{{.Names}}' | grep -i 'cursos-api' | head -n 1)
+# Verificar logs do container ativo
+docker logs -f --tail 50 $(docker ps --format '{{.Names}}' | grep -i 'cursos-api' | head -n 1)
 
-# Health check local
+# Health check local via loopback
 curl -I http://127.0.0.1:3333/
-# Deve responder sem erro 502/503
+# Deve retornar HTTP 200/302 sem erros 502/503
 ```
 
----
+### 7.2. Bateria de Testes Funcionais Obrigatórios
 
-## 4. CHECKLIST DOS 8 TESTES PLANEJADOS DA FASE 1
-
-O operador deve executar e validar os 8 testes abaixo antes de declarar a homologação concluída:
-
-### Teste 1: Autenticação e Extração de Token
-
-- **Ação:** Acessar o novo painel via navegador em `https://<DOMINIO>/painel?token=<JWT_MENTOR>` e verificar se o badge superior exibe "Mentor Ativo" e lista os cursos reais.
-- **Critério:** Token extraído com sucesso, persistido em localStorage e query string sanitizada da barra de endereços.
-
-### Teste 2: Isolamento de Mentor
-
-- **Ação:** Tentar requisitar `/mentor/cursos/<CURSO_DE_OUTRO_MENTOR>/etapas` usando o token do mentor.
-- **Critério:** Retorno HTTP `403 Forbidden` ou `404 Not Found`. Nenhum dado de outro mentor é exposto.
-
-### Teste 3: Upload de Vídeo VPS (Volume Persistente)
-
-- **Ação:** Na aba "Gestão de Aulas & Upload VPS" do novo painel, selecionar um arquivo MP4 de teste e disparar o envio.
-- **Critério:** Arquivo gravado em `/srv/cursos/videos/{curso_id}/` no host (correspondente a `/app/videos/{curso_id}/` no container). Resposta 200 com JSON contendo `video_path`.
-
-### Teste 4: Streaming Local Dinâmico com HTTP Range (Aula Diferente da 27)
-
-- **Ação:** Requisição com Range bytes para uma aula recém-cadastrada com vídeo local:
-  ```bash
-  curl -I -H "Range: bytes=0-1048576" -H "Authorization: Bearer <TOKEN>" http://127.0.0.1:3333/stream/<NOVA_AULA_ID>
-  ```
-- **Critério:** Retorno HTTP `206 Partial Content`, cabeçalho `Content-Range: bytes 0-1048576/...` e `Content-Type: video/mp4`.
-
-### Teste 5: Streaming pelo Mentor Proprietário (Sem Erro 403)
-
-- **Ação:** O mentor acessa o novo player e reproduz sua própria aula sem estar matriculado nela como aluno.
-- **Critério:** Vídeo reproduz imediatamente no player. A query SQL `UNION SELECT 1 FROM cursos WHERE id = $2 AND mentor_id = $1` libera o acesso sem 403.
-
-### Teste 6: Proteção Contra Path Traversal
-
-- **Ação:** Teste de injeção direta de caminho relativo malicioso:
-  ```bash
-  # Simulação interna ou teste com video_path contendo ../../
-  ```
-- **Critério:** Rejeição imediata com HTTP `400 Bad Request` ou `403 Forbidden` e log de segurança emitido no console: `[STREAM SECURITY VIOLATION]`.
-
-### Teste 7: Moderação Groq AI
-
-- **Ação:** Acionar submissão de curso em rascunho para moderação (`POST /mentor/cursos/:id/enviar-analise`).
-- **Critério:** Análise estruturada retornada com `ia_score` e transição segura para `em_analise` ou `aprovado`.
-
-### Teste 8: Bloqueio de Publicação em Curso Não Aprovado
-
-- **Ação:** Tentar publicar curso em status `rascunho` via `PUT /mentor/cursos/:id/publicar`.
-- **Critério:** Retorno HTTP `400 Bad Request` informando que apenas cursos com status `aprovado` podem ser publicados.
+1. **Teste 1: Consumo e Limpeza de Token em Query String (`painel-mentor.html`)**
+   - **Ação:** Acessar no navegador `https://<DOMINIO>/painel?token=<JWT_MENTOR>`.
+   - **Critério:** O badge superior deve indicar "Mentor Ativo", a lista de cursos reais do mentor deve carregar no select, e a barra de endereços do navegador deve ter a query string sanitizada imediatamente sem exibir o token (`window.history.replaceState`).
+2. **Teste 2: Isolamento de Mentor**
+   - **Ação:** Requisitar `/mentor/cursos/<ID_CURSO_DE_OUTRO_MENTOR>/etapas` com o token do mentor.
+   - **Critério:** Retorno `403 Forbidden` ou `404 Not Found`. Nenhum dado de outro mentor é acessível.
+3. **Teste 3: Upload de Vídeo MP4 para a VPS**
+   - **Ação:** Na aba "Gestão de Aulas & Upload VPS", enviar um MP4 de teste.
+   - **Critério:** Arquivo gravado em `/srv/cursos/videos/{curso_id}/` e retorno 200 com JSON contendo `video_path`.
+4. **Teste 4: Streaming com HTTP Range e Resposta 206**
+   - **Ação:** Executar curl simulando solicitação de Range:
+     ```bash
+     curl -I -H "Range: bytes=0-1048576" -H "Authorization: Bearer <TOKEN_MENTOR>" http://127.0.0.1:3333/stream/<AULA_ID>
+     ```
+   - **Critério:** Retorno HTTP `206 Partial Content`, cabeçalho `Content-Range: bytes 0-1048576/<TOTAL>` e `Content-Type: video/mp4`.
+5. **Teste 5: Autorização do Mentor Proprietário (Sem Erro 403)**
+   - **Ação:** O mentor reproduz sua aula no novo player sem estar matriculado nela como aluno.
+   - **Critério:** Vídeo reproduz imediatamente. Query com `UNION SELECT ... cursos.mentor_id = $1` libera o acesso.
+6. **Teste 6: Fallback Estrito Exclusivo da Aula 27**
+   - **Ação:** Requisitar `/stream/27` (aula legada) e requisitar `/stream/<OUTRA_AULA_SEM_VIDEO>`.
+   - **Critério:** A aula 27 reproduz o fallback legado `/app/videos/37/aula-27.mp4`. Qualquer outra aula sem vídeo retorna `HTTP 400` com mensagem clara e NÃO reproduz o vídeo de outra aula.
+7. **Teste 7: Proteção Contra Path Traversal**
+   - **Ação:** Teste de requisição para caminho com `../../etc/passwd`.
+   - **Critério:** Rejeição imediata com HTTP `400` ou `403` e log de segurança emitido: `[STREAM SECURITY VIOLATION]`.
+8. **Teste 8: Compatibilidade dos 4 Formatos de Vídeo no Player**
+   - **Ação:** Alternar entre aulas com tipo `local`, `youtube`, `onedrive` e `cloudinary`.
+   - **Critério:** Badges visuais mudam corretamente e o player carrega `<video>` nativo ou `<iframe>` do YouTube sem quebrar o layout.
 
 ---
 
-## 5. PLANO DE ROLLBACK RÁPIDO (EM CASO DE ANOMALIA)
+## 8. PLANO DE ROLLBACK RÁPIDO
 
-Se qualquer um dos 8 testes falhar ou houver instabilidade no serviço Cursos-API:
+Se qualquer anomalia for detectada durante os testes funcionais:
 
-### A. Reversão Rápida de Código via Git (Menos de 3 minutos)
+### Opção A: Reversão Rápida de Código via Git (Até 2 minutos)
 
 ```bash
 cd /root/cursos-api
@@ -173,26 +170,25 @@ git checkout 47aa7b1
 git clean -fd
 ```
 
-No EasyPanel, disparar novo **Rebuild** do serviço `Cursos-API`.
+No EasyPanel, acionar novo **Rebuild** do serviço `Cursos-API`. O sistema retornará imediatamente ao estado exato do commit base estável `47aa7b1`.
 
-### B. Restauração Completa de Emergência (Se Houver Corrupção de Dados ou Mídia)
+### Opção B: Restauração Completa de Snapshot (Em caso de falha grave)
 
-Conforme documentado em `docs/operacoes/PLANO_ROLLBACK.md`, utilizar o snapshot confirmado pelo operador em `/root/backups/cursos/20261031_195147`:
+Caso tenha havido qualquer perda de arquivos ou inconsistência:
 
 ```bash
-# Executar restauração manual guiada
 cd /root
 ./docs/operacoes/restaurar-cursos-vps.sh /root/backups/cursos/20261031_195147
 ```
 
-**Lembrete:** O rollback não depende de arquivos dentro do container atual, pois todos os dumps e backups residem no host em `/root/backups/cursos/20261031_195147`.
-
 ---
 
-## 6. ITENS FORA DO ESCOPO DESTA FATIA
+## 9. CRITÉRIO DE APROVAÇÃO FINAL
 
-Para manter a integridade operacional e o foco na estabilidade do player e do streaming, os seguintes itens ficam explicitamente fora desta fatia da Fase 1:
+A homologação da Fase 1 será considerada formalmente **APROVADA** quando, e somente quando:
 
-1. **Alteração em `src/routes/provas.js`:** Mantida apenas como proposta técnica em `docs/fase1/PROPOSTA_PROVAS.md`. Nenhuma linha do arquivo real é alterada.
-2. **Reexecução de migrations:** Nenhuma migration do PostgreSQL deve ser executada (`migration.sql` já foi aplicado na Fase 0).
-3. **Edição de Dockerfile ou alteração de imagens:** O runtime Node v20.20.2 já está ativo no container; ajustes estéticos de Dockerfile ficam para rodada específica de infraestrutura.
+1. O serviço `Cursos-API` estiver respondendo com status 200 no health check;
+2. Todos os 8 testes funcionais acima descritos passarem com sucesso;
+3. O novo painel estático carregar o layout 16:9 + matriz curricular em desktop e celular;
+4. Nenhum log de erro não tratado (500) for observado no container do `Cursos-API`;
+5. O operador registrar formalmente a aprovação para encerramento da Fase 1.

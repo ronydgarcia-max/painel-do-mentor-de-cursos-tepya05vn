@@ -100,12 +100,16 @@ router.get('/:aulaId', auth, async (req, res) => {
 
     const aula = aulaQuery.rows[0]
 
-    // Se a aula não existir no banco, verificar se há fallback explícito para aula 27
-    if (!aula && aulaId !== 27) {
-      return res.status(404).json({ error: 'Aula não encontrada' })
+    // Se a aula não existir no banco, verificar se é o registro legado identificado da aula 27
+    if (!aula) {
+      if (aulaId === 27) {
+        // Fallback estrito: permitido apenas para o registro legado identificado da aula 27
+      } else {
+        return res.status(404).json({ error: 'Aula não encontrada' })
+      }
     }
 
-    const cursoId = aula ? aula.curso_id : 37 // Curso 37 é o curso canônico da aula 27 no fallback
+    const cursoId = aula ? aula.curso_id : 37 // Curso 37 é o curso canônico da aula 27 no fallback legado
     const usuarioId = req.usuario.id
 
     // 2. Pilar de Autorização Ampla e Segura:
@@ -137,14 +141,23 @@ router.get('/:aulaId', auth, async (req, res) => {
         }
         return res.status(400).json({ error: err.message || 'Caminho de vídeo inválido' })
       }
-    } else if (FALLBACK_LOCAL_VIDEO_FILES[aulaId]) {
-      // Pilar de Fallback retrocompatível para aula 27
-      videoFilePath = FALLBACK_LOCAL_VIDEO_FILES[aulaId]
+    } else if (aulaId === 27 && FALLBACK_LOCAL_VIDEO_FILES[27]) {
+      // Fallback estrito: exclusivo para o registro legado da aula 27 (Fase 0)
+      // Nenhuma outra aula pode cair aqui.
+      videoFilePath = FALLBACK_LOCAL_VIDEO_FILES[27]
     } else {
-      // Se a aula for de outro tipo (ex: youtube, onedrive, upload) ou não possuir video_path
+      // Qualquer outra aula nova sem video_path ou de outro tipo de vídeo retorna erro claro.
+      // NUNCA reproduzir automaticamente o vídeo de outra aula.
       const tipo = aula ? aula.video_type : 'desconhecido'
+      const msgErro =
+        tipo === 'local'
+          ? 'Vídeo local não processado ou video_path não definido para esta aula. Faça o upload do arquivo MP4 antes da reprodução.'
+          : `Vídeo local não configurado para esta aula (tipo atual: ${tipo}). Para YouTube ou OneDrive, utilize a URL direta da aula.`
+
       return res.status(400).json({
-        error: `Vídeo local não configurado para esta aula (tipo atual: ${tipo}). Para YouTube ou OneDrive, utilize a URL direta da aula.`,
+        error: msgErro,
+        aula_id: aulaId,
+        video_type: tipo,
       })
     }
 
