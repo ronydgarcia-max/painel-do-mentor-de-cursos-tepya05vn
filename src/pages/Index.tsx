@@ -262,6 +262,13 @@ export default function Index() {
               <Play className="w-4 h-4" />
               Player — Referência Aprovada
             </TabsTrigger>
+            <TabsTrigger
+              value="fase1_entregaveis"
+              className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white font-semibold flex items-center gap-1.5"
+            >
+              <Sparkles className="w-4 h-4 text-emerald-300" />
+              Fase 1 — Entregáveis
+            </TabsTrigger>
           </TabsList>
 
           {/* Aba: Inventário EasyPanel Real */}
@@ -1921,6 +1928,271 @@ export default function Index() {
                       </p>
                     </div>
                   </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Aba Nova: Fase 1 — Entregáveis */}
+          <TabsContent value="fase1_entregaveis" className="space-y-6 mt-6">
+            <Card className="bg-slate-900 border-slate-800">
+              <CardHeader>
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                  <div>
+                    <div className="flex items-center gap-2 mb-2 flex-wrap">
+                      <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/40 text-xs font-semibold">
+                        FASE 1 EXECUTADA NO WORKSPACE &bull; PRONTA PARA CÓPIA NA VPS
+                      </Badge>
+                      <Badge variant="outline" className="border-blue-500/40 text-blue-400 text-xs">
+                        Branch: correcao-fluxo-cursos &bull; Base: 47aa7b1
+                      </Badge>
+                    </div>
+                    <CardTitle className="text-xl text-white flex items-center gap-2">
+                      <Sparkles className="w-5 h-5 text-emerald-400" />
+                      Fase 1 — Entregáveis &amp; Guia de Integração do Operador
+                    </CardTitle>
+                    <CardDescription className="text-slate-300 mt-1 text-xs">
+                      Todos os artefatos da Fase 1 foram produzidos no diretório{' '}
+                      <code>docs/fase1/</code> deste workspace, prontos para cópia manual na VPS
+                      pelo operador. O GoSkip não possui acesso à VPS nem ao GitHub.
+                    </CardDescription>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => handleCopyPath('docs/fase1/INTEGRACAO_FASE1.md')}
+                    className="border-slate-700 bg-slate-950 text-xs shrink-0"
+                  >
+                    <Copy className="w-3.5 h-3.5 mr-1 text-slate-400" />
+                    Copiar docs/fase1/INTEGRACAO_FASE1.md
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Banner de Autorização do Operador */}
+                <div className="p-3.5 rounded-lg bg-emerald-950/20 border border-emerald-800/40 space-y-2">
+                  <div className="flex items-center justify-between flex-wrap gap-2">
+                    <span className="font-bold text-emerald-300 text-xs flex items-center gap-1.5 uppercase tracking-wide">
+                      <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                      GATILHO DE AUTORIZAÇÃO CUMPRIDO
+                    </span>
+                    <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30 text-[10px]">
+                      Frase Exata Atestada
+                    </Badge>
+                  </div>
+                  <p className="text-xs text-slate-200">
+                    <em>
+                      &ldquo;Autorizo iniciar a Fase 1 da reescrita do painel do mentor.&rdquo;
+                    </em>
+                  </p>
+                  <p className="text-[11px] text-slate-400">
+                    O último checkbox de autorização do relatório da Fase 0 foi formalmente
+                    cumprido. A entrega contempla os três eixos aprovados: <strong>A</strong> (Novo
+                    Painel estático completo), <strong>B</strong> (Substituto seguro de stream.js) e{' '}
+                    <strong>C</strong> (Proposta técnica documentada para provas.js).
+                  </p>
+                </div>
+
+                {/* Grade dos 4 Entregáveis com Status */}
+                <div className="space-y-3">
+                  <h4 className="font-semibold text-white text-sm flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                    Inventário dos 4 Entregáveis no Workspace (docs/fase1/)
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                    {/* Entregável 1: painel-mentor.html */}
+                    <div className="p-4 rounded-lg bg-slate-950 border border-slate-800 space-y-3">
+                      <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                        <span className="font-bold text-white text-sm flex items-center gap-1.5">
+                          <Play className="w-4 h-4 text-blue-400" />
+                          1. painel-mentor.html
+                        </span>
+                        <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/30 text-[10px]">
+                          Pendente de Homologação na VPS
+                        </Badge>
+                      </div>
+                      <div className="space-y-1.5 text-slate-300">
+                        <div>
+                          <strong className="text-slate-400">Caminho Workspace:</strong>{' '}
+                          <code className="text-cyan-300 font-mono">
+                            docs/fase1/NOVO_PAINEL/painel-mentor.html
+                          </code>
+                        </div>
+                        <div>
+                          <strong className="text-slate-400">Destino na VPS:</strong>{' '}
+                          <code className="text-slate-200 font-mono">
+                            /root/cursos-api/src/static/painel-mentor.html
+                          </code>
+                        </div>
+                        <p className="text-slate-400 text-[11px] pt-1">
+                          Arquivo único estático (sem build step), player 16:9 à esquerda, matriz
+                          curricular à direita, progresso percentual, lista de aulas com duração,
+                          aula destacada, anterior/próxima, materiais PDF, indicação de quiz,
+                          suporte aos 4 formatos (VPS Range, YouTube, OneDrive, Cloudinary) e as 7
+                          ressalvas literais.
+                        </p>
+                      </div>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleCopyPath('docs/fase1/NOVO_PAINEL/painel-mentor.html')}
+                        className="w-full text-xs border-slate-700 bg-slate-900 text-slate-300"
+                      >
+                        <Copy className="w-3.5 h-3.5 mr-1" /> Copiar Caminho do Painel
+                      </Button>
+                    </div>
+
+                    {/* Entregável 2: stream.js */}
+                    <div className="p-4 rounded-lg bg-slate-950 border border-slate-800 space-y-3">
+                      <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                        <span className="font-bold text-white text-sm flex items-center gap-1.5">
+                          <Radio className="w-4 h-4 text-emerald-400" />
+                          2. stream.js (Streaming Seguro)
+                        </span>
+                        <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/30 text-[10px]">
+                          Pendente de Homologação na VPS
+                        </Badge>
+                      </div>
+                      <div className="space-y-1.5 text-slate-300">
+                        <div>
+                          <strong className="text-slate-400">Caminho Workspace:</strong>{' '}
+                          <code className="text-cyan-300 font-mono">docs/fase1/stream.js</code>
+                        </div>
+                        <div>
+                          <strong className="text-slate-400">Destino na VPS:</strong>{' '}
+                          <code className="text-slate-200 font-mono">
+                            /root/cursos-api/src/routes/stream.js
+                          </code>
+                        </div>
+                        <p className="text-slate-400 text-[11px] pt-1">
+                          Implementa os 6 pilares aprovados: consulta dinâmica de{' '}
+                          <code>video_path</code> no banco, trava estrita contra path traversal com
+                          log de alerta, checagem física de arquivo (404), fallback retrocompatível
+                          para aula 27, autorização para mentor-dono/admin e HTTP Range 206.
+                        </p>
+                      </div>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleCopyPath('docs/fase1/stream.js')}
+                        className="w-full text-xs border-slate-700 bg-slate-900 text-slate-300"
+                      >
+                        <Copy className="w-3.5 h-3.5 mr-1" /> Copiar Caminho de stream.js
+                      </Button>
+                    </div>
+
+                    {/* Entregável 3: INTEGRACAO_FASE1.md */}
+                    <div className="p-4 rounded-lg bg-slate-950 border border-slate-800 space-y-3">
+                      <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                        <span className="font-bold text-white text-sm flex items-center gap-1.5">
+                          <Terminal className="w-4 h-4 text-purple-400" />
+                          3. INTEGRACAO_FASE1.md
+                        </span>
+                        <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30 text-[10px]">
+                          Entregue / Pronto para o Operador
+                        </Badge>
+                      </div>
+                      <div className="space-y-1.5 text-slate-300">
+                        <div>
+                          <strong className="text-slate-400">Caminho Workspace:</strong>{' '}
+                          <code className="text-cyan-300 font-mono">
+                            docs/fase1/INTEGRACAO_FASE1.md
+                          </code>
+                        </div>
+                        <p className="text-slate-400 text-[11px] pt-1">
+                          Manual operacional passo a passo para o operador: branch{' '}
+                          <code>correcao-fluxo-cursos</code> sobre base <code>47aa7b1</code>,
+                          commit, push, rebuild no EasyPanel, verificação de logs, checklist dos 8
+                          testes e plano de rollback sem segredos.
+                        </p>
+                      </div>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleCopyPath('docs/fase1/INTEGRACAO_FASE1.md')}
+                        className="w-full text-xs border-slate-700 bg-slate-900 text-slate-300"
+                      >
+                        <Copy className="w-3.5 h-3.5 mr-1" /> Copiar Guia de Integração
+                      </Button>
+                    </div>
+
+                    {/* Entregável 4: PROPOSTA_PROVAS.md */}
+                    <div className="p-4 rounded-lg bg-slate-950 border border-slate-800 space-y-3">
+                      <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                        <span className="font-bold text-white text-sm flex items-center gap-1.5">
+                          <FileText className="w-4 h-4 text-amber-400" />
+                          4. PROPOSTA_PROVAS.md
+                        </span>
+                        <Badge className="bg-blue-500/20 text-blue-300 border-blue-500/30 text-[10px]">
+                          Proposta Documentada (Sem Aplicar)
+                        </Badge>
+                      </div>
+                      <div className="space-y-1.5 text-slate-300">
+                        <div>
+                          <strong className="text-slate-400">Caminho Workspace:</strong>{' '}
+                          <code className="text-cyan-300 font-mono">
+                            docs/fase1/PROPOSTA_PROVAS.md
+                          </code>
+                        </div>
+                        <p className="text-slate-400 text-[11px] pt-1">
+                          Documentação dos 4 achados de <code>provas.js</code> com trechos
+                          sugeridos. Marcação expressa de que a aplicação exige confirmação separada
+                          do operador; o arquivo de produção permanece intocado.
+                        </p>
+                      </div>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleCopyPath('docs/fase1/PROPOSTA_PROVAS.md')}
+                        className="w-full text-xs border-slate-700 bg-slate-900 text-slate-300"
+                      >
+                        <Copy className="w-3.5 h-3.5 mr-1" /> Copiar Proposta de Provas
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Resumo do Passo a Passo para o Operador na VPS */}
+                <div className="p-4 rounded-lg bg-slate-950 border border-slate-800 space-y-3">
+                  <h4 className="font-bold text-white text-sm flex items-center gap-2">
+                    <Terminal className="w-4 h-4 text-blue-400" />
+                    Resumo do Passo a Passo do Operador na VPS
+                  </h4>
+                  <ol className="list-decimal list-inside space-y-2 text-xs text-slate-300">
+                    <li>
+                      <strong>Conectar na VPS:</strong> Acessar <code>cd /root/cursos-api</code> e
+                      confirmar que está na branch <code>correcao-fluxo-cursos</code> (base estável{' '}
+                      <code>47aa7b1</code>).
+                    </li>
+                    <li>
+                      <strong>Copiar os arquivos:</strong> Aplicar <code>docs/fase1/stream.js</code>{' '}
+                      em <code>src/routes/stream.js</code> e{' '}
+                      <code>docs/fase1/NOVO_PAINEL/painel-mentor.html</code> em{' '}
+                      <code>src/static/painel-mentor.html</code>.
+                    </li>
+                    <li>
+                      <strong>Validar sintaxe:</strong> Executar{' '}
+                      <code>node -c src/routes/stream.js</code> na VPS antes de comitar.
+                    </li>
+                    <li>
+                      <strong>Commit e Push:</strong> Criar commit rastreável e enviar para{' '}
+                      <code>origin correcao-fluxo-cursos</code> (nunca main).
+                    </li>
+                    <li>
+                      <strong>EasyPanel Rebuild:</strong> Disparar o Redeploy do serviço{' '}
+                      <code>Cursos-API</code> no EasyPanel e acompanhar logs e health check.
+                    </li>
+                    <li>
+                      <strong>Executar os 8 Testes:</strong> Validar autenticação, isolamento de
+                      mentor, upload VPS, streaming dinâmico com Range, streaming do mentor sem 403,
+                      path traversal, moderação Groq e bloqueio de publicação.
+                    </li>
+                    <li>
+                      <strong>Rollback se necessário:</strong> Caso ocorra qualquer anomalia,
+                      reverter para <code>47aa7b1</code> em menos de 3 minutos ou restaurar o
+                      snapshot seguro <code>/root/backups/cursos/20261031_195147</code>.
+                    </li>
+                  </ol>
                 </div>
               </CardContent>
             </Card>

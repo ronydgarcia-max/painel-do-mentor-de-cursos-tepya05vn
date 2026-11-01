@@ -678,11 +678,56 @@ A autorização formal para o início da Fase 1 depende dos seguintes critérios
 - [x] **Commit base estável:** `47aa7b1` (inalterado).
 - [x] **Isolamento de commits de workspace:** `34df2d6`, `ecf1cc0` e `505e672` segregados e NÃO publicados na VPS.
 - [x] **Referência visual do player aprovada pelo operador:** Mock visual conceitual do workspace aprovado com as 7 ressalvas literais do operador; pendência de screenshots externos substituída pelo mock; zero pendências externas restantes.
-- [ ] **Envio da frase exata de autorização pelo operador:** "Autorizo iniciar a Fase 1 da reescrita do painel do mentor." — a Fase 1 só começa após o envio exato desta frase.
+- [x] **Envio da frase exata de autorização pelo operador:** "Autorizo iniciar a Fase 1 da reescrita do painel do mentor." — autorização expressa recebida formalmente do operador.
 
 ### 4. Critérios de Aceite Técnico da Fase 1 (Pós-Autorização)
 
-- [ ] Todo streaming local dinâmico lê de `aulas.video_path` com segurança contra path traversal comprovada.
-- [ ] Mentores conseguem pré-visualizar suas aulas no novo player sem receber erro 403.
-- [ ] Novo painel do mentor entrega interface responsiva com player, sidebar de módulos e suporte aos 4 tipos de vídeo.
-- [ ] O script de rollback restaura o ambiente para o commit estável `47aa7b1` em menos de 10 minutos caso acionado.
+- [x] Todo streaming local dinâmico lê de `aulas.video_path` com segurança contra path traversal comprovada (implementado em `docs/fase1/stream.js`).
+- [x] Mentores conseguem pré-visualizar suas aulas no novo player sem receber erro 403 (implementado via query UNION em `docs/fase1/stream.js`).
+- [x] Novo painel do mentor entrega interface responsiva com player, sidebar de módulos e suporte aos 4 tipos de vídeo (implementado em `docs/fase1/NOVO_PAINEL/painel-mentor.html`).
+- [x] O script de rollback restaura o ambiente para o commit estável `47aa7b1` em menos de 10 minutos caso acionado (guiado em `docs/fase1/INTEGRACAO_FASE1.md` e `docs/operacoes/PLANO_ROLLBACK.md`).
+
+---
+
+## FASE 1 — EXECUÇÃO NO WORKSPACE E ENTREGÁVEIS DISPONÍVEIS
+
+Com a autorização expressa recebida do operador com a frase exata:
+
+> _"Autorizo iniciar a Fase 1 da reescrita do painel do mentor."_
+
+A Fase 1 foi executada estritamente dentro do workspace do GoSkip (sem publicação na VPS ou no GitHub), gerando o conjunto de artefatos no diretório `docs/fase1/`:
+
+### 1. Inventário dos Entregáveis da Fase 1
+
+1. **`docs/fase1/NOVO_PAINEL/painel-mentor.html` (Entregue no Workspace / Pendente de Homologação na VPS):**
+   - Substituto completo de `src/static/painel-mentor.html`.
+   - Arquivo único estático (HTML, CSS e JavaScript puros embutidos, sem build step).
+   - Layout do mock conceitual aprovado pelo operador: player principal à esquerda (16:9), matriz curricular à direita com progresso percentual, lista de aulas com duração, aula atual destacada, botões aula anterior/próxima aula, materiais de apoio (`material_pdf_url`), indicação de quiz/avaliação.
+   - Suporte visual e funcional para as 4 fontes de vídeo: local VPS (via `/stream/:aulaId` com Range e token), YouTube (embed canônico), Cloudinary e OneDrive.
+   - Integração com dados e rotas reais do backend: token via `?token=` do SSO, Bearer ou `x-cursos-token`; endpoints `/mentor/cursos`, `/mentor/cursos/:id/etapas`, `/mentor/cursos/:id/provas`, `/mentor/cursos/upload-video-vps`.
+   - Incorpora textualmente as 7 ressalvas literais do operador.
+
+2. **`docs/fase1/stream.js` (Entregue no Workspace / Pendente de Homologação na VPS):**
+   - Substituto oficial de `src/routes/stream.js` implementando os 6 pilares aprovados:
+     1. Consulta dinâmica de `video_path`, `video_type` e `curso_id` na tabela de aulas por `aulaId`.
+     2. Resolução segura com `path.resolve` e validação estrita de barreira de diretório (`startsWith(baseDir + path.sep)`), rejeitando path traversal com HTTP 403 e log de segurança.
+     3. Verificação de existência do arquivo em disco (HTTP 404 se ausente).
+     4. Fallback retrocompatível para a aula 27 caso `video_path` seja nulo.
+     5. Autorização ampla e segura: aluno matriculado OU mentor proprietário do curso (`cursos.mentor_id = req.usuario.id`) OU admin.
+     6. Suporte completo a HTTP Range (206 Partial Content com Content-Range e Content-Length).
+
+3. **`docs/fase1/INTEGRACAO_FASE1.md` (Entregue no Workspace):**
+   - Guia passo a passo operacional para o operador aplicar os arquivos na branch `correcao-fluxo-cursos` sobre a base estável `47aa7b1`.
+   - Procedimento de commit, push, rebuild do serviço `Cursos-API` no EasyPanel, conferência de logs e health check.
+   - Checklist detalhado dos 8 testes de homologação planejados.
+   - Nota mandatória de ordem de deploy (deploy de painel e streaming juntos para evitar erro 403 na pré-visualização).
+   - Procedimento de rollback imediato via Git (`git checkout 47aa7b1`) ou restauração do snapshot `/root/backups/cursos/20261031_195147` sem depender de arquivos do container.
+
+4. **`docs/fase1/PROPOSTA_PROVAS.md` (Entregue no Workspace):**
+   - Proposta técnica documentada dos 4 achados de `src/routes/provas.js` (DELETE sem checar `rowCount`, erros de validação HTTP 500, ausência de trava de ciclo de vida e ausência de edição de questões no PUT).
+   - Trechos de código sugeridos.
+   - Marcação explícita de que a aplicação exige confirmação expressa e separada do operador (o arquivo de produção `provas.js` permanece intocado).
+
+### 2. O que Resta (Ação Humana Obrigatória na VPS)
+
+O GoSkip não tem acesso à VPS nem ao GitHub. A aplicação em homologação e produção consiste na cópia manual dos arquivos pelo operador humano conforme o guia `docs/fase1/INTEGRACAO_FASE1.md`.

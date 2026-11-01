@@ -47,10 +47,10 @@ Estes itens foram executados e atestados formalmente pelo **OPERADOR DA VPS**:
 Com a resolução e confirmação pelo operador do **Backup e Dry-Run**, do **Redis RDB**, do **Inventário EasyPanel**, da **Rotação da Chave API do EasyPanel**, do **Runtime Node v20.20.2**, do **PostgreSQL com Migrations aplicadas**, o recebimento/análise técnica de **`src/routes/provas.js`** e a **aprovação formal do mock visual do player pelo operador**:
 
 - [x] **1. Referência Visual do Player Aprovada pelo Operador (CONCLUÍDA):**  
-      A pendência de screenshots externos da plataforma Adapta fica formal e integralmente **SUBSTITUÍDA pelo mock conceitual aprovado pelo operador** no workspace do GoSkip.  
-      O operador declarou: _"O mock enviado deve ser considerado a referência visual desejada para o novo player do painel/aluno de Cursos."_  
-      Elementos aprovados: player principal à esquerda; matriz curricular à direita com progresso percentual; lista de aulas com duração; aula atual destacada; botões anterior e próxima aula; materiais de apoio; indicação de quiz; suporte visual para vídeo local VPS, YouTube e OneDrive.  
-      **7 Ressalvas do Operador Registradas:**
+       A pendência de screenshots externos da plataforma Adapta fica formal e integralmente **SUBSTITUÍDA pelo mock conceitual aprovado pelo operador** no workspace do GoSkip.  
+       O operador declarou: _"O mock enviado deve ser considerado a referência visual desejada para o novo player do painel/aluno de Cursos."_  
+       Elementos aprovados: player principal à esquerda; matriz curricular à direita com progresso percentual; lista de aulas com duração; aula atual destacada; botões anterior e próxima aula; materiais de apoio; indicação de quiz; suporte visual para vídeo local VPS, YouTube e OneDrive.  
+       **7 Ressalvas do Operador Registradas:**
   1. O mock é conceitual.
   2. O mock foi produzido no workspace do GoSkip.
   3. O mock não representa uma captura real da página externa.
@@ -77,10 +77,10 @@ Com a resolução e confirmação pelo operador do **Backup e Dry-Run**, do **Re
 > Qualquer outra mensagem ou frase diferente não autoriza o início da Fase 1.
 
 ```text
-[ ] FASE 1 FORMALMENTE AUTORIZADA PELO RESPONSÁVEL DO PROJETO
+[x] FASE 1 FORMALMENTE AUTORIZADA PELO RESPONSÁVEL DO PROJETO
 
-Responsável: __________________________________________________
-Data e Hora: __________________________________________________
+Responsável: OPERADOR DA VPS (Atestado Formalmente)
+Data e Hora: Autorizado em Sessão Operacional
 Frase Exata Enviada: "Autorizo iniciar a Fase 1 da reescrita do painel do mentor."
 Snapshot de Backup Validado: /root/backups/cursos/20261031_195147 (SHA-256 OK, Redis RDB OK)
 Token EasyPanel Rotacionado: [x] SIM (Revogado e recriado pelo operador; marcador [TOKEN_REMOVIDO_E_ROTACIONADO])
