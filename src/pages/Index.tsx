@@ -2223,6 +2223,156 @@ export default function Index() {
                   </div>
                 </div>
 
+                {/* Card Especial: Teste Pré-Homologação na VPS (Modo A e Modo B) */}
+                <div className="p-4 rounded-lg bg-slate-950 border-2 border-cyan-800/60 space-y-4">
+                  <div className="flex items-center justify-between flex-wrap gap-2 border-b border-slate-800 pb-3">
+                    <div className="flex items-center gap-2">
+                      <div className="p-1.5 rounded bg-cyan-500/20 text-cyan-400">
+                        <Terminal className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-white text-sm flex items-center gap-2">
+                          Teste Pré-Homologação na VPS (Caminho Seguro Não Invasivo)
+                        </h4>
+                        <p className="text-slate-400 text-xs mt-0.5">
+                          Resposta ao operador: testar antes de oficializar, sem comitar, sem
+                          rebuild e sem tocar em produção.
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/40 text-[10px]">
+                        HOMOLOGAÇÃO PENDENTE DE AUTORIZAÇÃO
+                      </Badge>
+                      <Badge className="bg-cyan-500/20 text-cyan-300 border-cyan-500/40 text-[10px]">
+                        Isolamento Estrito em /tmp
+                      </Badge>
+                    </div>
+                  </div>
+
+                  {/* Resumo dos 2 Modos */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                    <div className="p-3 rounded bg-slate-900 border border-slate-800 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-cyan-300 flex items-center gap-1.5">
+                          <ShieldCheck className="w-4 h-4 text-cyan-400" />
+                          MODO A: Estático (Zero Risco)
+                        </span>
+                        <Badge
+                          variant="outline"
+                          className="border-cyan-500/40 text-cyan-400 text-[10px]"
+                        >
+                          Passo Inicial
+                        </Badge>
+                      </div>
+                      <p className="text-slate-300 text-[11px]">
+                        A partir de <code>/tmp/fase1_candidatos/</code>: confere os hashes SHA-256
+                        contra o manifesto, executa <code>node --check</code> no stream.js, valida
+                        estrutura do HTML e gera o diff unificado contra o commit base{' '}
+                        <code>47aa7b1</code> <strong>sem aplicar nada</strong>. Prova final com{' '}
+                        <code>git status</code> 100% limpo no repo real.
+                      </p>
+                      <div className="bg-slate-950 p-2 rounded font-mono text-[11px] text-cyan-200 border border-slate-800">
+                        ./docs/operacoes/testar-fase1-vps.sh estatico
+                      </div>
+                    </div>
+
+                    <div className="p-3 rounded bg-slate-900 border border-slate-800 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-emerald-300 flex items-center gap-1.5">
+                          <Radio className="w-4 h-4 text-emerald-400" />
+                          MODO B: Porta Alternativa (3334)
+                        </span>
+                        <Badge
+                          variant="outline"
+                          className="border-emerald-500/40 text-emerald-400 text-[10px]"
+                        >
+                          Teste Real Isolado
+                        </Badge>
+                      </div>
+                      <p className="text-slate-300 text-[11px]">
+                        Cria cópia descartável em <code>/tmp/fase1_teste/</code> (sem .git),
+                        reutiliza <code>node_modules</code> e conecta ao Postgres lendo o .env do
+                        repo (sem exibir valores). Sobe a app na porta 3334 para testar painel no
+                        navegador e executar bateria com curl. Limpeza com comando parar.
+                      </p>
+                      <div className="bg-slate-950 p-2 rounded font-mono text-[11px] text-emerald-200 border border-slate-800">
+                        ./docs/operacoes/testar-fase1-vps.sh servidor
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* O que NÃO dá para testar antes da homologação */}
+                  <div className="p-3 rounded bg-amber-950/20 border border-amber-800/40 space-y-1.5 text-xs">
+                    <span className="font-bold text-amber-300 flex items-center gap-1.5">
+                      <AlertTriangle className="w-4 h-4 text-amber-400" />
+                      O que NÃO dá para testar antes da aplicação oficial (exclusivo da
+                      homologação):
+                    </span>
+                    <ul className="list-disc list-inside space-y-1 text-slate-300 text-[11px]">
+                      <li>
+                        <strong>Rebuild no EasyPanel:</strong> Exige commit/push no GitHub para o
+                        EasyPanel puxar a branch. No pré-teste, nada sobe pro GitHub.
+                      </li>
+                      <li>
+                        <strong>Upload real em /srv/cursos/videos:</strong> Escrita no disco de
+                        produção altera o storage físico. Fica para a homologação autorizada.
+                      </li>
+                      <li>
+                        <strong>Painel servido pela URL oficial de produção:</strong> Permanece
+                        intacto no container de produção até autorização formal.
+                      </li>
+                    </ul>
+                  </div>
+
+                  {/* Bateria de Testes com curl */}
+                  <div className="space-y-2 text-xs">
+                    <span className="font-semibold text-white">
+                      Bateria de Testes Automatizada com curl (Saída Esperada Documentada):
+                    </span>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 text-[11px]">
+                      <div className="p-2 rounded bg-slate-900 border border-slate-800">
+                        <span className="text-slate-400 block font-semibold">Health Check</span>
+                        <code className="text-emerald-300">GET /health &rarr; 200 OK</code>
+                      </div>
+                      <div className="p-2 rounded bg-slate-900 border border-slate-800">
+                        <span className="text-slate-400 block font-semibold">Range HTTP</span>
+                        <code className="text-emerald-300">Range: bytes &rarr; 206 Partial</code>
+                      </div>
+                      <div className="p-2 rounded bg-slate-900 border border-slate-800">
+                        <span className="text-slate-400 block font-semibold">Sem Permissão</span>
+                        <code className="text-amber-300">Usuário estranho &rarr; 403</code>
+                      </div>
+                      <div className="p-2 rounded bg-slate-900 border border-slate-800">
+                        <span className="text-slate-400 block font-semibold">Path Traversal</span>
+                        <code className="text-rose-300">../../etc/passwd &rarr; 403</code>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Botões de Cópia dos Documentos */}
+                  <div className="flex items-center gap-2 pt-1 flex-wrap">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleCopyPath('docs/fase1/TESTE_PRE_HOMOLOGACAO_VPS.md')}
+                      className="text-xs border-cyan-800 bg-cyan-950/30 text-cyan-300 hover:bg-cyan-900/40"
+                    >
+                      <Copy className="w-3.5 h-3.5 mr-1" /> Copiar
+                      docs/fase1/TESTE_PRE_HOMOLOGACAO_VPS.md
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleCopyPath('docs/operacoes/testar-fase1-vps.sh')}
+                      className="text-xs border-slate-700 bg-slate-900 text-slate-300 hover:bg-slate-800"
+                    >
+                      <Copy className="w-3.5 h-3.5 mr-1" /> Copiar
+                      docs/operacoes/testar-fase1-vps.sh
+                    </Button>
+                  </div>
+                </div>
+
                 {/* Resumo do Passo a Passo para o Operador na VPS */}
                 <div className="p-4 rounded-lg bg-slate-950 border border-slate-800 space-y-3">
                   <h4 className="font-bold text-white text-sm flex items-center gap-2">
