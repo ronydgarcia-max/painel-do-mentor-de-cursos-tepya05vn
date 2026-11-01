@@ -1947,7 +1947,10 @@ export default function Index() {
                         Branch: correcao-fluxo-cursos &bull; Base: 47aa7b1
                       </Badge>
                       <Badge className="bg-purple-500/20 text-purple-300 border-purple-500/40 text-xs">
-                        17 Itens Auditados &bull; SHA-256 Validados
+                        27 Itens Validados &bull; SHA-256 Atualizados
+                      </Badge>
+                      <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/40 text-xs">
+                        sessionStorage Ativo &bull; Zero localStorage
                       </Badge>
                     </div>
                     <CardTitle className="text-xl text-white flex items-center gap-2">
@@ -2030,7 +2033,8 @@ export default function Index() {
                         <p className="text-slate-400 text-[11px] pt-1">
                           Arquivo estático autônomo com player 16:9, matriz curricular lateral,
                           suporte aos 4 formatos de vídeo e tratamento seguro de token em query
-                          string (validação JWT + replaceState + sem logs).
+                          string (validação JWT + replaceState + sem logs + sessionStorage
+                          exclusivo, sem persistência em localStorage).
                         </p>
                       </div>
                       <Button
@@ -2099,8 +2103,9 @@ export default function Index() {
                         </div>
                         <p className="text-slate-400 text-[11px] pt-1">
                           Manual operacional completo: backup /root/backups/cursos/20261031_195147,
-                          arquivos substituídos, comandos de cópia, node -c, rebuild EasyPanel,
-                          health check, 8 testes e rollback.
+                          arquivos substituídos, comandos de cópia para pasta temporária
+                          (/tmp/fase1_candidatos), diff previsto contra 47aa7b1, node --check,
+                          rebuild EasyPanel, health check, 8 testes e rollback.
                         </p>
                       </div>
                       <Button
@@ -2154,7 +2159,7 @@ export default function Index() {
                           5. REVISAO_FASE1.md
                         </span>
                         <Badge className="bg-cyan-500/20 text-cyan-300 border-cyan-500/30 text-[10px]">
-                          17 Pontos Auditados
+                          27 Pontos Auditados
                         </Badge>
                       </div>
                       <div className="space-y-1.5 text-slate-300">
@@ -2165,9 +2170,10 @@ export default function Index() {
                           </code>
                         </div>
                         <p className="text-slate-400 text-[11px] pt-1">
-                          Revisão ponto a ponto com veredito (15 OK, 2 ajustados), evidências com
-                          linha de arquivo, rotas reais do backend e compatibilidade com os 4 tipos
-                          de vídeo.
+                          Revisão ponto a ponto dos 27 itens de conformidade com veredito,
+                          evidências com arquivo e linha, eliminação de localStorage para
+                          sessionStorage, rotas reais do backend e compatibilidade com os 4 tipos de
+                          vídeo.
                         </p>
                       </div>
                       <Button
@@ -2199,9 +2205,10 @@ export default function Index() {
                           </code>
                         </div>
                         <p className="text-slate-400 text-[11px] pt-1">
-                          Manifesto SHA-256 dos 4 arquivos, resultado dos testes de sintaxe (node
-                          --check), varredura de segredos (zero vazamentos) e comando exato para git
-                          diff 47aa7b1 no repositório real.
+                          Manifesto SHA-256 atualizado dos 6 arquivos, veredito e evidências
+                          (arquivo+linha) para os 27 pontos pré-homologação, resultado do node
+                          --check, varredura de segredos (zero vazamentos) e comandos de cópia para
+                          pasta temporária com diff previsto contra 47aa7b1.
                         </p>
                       </div>
                       <Button
@@ -2229,14 +2236,31 @@ export default function Index() {
                       <code>47aa7b1</code>).
                     </li>
                     <li>
-                      <strong>Copiar os arquivos:</strong> Aplicar <code>docs/fase1/stream.js</code>{' '}
-                      em <code>src/routes/stream.js</code> e{' '}
-                      <code>docs/fase1/NOVO_PAINEL/painel-mentor.html</code> em{' '}
-                      <code>src/static/painel-mentor.html</code>.
+                      <strong>Copiar para pasta temporária:</strong> Copiar os arquivos candidatos
+                      para <code>/tmp/fase1_candidatos/</code> <strong>sem substituir</strong> os
+                      originais em produção.
+                    </li>
+                    <li>
+                      <strong>Gerar diff previsto contra 47aa7b1:</strong> Executar{' '}
+                      <code>
+                        git show 47aa7b1:src/routes/stream.js | diff -u -
+                        /tmp/fase1_candidatos/src/routes/stream.js
+                      </code>{' '}
+                      e{' '}
+                      <code>
+                        git show 47aa7b1:src/static/painel-mentor.html | diff -u -
+                        /tmp/fase1_candidatos/src/static/painel-mentor.html
+                      </code>
+                      .
+                    </li>
+                    <li>
+                      <strong>Substituir após auditoria visual:</strong> Fazer backup local
+                      (.bak.fase1) e copiar de <code>/tmp/fase1_candidatos/</code> para{' '}
+                      <code>src/</code>.
                     </li>
                     <li>
                       <strong>Validar sintaxe:</strong> Executar{' '}
-                      <code>node -c src/routes/stream.js</code> na VPS antes de comitar.
+                      <code>node --check src/routes/stream.js</code> na VPS antes de comitar.
                     </li>
                     <li>
                       <strong>Commit e Push:</strong> Criar commit rastreável e enviar para{' '}

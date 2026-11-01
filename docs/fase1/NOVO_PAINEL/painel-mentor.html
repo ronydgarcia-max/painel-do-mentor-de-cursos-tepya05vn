@@ -1387,12 +1387,12 @@
         }
 
         // 1. Extração e Tratamento Seguro de Token Transitório via Query String
-        // Conformidade estrita com as 6 exigências do operador:
+        // Conformidade estrita com as 6 exigências do operador e Regra de Segurança Pré-Homologação:
         // 1. validar o token antes de consumir
-        // 2. criar a sessão necessária (localStorage 'cursos_token')
-        // 3. remover o token da URL com history.replaceState
+        // 2. criar a sessão necessária exclusivamente em sessionStorage (ZERO token em localStorage)
+        // 3. remover o token da URL imediatamente com history.replaceState
         // 4. não registrar o token em logs (console/telemetria)
-        // 5. não enviar o token em links
+        // 5. não enviar o token em links internos
         // 6. não mantê-lo na URL durante a navegação
         function consumirTokenTransicao() {
           try {
@@ -1402,9 +1402,8 @@
             if (tokenQuery) {
               // 1. Validar o formato do token antes de consumir
               if (validarFormatoToken(tokenQuery)) {
-                // 2. Criar a sessão necessária
+                // 2. Criar a sessão estritamente em sessionStorage (requisito: ausência em localStorage)
                 sessionStorage.setItem('cursos_token', tokenQuery.trim())
-                localStorage.setItem('cursos_token', tokenQuery.trim())
               } else {
                 console.warn('[AUTH] Token transitório descartado por formato inválido.')
               }
@@ -1420,9 +1419,8 @@
             // Silencia qualquer exceção sem expor valores
           }
 
-          // Recupera da sessão persistida (sessionStorage ou localStorage)
-          const tokenSalvo =
-            sessionStorage.getItem('cursos_token') || localStorage.getItem('cursos_token') || null
+          // Recupera da sessão persistida em sessionStorage (ou cookie quando suportado; nunca localStorage)
+          const tokenSalvo = sessionStorage.getItem('cursos_token') || null
 
           if (tokenSalvo && validarFormatoToken(tokenSalvo)) {
             return tokenSalvo
@@ -1834,7 +1832,6 @@
 
         document.getElementById('btnLogout').addEventListener('click', () => {
           sessionStorage.removeItem('cursos_token')
-          localStorage.removeItem('cursos_token')
           state.token = null
           atualizarStatusAuth(false, 'Desconectado')
           showToast('Sessão encerrada.', 'info')

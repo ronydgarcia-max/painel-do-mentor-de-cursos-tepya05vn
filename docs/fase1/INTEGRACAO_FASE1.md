@@ -60,39 +60,78 @@ git log -1 --oneline
 # Deve confirmar que a base direta é o commit 47aa7b1
 ```
 
-### Passo 3: Criar cópias de segurança locais antes de sobrescrever
+### Passo 3: Criar diretório temporário para inspeção e cópia segura dos candidatos
+
+> ⚠️ **REGRA MANDATÓRIA DE SEGURANÇA:** Os arquivos originais em produção **NÃO PODEM SER SUBSTITUÍDOS DIRETAMENTE**. Os artefatos candidatos devem ser copiados primeiro para um diretório temporário isolado (`/tmp/fase1_candidatos/`). O diff definitivo contra o commit base `47aa7b1` deve ser gerado e auditado visualmente pelo operador antes de qualquer substituição.
 
 ```bash
-cp src/routes/stream.js src/routes/stream.js.bak.fase1
-cp src/static/painel-mentor.html src/static/painel-mentor.html.bak.fase1
+# 1. Criar diretório temporário isolado
+mkdir -p /tmp/fase1_candidatos/src/routes
+mkdir -p /tmp/fase1_candidatos/src/static
+mkdir -p /tmp/fase1_candidatos/docs/fase1
+
+# 2. Transferir os arquivos candidatos do workspace para o diretório temporário
+# (Exemplo via scp ou criando os arquivos manualmente com base no workspace):
+# /tmp/fase1_candidatos/src/routes/stream.js            <- docs/fase1/stream.js
+# /tmp/fase1_candidatos/src/static/painel-mentor.html   <- docs/fase1/NOVO_PAINEL/painel-mentor.html
 ```
 
-### Passo 4: Transferir e copiar os novos arquivos
+### Passo 4: Auditoria do Diff Definitivo na VPS contra o Commit Base `47aa7b1`
 
-Copiar o conteúdo dos artefatos do workspace para as respectivas pastas no repositório real:
+Com os arquivos candidatos posicionados em `/tmp/fase1_candidatos/`, o operador executa o diff comparando a base real `47aa7b1` com os candidatos temporários **SEM TOCAR nos arquivos de produção atuais**:
 
-- `docs/fase1/stream.js` ➔ `/root/cursos-api/src/routes/stream.js`
-- `docs/fase1/NOVO_PAINEL/painel-mentor.html` ➔ `/root/cursos-api/src/static/painel-mentor.html`
-- Manter uma pasta `docs/fase1/` no repositório com os relatórios de auditoria para fins de rastreabilidade.
+```bash
+cd /root/cursos-api
+
+# Comparar a versão estável 47aa7b1 de stream.js com o candidato temporário:
+git show 47aa7b1:src/routes/stream.js | diff -u - /tmp/fase1_candidatos/src/routes/stream.js
+
+# Comparar a versão estável 47aa7b1 de painel-mentor.html com o candidato temporário:
+git show 47aa7b1:src/static/painel-mentor.html | diff -u - /tmp/fase1_candidatos/src/static/painel-mentor.html
+
+# Ou comparar diretamente contra a árvore de trabalho da branch correcao-fluxo-cursos:
+diff -u src/routes/stream.js /tmp/fase1_candidatos/src/routes/stream.js
+diff -u src/static/painel-mentor.html /tmp/fase1_candidatos/src/static/painel-mentor.html
+```
+
+### Passo 5: Criar backup local e aplicar a substituição apenas após revisão aprovada
+
+Somente após o operador aprovar visualmente o diff das saídas acima:
+
+```bash
+# Backup preventivo dos arquivos atuais
+cp src/routes/stream.js src/routes/stream.js.bak.fase1
+cp src/static/painel-mentor.html src/static/painel-mentor.html.bak.fase1
+
+# Substituição definitiva dos arquivos a partir do diretório temporário
+cp /tmp/fase1_candidatos/src/routes/stream.js src/routes/stream.js
+cp /tmp/fase1_candidatos/src/static/painel-mentor.html src/static/painel-mentor.html
+
+# Copiar os relatórios de auditoria para rastreabilidade
+mkdir -p docs/fase1
+cp -r /tmp/fase1_candidatos/docs/fase1/* docs/fase1/ 2>/dev/null || true
+```
 
 ---
 
-## 5. VALIDAÇÃO SINTÁTICA LOCAL NA VPS
+## 6. VALIDAÇÃO SINTÁTICA LOCAL NA VPS
 
-Antes de commitar ou acionar rebuild, valide a sintaxe do arquivo JavaScript substituído:
+Antes de commitar ou acionar rebuild, valide a sintaxe do arquivo JavaScript substituído (pode ser executado tanto no candidato em `/tmp/fase1_candidatos/src/routes/stream.js` quanto no destino final):
 
 ```bash
-# Validação sintática do arquivo Node.js
+# Validação sintática do arquivo Node.js com node --check
+node --check src/routes/stream.js
+# ou de forma abreviada:
 node -c src/routes/stream.js
 # Saída esperada: Silenciosa (Exit code 0). Qualquer erro de sintaxe interrompe o processo aqui.
 
-# Validação do checksum SHA-256 (opcional, para conferir integridade da transferência)
+# Validação do checksum SHA-256 para conferir integridade da transferência
 sha256sum src/routes/stream.js src/static/painel-mentor.html
 ```
 
 ---
 
-## 6. COMMIT, PUSH E REBUILD DO CURSOS-API NO EASYPANEL
+## 7. COMMIT, PUSH E REBUILD DO CURSOS-API NO EASYPANEL
 
 ### Passo 1: Commit e Push na branch de trabalho
 
@@ -113,9 +152,9 @@ git push origin correcao-fluxo-cursos
 
 ---
 
-## 7. HEALTH CHECK E TESTES FUNCIONAIS
+## 8. HEALTH CHECK E TESTES FUNCIONAIS
 
-### 7.1. Health Check Imediato
+### 8.1. Health Check Imediato
 
 ```bash
 # Verificar logs do container ativo
@@ -126,7 +165,7 @@ curl -I http://127.0.0.1:3333/
 # Deve retornar HTTP 200/302 sem erros 502/503
 ```
 
-### 7.2. Bateria de Testes Funcionais Obrigatórios
+### 8.2. Bateria de Testes Funcionais Obrigatórios
 
 1. **Teste 1: Consumo e Limpeza de Token em Query String (`painel-mentor.html`)**
    - **Ação:** Acessar no navegador `https://<DOMINIO>/painel?token=<JWT_MENTOR>`.
@@ -158,7 +197,7 @@ curl -I http://127.0.0.1:3333/
 
 ---
 
-## 8. PLANO DE ROLLBACK RÁPIDO
+## 9. PLANO DE ROLLBACK RÁPIDO
 
 Se qualquer anomalia for detectada durante os testes funcionais:
 
@@ -183,7 +222,7 @@ cd /root
 
 ---
 
-## 9. CRITÉRIO DE APROVAÇÃO FINAL
+## 10. CRITÉRIO DE APROVAÇÃO FINAL
 
 A homologação da Fase 1 será considerada formalmente **APROVADA** quando, e somente quando:
 
