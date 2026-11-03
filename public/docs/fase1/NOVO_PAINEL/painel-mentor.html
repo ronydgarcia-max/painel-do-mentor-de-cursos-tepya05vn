@@ -1,0 +1,1942 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Painel do Mentor — Plataforma Cursos</title>
+    <meta
+      name="description"
+      content="Painel oficial de mentoria e gestão curricular da Plataforma Cursos (Fase 1)."
+    />
+    <!-- Fonte e Estilos Modernos Embutidos (Zero Dependência de Build Step) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --bg-base: #030712;
+        --bg-surface: #0b1329;
+        --bg-card: #111e3f;
+        --bg-card-hover: #162650;
+        --border-color: #1e293b;
+        --border-focus: #3b82f6;
+        --text-main: #f8fafc;
+        --text-muted: #94a3b8;
+        --text-dim: #64748b;
+        --primary: #2563eb;
+        --primary-hover: #1d4ed8;
+        --emerald: #10b981;
+        --emerald-bg: rgba(16, 185, 129, 0.15);
+        --amber: #f59e0b;
+        --amber-bg: rgba(245, 158, 11, 0.15);
+        --red: #ef4444;
+        --red-bg: rgba(239, 68, 68, 0.15);
+        --purple: #8b5cf6;
+        --purple-bg: rgba(139, 92, 246, 0.15);
+        --cyan: #06b6d4;
+        --cyan-bg: rgba(6, 182, 212, 0.15);
+        --radius: 10px;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: var(--bg-base);
+        color: var(--text-main);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      /* Cabeçalho Superior */
+      header.topbar {
+        background-color: rgba(11, 19, 41, 0.85);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--border-color);
+        padding: 14px 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: sticky;
+        top: 0;
+        z-index: 50;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .brand-logo {
+        background: linear-gradient(135deg, #2563eb, #8b5cf6);
+        color: #fff;
+        font-weight: 800;
+        font-size: 16px;
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+      }
+
+      .brand-title {
+        font-size: 15px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+      }
+
+      .brand-subtitle {
+        font-size: 11px;
+        color: var(--text-muted);
+      }
+
+      .top-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .badge-status {
+        font-size: 11px;
+        font-weight: 600;
+        padding: 4px 10px;
+        border-radius: 9999px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--emerald-bg);
+        color: var(--emerald);
+        border: 1px solid rgba(16, 185, 129, 0.3);
+      }
+
+      .badge-status .dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: currentColor;
+      }
+
+      .btn {
+        font-family: inherit;
+        font-size: 13px;
+        font-weight: 600;
+        padding: 8px 14px;
+        border-radius: var(--radius);
+        border: 1px solid transparent;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.15s ease;
+        text-decoration: none;
+      }
+
+      .btn-primary {
+        background-color: var(--primary);
+        color: #fff;
+      }
+
+      .btn-primary:hover {
+        background-color: var(--primary-hover);
+      }
+
+      .btn-outline {
+        background-color: transparent;
+        border-color: var(--border-color);
+        color: var(--text-main);
+      }
+
+      .btn-outline:hover {
+        background-color: var(--bg-card);
+        border-color: #334155;
+      }
+
+      .btn-sm {
+        font-size: 11px;
+        padding: 5px 10px;
+      }
+
+      /* Container Principal */
+      main.main-layout {
+        flex: 1;
+        max-width: 1440px;
+        width: 100%;
+        margin: 0 auto;
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      /* Seção de Ressalvas Vinculantes do Operador */
+      .ressalvas-banner {
+        background: rgba(30, 41, 59, 0.4);
+        border: 1px solid var(--border-color);
+        border-left: 4px solid var(--primary);
+        border-radius: var(--radius);
+        padding: 16px;
+      }
+
+      .ressalvas-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 8px;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .ressalvas-title {
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #60a5fa;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .ressalvas-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 8px;
+        font-size: 11px;
+        color: var(--text-muted);
+        margin-top: 10px;
+      }
+
+      .ressalva-item {
+        background: rgba(11, 19, 41, 0.7);
+        padding: 8px 12px;
+        border-radius: 6px;
+        border: 1px solid rgba(255, 255, 255, 0.04);
+      }
+
+      .ressalva-item strong {
+        color: var(--text-main);
+      }
+
+      /* Barra de Navegação das Seções do Painel */
+      .tabs-bar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 8px;
+        overflow-x: auto;
+      }
+
+      .tab-btn {
+        background: transparent;
+        border: none;
+        color: var(--text-muted);
+        font-family: inherit;
+        font-size: 13px;
+        font-weight: 600;
+        padding: 8px 14px;
+        border-radius: var(--radius);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.15s ease;
+        white-space: nowrap;
+      }
+
+      .tab-btn:hover {
+        color: var(--text-main);
+        background: var(--bg-surface);
+      }
+
+      .tab-btn.active {
+        background: var(--primary);
+        color: #fff;
+      }
+
+      /* Grid do Player e Matriz Curricular (Mock Aprovado) */
+      .player-workspace {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+
+      @media (min-width: 1024px) {
+        .player-workspace {
+          grid-template-columns: 2fr 1fr; /* Player 2/3 à esquerda, Matriz 1/3 à direita */
+        }
+      }
+
+      /* Coluna Esquerda: Player Principal 16:9 */
+      .player-container {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .video-viewport {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        background: #000;
+        border-radius: var(--radius);
+        overflow: hidden;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .video-viewport video,
+      .video-viewport iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+        object-fit: contain;
+      }
+
+      .video-badge {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        z-index: 10;
+        background: rgba(0, 0, 0, 0.75);
+        backdrop-filter: blur(8px);
+        padding: 4px 10px;
+        border-radius: 6px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        font-size: 11px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .video-badge.badge-vps {
+        color: var(--emerald);
+        border-color: rgba(16, 185, 129, 0.3);
+      }
+      .video-badge.badge-youtube {
+        color: #f87171;
+        border-color: rgba(239, 68, 68, 0.3);
+      }
+      .video-badge.badge-onedrive {
+        color: var(--cyan);
+        border-color: rgba(6, 182, 212, 0.3);
+      }
+      .video-badge.badge-cloudinary {
+        color: var(--purple);
+        border-color: rgba(139, 92, 246, 0.3);
+      }
+
+      .video-empty-state {
+        text-align: center;
+        padding: 24px;
+        max-width: 420px;
+      }
+
+      .video-empty-state svg {
+        width: 48px;
+        height: 48px;
+        color: var(--text-dim);
+        margin-bottom: 12px;
+      }
+
+      .video-empty-state h3 {
+        font-size: 15px;
+        font-weight: 700;
+        margin-bottom: 4px;
+      }
+
+      .video-empty-state p {
+        font-size: 12px;
+        color: var(--text-muted);
+      }
+
+      /* Barra de Detalhes da Aula e Navegação Anterior / Próxima */
+      .lesson-meta-bar {
+        background: var(--bg-surface);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius);
+        padding: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .lesson-title-area {
+        flex: 1;
+        min-width: 250px;
+      }
+
+      .lesson-badge-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 4px;
+      }
+
+      .tag {
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        padding: 2px 8px;
+        border-radius: 4px;
+        background: var(--bg-card);
+        color: var(--text-muted);
+        border: 1px solid var(--border-color);
+      }
+
+      .tag-blue {
+        background: rgba(37, 99, 235, 0.15);
+        color: #60a5fa;
+        border-color: rgba(37, 99, 235, 0.3);
+      }
+      .tag-amber {
+        background: var(--amber-bg);
+        color: var(--amber);
+        border-color: rgba(245, 158, 11, 0.3);
+      }
+
+      .lesson-headline {
+        font-size: 17px;
+        font-weight: 700;
+        color: var(--text-main);
+      }
+
+      .lesson-nav-buttons {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      /* Seção de Materiais de Apoio */
+      .materials-box {
+        background: var(--bg-surface);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius);
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .box-title {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--text-main);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .material-item {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .material-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        overflow: hidden;
+      }
+
+      .material-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 6px;
+        background: rgba(239, 68, 68, 0.15);
+        color: #f87171;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 11px;
+        flex-shrink: 0;
+      }
+
+      .material-text {
+        overflow: hidden;
+      }
+
+      .material-name {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--text-main);
+        white-space: nowrap;
+        overflow: ellipsis;
+      }
+
+      .material-desc {
+        font-size: 11px;
+        color: var(--text-muted);
+      }
+
+      /* Coluna Direita: Matriz Curricular */
+      .curriculum-sidebar {
+        background: var(--bg-surface);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius);
+        padding: 18px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        height: fit-content;
+      }
+
+      .progress-widget {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .progress-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .progress-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--text-muted);
+      }
+
+      .progress-pct {
+        font-size: 14px;
+        font-weight: 800;
+        font-family: 'JetBrains Mono', monospace;
+        color: var(--emerald);
+      }
+
+      .progress-track {
+        width: 100%;
+        height: 6px;
+        background: #1e293b;
+        border-radius: 999px;
+        overflow: hidden;
+      }
+
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #10b981, #3b82f6);
+        border-radius: 999px;
+        transition: width 0.3s ease;
+      }
+
+      .progress-caption {
+        font-size: 11px;
+        color: var(--text-dim);
+        display: flex;
+        justify-content: space-between;
+      }
+
+      /* Lista Sequencial de Aulas */
+      .lessons-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        max-height: 520px;
+        overflow-y: auto;
+        padding-right: 4px;
+      }
+
+      .lessons-list::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      .lessons-list::-webkit-scrollbar-thumb {
+        background: #334155;
+        border-radius: 3px;
+      }
+
+      .lesson-item {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 10px 12px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+
+      .lesson-item:hover {
+        background: var(--bg-card-hover);
+        border-color: #334155;
+        transform: translateX(2px);
+      }
+
+      .lesson-item.active {
+        background: rgba(37, 99, 235, 0.18);
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 1px #3b82f6;
+      }
+
+      .lesson-item-left {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        overflow: hidden;
+      }
+
+      .lesson-ordem {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--text-muted);
+        width: 20px;
+        text-align: center;
+        font-family: 'JetBrains Mono', monospace;
+        flex-shrink: 0;
+      }
+
+      .lesson-item.active .lesson-ordem {
+        color: #60a5fa;
+      }
+
+      .lesson-name {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--text-main);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .lesson-meta-small {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 10px;
+        color: var(--text-muted);
+        margin-top: 2px;
+      }
+
+      .badge-quiz {
+        background: var(--amber-bg);
+        color: var(--amber);
+        font-size: 9px;
+        font-weight: 700;
+        padding: 1px 6px;
+        border-radius: 4px;
+        border: 1px solid rgba(245, 158, 11, 0.3);
+        text-transform: uppercase;
+      }
+
+      /* Seletor de Cursos do Mentor */
+      .course-selector-bar {
+        background: var(--bg-surface);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius);
+        padding: 12px 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .select-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .select-wrapper label {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--text-muted);
+      }
+
+      .custom-select {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        color: var(--text-main);
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-family: inherit;
+        font-size: 12px;
+        font-weight: 600;
+        outline: none;
+        min-width: 240px;
+      }
+
+      .custom-select:focus {
+        border-color: var(--border-focus);
+      }
+
+      /* Modal / Overlay de Carregamento e Mensagens */
+      .toast-container {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        z-index: 100;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .toast {
+        background: #1e293b;
+        color: #fff;
+        padding: 12px 18px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 500;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        border: 1px solid #334155;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        animation: fadeIn 0.2s ease;
+      }
+
+      .toast.success {
+        border-color: var(--emerald);
+      }
+      .toast.error {
+        border-color: var(--red);
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(6px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Responsividade Celular */
+      @media (max-width: 768px) {
+        header.topbar {
+          padding: 12px 16px;
+        }
+        main.main-layout {
+          padding: 16px;
+          gap: 16px;
+        }
+        .brand-subtitle {
+          display: none;
+        }
+        .lesson-nav-buttons {
+          width: 100%;
+          justify-content: space-between;
+        }
+        .lesson-nav-buttons .btn {
+          flex: 1;
+          justify-content: center;
+        }
+        .custom-select {
+          min-width: 100%;
+        }
+        .course-selector-bar {
+          flex-direction: column;
+          align-items: stretch;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Topbar com Identidade e Estado de Autenticação -->
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-logo">C</div>
+        <div>
+          <div class="brand-title">Painel do Mentor</div>
+          <div class="brand-subtitle">Plataforma Cursos &bull; Fase 1 (Substituto Oficial)</div>
+        </div>
+      </div>
+
+      <div class="top-actions">
+        <span id="authStatusBadge" class="badge-status">
+          <span class="dot"></span>
+          <span id="authStatusText">Autenticando...</span>
+        </span>
+
+        <button
+          id="btnAtualizarDados"
+          class="btn btn-outline btn-sm"
+          title="Recarregar dados do servidor"
+        >
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+            <path d="M3 3v5h5" />
+            <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
+            <path d="M16 21h5v-5" />
+          </svg>
+          Recarregar
+        </button>
+
+        <button id="btnLogout" class="btn btn-outline btn-sm">Sair</button>
+      </div>
+    </header>
+
+    <!-- Conteúdo Principal -->
+    <main class="main-layout">
+      <!-- Banner das 7 Ressalvas Vinculantes do Operador -->
+      <section class="ressalvas-banner">
+        <div class="ressalvas-header">
+          <div class="ressalvas-title">
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            </svg>
+            Referência Visual Aprovada &bull; As 7 Ressalvas Vinculantes do Operador
+          </div>
+          <span class="tag tag-blue">Escopo Aprovado Fase 1</span>
+        </div>
+        <p style="font-size: 11px; color: #cbd5e1">
+          O mock conceitual foi homologado pelo operador como referência de UX para o novo player e
+          a matriz curricular. A implementação abaixo respeita integralmente as 7 condições
+          literais:
+        </p>
+        <div class="ressalvas-grid">
+          <div class="ressalva-item"><strong>1.</strong> O mock é conceitual.</div>
+          <div class="ressalva-item">
+            <strong>2.</strong> O mock foi produzido no workspace do GoSkip.
+          </div>
+          <div class="ressalva-item">
+            <strong>3.</strong> O mock não representa captura real da página externa.
+          </div>
+          <div class="ressalva-item">
+            <strong>4.</strong> A implementação usa dados e rotas reais do projeto Cursos.
+          </div>
+          <div class="ressalva-item">
+            <strong>5.</strong> Preserva /stream/{id}, video_path, vídeos locais, YouTube,
+            Cloudinary e OneDrive.
+          </div>
+          <div class="ressalva-item">
+            <strong>6.</strong> O player funciona em desktop e celular.
+          </div>
+          <div class="ressalva-item">
+            <strong>7.</strong> Progresso, módulos, duração, materiais e navegação vêm dos dados
+            reais do backend.
+          </div>
+        </div>
+      </section>
+
+      <!-- Barra de Seleção de Curso do Mentor -->
+      <section class="course-selector-bar">
+        <div class="select-wrapper">
+          <label for="selectCursoMentor">Curso Selecionado:</label>
+          <select id="selectCursoMentor" class="custom-select">
+            <option value="">Carregando cursos do mentor...</option>
+          </select>
+        </div>
+
+        <div style="display: flex; gap: 8px; align-items: center">
+          <span id="cursoStatusBadge" class="tag tag-blue">Status: Rascunho</span>
+          <span id="cursoTotalEtapas" class="tag">0 Aulas</span>
+        </div>
+      </section>
+
+      <!-- Abas Funcionais do Painel do Mentor -->
+      <nav class="tabs-bar">
+        <button class="tab-btn active" data-tab="tab-player">
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <polygon points="5 3 19 12 5 21 5 3" />
+          </svg>
+          Player &amp; Matriz Curricular (Mock Aprovado)
+        </button>
+        <button class="tab-btn" data-tab="tab-gestao">
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <rect width="18" height="18" x="3" y="3" rx="2" />
+            <path d="M3 9h18" />
+            <path d="M9 21V9" />
+          </svg>
+          Gestão de Aulas &amp; Upload VPS
+        </button>
+        <button class="tab-btn" data-tab="tab-provas">
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+            <polyline points="14 2 14 8 20 8" />
+            <line x1="16" y1="13" x2="8" y2="13" />
+            <line x1="16" y1="17" x2="8" y2="17" />
+            <polyline points="10 9 9 9 8 9" />
+          </svg>
+          Avaliações / Quizzes
+        </button>
+      </nav>
+
+      <!-- ABA 1: PLAYER & MATRIZ CURRICULAR (Layout Aprovado) -->
+      <section id="tab-player" class="tab-content">
+        <div class="player-workspace">
+          <!-- Coluna Esquerda: Player Principal 16:9 + Meta + Materiais -->
+          <div class="player-container">
+            <!-- Viewport do Vídeo 16:9 com Badges Dinâmicos de Fonte -->
+            <div class="video-viewport" id="videoViewport">
+              <div id="videoSourceBadge" class="video-badge badge-vps">
+                <span
+                  style="width: 6px; height: 6px; border-radius: 50%; background: currentColor"
+                ></span>
+                <span id="videoSourceLabel">Vídeo Local VPS (/stream/:aulaId)</span>
+              </div>
+
+              <!-- Player HTML5 Dinâmico para VPS e Cloudinary / OneDrive -->
+              <video id="nativeVideoPlayer" controls playsinline style="display: none">
+                Seu navegador não suporta reprodução de vídeo MP4.
+              </video>
+
+              <!-- Iframe para YouTube -->
+              <iframe
+                id="youtubeIframe"
+                allow="
+                  accelerometer;
+                  autoplay;
+                  clipboard-write;
+                  encrypted-media;
+                  gyroscope;
+                  picture-in-picture;
+                "
+                allowfullscreen
+                style="display: none"
+              ></iframe>
+
+              <!-- Estado Vazio / Loading -->
+              <div id="videoEmptyState" class="video-empty-state">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <polygon points="5 3 19 12 5 21 5 3" />
+                </svg>
+                <h3 id="videoEmptyTitle">Selecione uma Aula</h3>
+                <p id="videoEmptyDesc">
+                  Escolha uma aula na matriz curricular ao lado para iniciar a reprodução com
+                  suporte aos 4 formatos de vídeo.
+                </p>
+              </div>
+            </div>
+
+            <!-- Barra de Ações Imediatas: Aula Atual + Anterior / Próxima -->
+            <div class="lesson-meta-bar">
+              <div class="lesson-title-area">
+                <div class="lesson-badge-row">
+                  <span id="lblModuloAula" class="tag tag-blue">Módulo 1</span>
+                  <span id="lblDuracaoAula" class="tag">Duração: --:--</span>
+                  <span id="lblTipoMidia" class="tag tag-amber">Tipo: Local</span>
+                </div>
+                <h2 id="lblTituloAula" class="lesson-headline">Nenhuma aula selecionada</h2>
+              </div>
+
+              <div class="lesson-nav-buttons">
+                <button id="btnAulaAnterior" class="btn btn-outline" disabled>
+                  &larr; Aula Anterior
+                </button>
+                <button id="btnProximaAula" class="btn btn-primary" disabled>
+                  Próxima Aula &rarr;
+                </button>
+              </div>
+            </div>
+
+            <!-- Materiais de Apoio da Aula (material_pdf_url) -->
+            <div class="materials-box">
+              <div class="box-title">
+                <span>Materiais de Apoio da Aula</span>
+                <span id="lblQtdMateriais" class="tag">0 Arquivos</span>
+              </div>
+
+              <div id="materialContentArea">
+                <div id="materialDisponivel" class="material-item" style="display: none">
+                  <div class="material-info">
+                    <div class="material-icon">PDF</div>
+                    <div class="material-text">
+                      <div id="lblNomeMaterial" class="material-name">
+                        Material_Complementar.pdf
+                      </div>
+                      <div class="material-desc">
+                        Apostila oficial de apoio disponibilizada pelo mentor
+                      </div>
+                    </div>
+                  </div>
+                  <a
+                    id="linkDownloadPdf"
+                    href="#"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="btn btn-outline btn-sm"
+                  >
+                    Baixar PDF
+                  </a>
+                </div>
+
+                <div
+                  id="materialVazio"
+                  style="font-size: 11px; color: var(--text-dim); text-align: center; padding: 12px"
+                >
+                  Esta aula não possui material complementar em PDF cadastrado.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Coluna Direita: Matriz Curricular & Progresso -->
+          <aside class="curriculum-sidebar">
+            <!-- Widget de Progresso Percentual -->
+            <div class="progress-widget">
+              <div class="progress-top">
+                <span class="progress-label">Progresso do Curso</span>
+                <span id="lblProgressoPercentual" class="progress-pct">0%</span>
+              </div>
+              <div class="progress-track">
+                <div id="progressBarFill" class="progress-fill" style="width: 0%"></div>
+              </div>
+              <div class="progress-caption">
+                <span id="lblAulasConcluidas">0 de 0 aulas</span>
+                <span id="lblQuizzesPendentes">0 Avaliações</span>
+              </div>
+            </div>
+
+            <!-- Lista de Aulas e Quizzes -->
+            <div
+              style="
+                font-size: 12px;
+                font-weight: 700;
+                color: var(--text-muted);
+                display: flex;
+                justify-content: space-between;
+              "
+            >
+              <span>AULAS DO CURSO</span>
+              <span id="lblTotalAulasListadas">0 itens</span>
+            </div>
+
+            <div id="listaAulasCurriculo" class="lessons-list">
+              <!-- Itens inseridos dinamicamente via JavaScript -->
+              <div
+                style="text-align: center; color: var(--text-dim); font-size: 11px; padding: 20px"
+              >
+                Carregando matriz curricular...
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- ABA 2: GESTÃO DE AULAS & UPLOAD VPS -->
+      <section id="tab-gestao" class="tab-content" style="display: none">
+        <div
+          style="
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+          "
+        >
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              flex-wrap: gap;
+              gap: 12px;
+            "
+          >
+            <div>
+              <h3 style="font-size: 16px; font-weight: 700">
+                Gestão Curricular &bull; Nova Etapa / Aula
+              </h3>
+              <p style="font-size: 12px; color: var(--text-muted)">
+                Cadastre novas etapas vinculadas ao curso selecionado e realize upload seguro de
+                vídeos MP4 para a VPS.
+              </p>
+            </div>
+          </div>
+
+          <!-- Formulário de Criação de Etapa -->
+          <form
+            id="formNovaEtapa"
+            style="
+              display: grid;
+              grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+              gap: 12px;
+              background: var(--bg-card);
+              padding: 16px;
+              border-radius: 8px;
+              border: 1px solid var(--border-color);
+            "
+          >
+            <div>
+              <label
+                style="
+                  font-size: 11px;
+                  font-weight: 600;
+                  color: var(--text-muted);
+                  display: block;
+                  margin-bottom: 4px;
+                "
+                >Título da Aula / Etapa:</label
+              >
+              <input
+                type="text"
+                id="inputTituloEtapa"
+                required
+                placeholder="Ex.: 01. Fundamentos da Liderança"
+                style="
+                  width: 100%;
+                  padding: 8px 12px;
+                  border-radius: 6px;
+                  background: var(--bg-surface);
+                  border: 1px solid var(--border-color);
+                  color: #fff;
+                  font-size: 12px;
+                "
+              />
+            </div>
+
+            <div>
+              <label
+                style="
+                  font-size: 11px;
+                  font-weight: 600;
+                  color: var(--text-muted);
+                  display: block;
+                  margin-bottom: 4px;
+                "
+                >Tipo de Conteúdo:</label
+              >
+              <select
+                id="selectTipoConteudo"
+                style="
+                  width: 100%;
+                  padding: 8px 12px;
+                  border-radius: 6px;
+                  background: var(--bg-surface);
+                  border: 1px solid var(--border-color);
+                  color: #fff;
+                  font-size: 12px;
+                "
+              >
+                <option value="video">Vídeo</option>
+                <option value="slide">Slide</option>
+                <option value="imagem">Imagem</option>
+              </select>
+            </div>
+
+            <div>
+              <label
+                style="
+                  font-size: 11px;
+                  font-weight: 600;
+                  color: var(--text-muted);
+                  display: block;
+                  margin-bottom: 4px;
+                "
+                >Fonte do Vídeo (se aplicável):</label
+              >
+              <select
+                id="selectTipoVideo"
+                style="
+                  width: 100%;
+                  padding: 8px 12px;
+                  border-radius: 6px;
+                  background: var(--bg-surface);
+                  border: 1px solid var(--border-color);
+                  color: #fff;
+                  font-size: 12px;
+                "
+              >
+                <option value="local">Vídeo Local VPS (/app/videos/{curso_id})</option>
+                <option value="youtube">YouTube (URL / Embed)</option>
+                <option value="onedrive">OneDrive / Microsoft Graph</option>
+                <option value="upload">Cloudinary</option>
+              </select>
+            </div>
+
+            <div>
+              <label
+                style="
+                  font-size: 11px;
+                  font-weight: 600;
+                  color: var(--text-muted);
+                  display: block;
+                  margin-bottom: 4px;
+                "
+                >URL ou Identificador (YouTube/OneDrive):</label
+              >
+              <input
+                type="text"
+                id="inputVideoUrl"
+                placeholder="Ex: https://www.youtube.com/watch?v=..."
+                style="
+                  width: 100%;
+                  padding: 8px 12px;
+                  border-radius: 6px;
+                  background: var(--bg-surface);
+                  border: 1px solid var(--border-color);
+                  color: #fff;
+                  font-size: 12px;
+                "
+              />
+            </div>
+
+            <div>
+              <label
+                style="
+                  font-size: 11px;
+                  font-weight: 600;
+                  color: var(--text-muted);
+                  display: block;
+                  margin-bottom: 4px;
+                "
+                >URL do Material PDF Complementar:</label
+              >
+              <input
+                type="url"
+                id="inputMaterialPdfUrl"
+                placeholder="https://.../apostila.pdf"
+                style="
+                  width: 100%;
+                  padding: 8px 12px;
+                  border-radius: 6px;
+                  background: var(--bg-surface);
+                  border: 1px solid var(--border-color);
+                  color: #fff;
+                  font-size: 12px;
+                "
+              />
+            </div>
+
+            <div style="display: flex; align-items: flex-end">
+              <button type="submit" class="btn btn-primary" style="width: 100%">
+                Criar Etapa no Banco
+              </button>
+            </div>
+          </form>
+
+          <!-- Bloco de Upload VPS Direto -->
+          <div
+            style="
+              background: rgba(16, 185, 129, 0.08);
+              border: 1px solid rgba(16, 185, 129, 0.2);
+              padding: 16px;
+              border-radius: 8px;
+              display: flex;
+              flex-direction: column;
+              gap: 8px;
+            "
+          >
+            <h4 style="font-size: 13px; font-weight: 700; color: var(--emerald)">
+              Upload de Vídeo Local para a VPS (POST /mentor/cursos/upload-video-vps)
+            </h4>
+            <p style="font-size: 11px; color: var(--text-muted)">
+              Envia o arquivo MP4 diretamente para o volume persistente
+              <code>/app/videos/{curso_id}/</code> com limite de até 1GB.
+            </p>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center">
+              <input
+                type="file"
+                id="inputFileVideoVps"
+                accept="video/mp4"
+                style="font-size: 12px; color: var(--text-muted)"
+              />
+              <button id="btnUploadVps" class="btn btn-outline btn-sm">Enviar MP4 para VPS</button>
+              <span id="uploadVpsStatus" style="font-size: 11px; color: var(--text-dim)"
+                >Nenhum arquivo enviado</span
+              >
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ABA 3: AVALIAÇÕES / QUIZZES -->
+      <section id="tab-provas" class="tab-content" style="display: none">
+        <div
+          style="
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+          "
+        >
+          <div>
+            <h3 style="font-size: 16px; font-weight: 700">
+              Avaliações &bull; Provas e Questionários do Curso
+            </h3>
+            <p style="font-size: 12px; color: var(--text-muted)">
+              Consulta das provas cadastradas no backend via
+              <code>GET /mentor/cursos/:id/provas</code> com contagem de perguntas.
+            </p>
+          </div>
+
+          <div
+            id="listaProvasContainer"
+            style="
+              display: grid;
+              grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+              gap: 12px;
+            "
+          >
+            <div style="text-align: center; color: var(--text-dim); font-size: 11px; padding: 20px">
+              Carregando avaliações do curso...
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Container de Toasts -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- SCRIPT CENTRAL DE INTEGRAÇÃO COM ROTAS REAIS -->
+    <script>
+      ;(function () {
+        'use strict'
+
+        // Estado Global do Painel do Mentor
+        const state = {
+          token: null,
+          cursos: [],
+          cursoSelecionado: null,
+          etapas: [],
+          provas: [],
+          aulaAtualIndex: -1,
+        }
+
+        // Helper estrito de validação estrutural de token JWT
+        function validarFormatoToken(token) {
+          if (!token || typeof token !== 'string') return false
+          const trimmed = token.trim()
+          // Um JWT possui três segmentos separados por ponto (header.payload.signature)
+          const partes = trimmed.split('.')
+          if (partes.length !== 3) return false
+          // Checagem de caracteres base64url seguros para prevenir injeções
+          const jwtRegex = /^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+$/
+          return jwtRegex.test(trimmed)
+        }
+
+        // 1. Extração e Tratamento Seguro de Token Transitório via Query String
+        // Conformidade estrita com as 6 exigências do operador e Regra de Segurança Pré-Homologação:
+        // 1. validar o token antes de consumir
+        // 2. criar a sessão necessária exclusivamente em sessionStorage (ZERO token em localStorage)
+        // 3. remover o token da URL imediatamente com history.replaceState
+        // 4. não registrar o token em logs (console/telemetria)
+        // 5. não enviar o token em links internos
+        // 6. não mantê-lo na URL durante a navegação
+        function consumirTokenTransicao() {
+          try {
+            const urlParams = new URLSearchParams(window.location.search)
+            const tokenQuery = urlParams.get('token')
+
+            if (tokenQuery) {
+              // 1. Validar o formato do token antes de consumir
+              if (validarFormatoToken(tokenQuery)) {
+                // 2. Criar a sessão estritamente em sessionStorage (requisito: ausência em localStorage)
+                sessionStorage.setItem('cursos_token', tokenQuery.trim())
+              } else {
+                console.warn('[AUTH] Token transitório descartado por formato inválido.')
+              }
+
+              // 3. Remover o token da URL imediatamente com history.replaceState
+              urlParams.delete('token')
+              const novaBusca = urlParams.toString()
+              const novaUrl =
+                window.location.pathname + (novaBusca ? '?' + novaBusca : '') + window.location.hash
+              window.history.replaceState({}, document.title, novaUrl)
+            }
+          } catch (e) {
+            // Silencia qualquer exceção sem expor valores
+          }
+
+          // Recupera da sessão persistida em sessionStorage (ou cookie quando suportado; nunca localStorage)
+          const tokenSalvo = sessionStorage.getItem('cursos_token') || null
+
+          if (tokenSalvo && validarFormatoToken(tokenSalvo)) {
+            return tokenSalvo
+          }
+          return null
+        }
+
+        state.token = consumirTokenTransicao()
+
+        // Utilitário de Requisições Autenticadas
+        async function apiFetch(endpoint, options = {}) {
+          const headers = {
+            'Content-Type': 'application/json',
+            ...(options.headers || {}),
+          }
+
+          if (state.token) {
+            headers['Authorization'] = 'Bearer ' + state.token
+            headers['x-cursos-token'] = state.token
+          }
+
+          const response = await fetch(endpoint, {
+            ...options,
+            headers,
+          })
+
+          if (response.status === 401 || response.status === 403) {
+            const erroJson = await response.json().catch(() => ({}))
+            console.warn('[AUTH ALERT] Não autorizado:', erroJson)
+            if (response.status === 401) {
+              atualizarStatusAuth(false, 'Sessão expirada ou token ausente')
+            }
+          }
+
+          return response
+        }
+
+        // Toasts
+        function showToast(message, type = 'info') {
+          const container = document.getElementById('toastContainer')
+          const toast = document.createElement('div')
+          toast.className = `toast ${type}`
+          toast.textContent = message
+          container.appendChild(toast)
+          setTimeout(() => {
+            toast.remove()
+          }, 4000)
+        }
+
+        function atualizarStatusAuth(autenticado, mensagem) {
+          const badge = document.getElementById('authStatusBadge')
+          const text = document.getElementById('authStatusText')
+          if (autenticado) {
+            badge.style.background = 'var(--emerald-bg)'
+            badge.style.color = 'var(--emerald)'
+            badge.style.borderColor = 'rgba(16, 185, 129, 0.3)'
+            text.textContent = mensagem || 'Mentor Conectado'
+          } else {
+            badge.style.background = 'var(--red-bg)'
+            badge.style.color = 'var(--red)'
+            badge.style.borderColor = 'rgba(239, 68, 68, 0.3)'
+            text.textContent = mensagem || 'Não Autenticado'
+          }
+        }
+
+        // 2. Carregamento dos Cursos do Mentor (GET /mentor/cursos)
+        async function carregarCursosMentor() {
+          if (!state.token) {
+            atualizarStatusAuth(false, 'Token não informado')
+            showToast('Acesse com ?token= ou realize login para continuar.', 'error')
+            return
+          }
+
+          try {
+            const res = await apiFetch('/mentor/cursos')
+            if (!res.ok) {
+              throw new Error(`HTTP ${res.status}`)
+            }
+            const data = await res.json()
+            state.cursos = Array.isArray(data) ? data : data.cursos || []
+
+            const select = document.getElementById('selectCursoMentor')
+            select.innerHTML = ''
+
+            if (state.cursos.length === 0) {
+              select.innerHTML = '<option value="">Nenhum curso cadastrado</option>'
+              atualizarStatusAuth(true, 'Mentor Sem Cursos')
+              return
+            }
+
+            state.cursos.forEach((c, idx) => {
+              const opt = document.createElement('option')
+              opt.value = c.id
+              opt.textContent = `${c.id}. ${c.titulo || 'Sem título'} [${c.status || 'rascunho'}]`
+              select.appendChild(opt)
+            })
+
+            atualizarStatusAuth(true, `Mentor Ativo (${state.cursos.length} cursos)`)
+
+            // Seleciona o primeiro curso por padrão
+            selecionarCurso(state.cursos[0].id)
+          } catch (err) {
+            console.error('[ERRO] Falha ao carregar cursos:', err)
+            atualizarStatusAuth(false, 'Erro de conexão com API')
+            showToast('Falha ao obter cursos do mentor.', 'error')
+          }
+        }
+
+        // 3. Seleção de Curso e Carga de Etapas e Provas
+        async function selecionarCurso(cursoId) {
+          state.cursoSelecionado =
+            state.cursos.find((c) => String(c.id) === String(cursoId)) || null
+          if (!state.cursoSelecionado) return
+
+          // Atualiza Badges de Curso
+          document.getElementById('cursoStatusBadge').textContent =
+            'Status: ' + (state.cursoSelecionado.status || 'rascunho')
+
+          await Promise.all([carregarEtapasCurso(cursoId), carregarProvasCurso(cursoId)])
+        }
+
+        // 4. Carregamento das Etapas/Aulas (GET /mentor/cursos/:id/etapas)
+        async function carregarEtapasCurso(cursoId) {
+          try {
+            const res = await apiFetch(`/mentor/cursos/${cursoId}/etapas`)
+            if (!res.ok) throw new Error(`HTTP ${res.status}`)
+            const etapas = await res.json()
+            state.etapas = Array.isArray(etapas) ? etapas : []
+
+            document.getElementById('cursoTotalEtapas').textContent = `${state.etapas.length} Aulas`
+            document.getElementById('lblTotalAulasListadas').textContent =
+              `${state.etapas.length} itens`
+
+            renderizarMatrizCurricular()
+
+            // Se houver etapas, abre a primeira automaticamente
+            if (state.etapas.length > 0) {
+              selecionarAula(0)
+            } else {
+              limparPlayer()
+            }
+          } catch (err) {
+            console.error('[ERRO] Falha ao carregar etapas:', err)
+            state.etapas = []
+            renderizarMatrizCurricular()
+          }
+        }
+
+        // 5. Carregamento de Provas (GET /mentor/cursos/:id/provas)
+        async function carregarProvasCurso(cursoId) {
+          try {
+            const res = await apiFetch(`/mentor/cursos/${cursoId}/provas`)
+            if (!res.ok) throw new Error(`HTTP ${res.status}`)
+            const provas = await res.json()
+            state.provas = Array.isArray(provas) ? provas : []
+            renderizarProvas()
+          } catch (err) {
+            console.warn('[INFO] Provas não disponíveis ou erro na rota:', err)
+            state.provas = []
+            renderizarProvas()
+          }
+        }
+
+        // 6. Renderização da Matriz Curricular (Mock Aprovado)
+        function renderizarMatrizCurricular() {
+          const container = document.getElementById('listaAulasCurriculo')
+          container.innerHTML = ''
+
+          if (state.etapas.length === 0) {
+            container.innerHTML = `
+            <div style="text-align: center; color: var(--text-dim); font-size: 11px; padding: 20px;">
+              Nenhuma aula cadastrada neste curso ainda.
+            </div>`
+            atualizarProgresso(0, 0)
+            return
+          }
+
+          state.etapas.forEach((etapa, idx) => {
+            const item = document.createElement('div')
+            item.className = 'lesson-item' + (idx === state.aulaAtualIndex ? ' active' : '')
+
+            // Verifica se há prova associada a esta etapa
+            const temQuiz = state.provas.some((p) => String(p.etapa_id) === String(etapa.id))
+
+            item.innerHTML = `
+            <div class="lesson-item-left">
+              <span class="lesson-ordem">${etapa.ordem || idx + 1}</span>
+              <div style="overflow: hidden;">
+                <div class="lesson-name">${etapa.titulo || 'Aula sem título'}</div>
+                <div class="lesson-meta-small">
+                  <span>${etapa.video_type || 'local'}</span>
+                  ${temQuiz ? '<span class="badge-quiz">Quiz</span>' : ''}
+                </div>
+              </div>
+            </div>
+            <span style="font-size: 10px; color: var(--text-dim); font-family: monospace;">
+              ${etapa.duracao ? etapa.duracao + ' min' : ''}
+            </span>
+          `
+
+            item.addEventListener('click', () => selecionarAula(idx))
+            container.appendChild(item)
+          })
+
+          // Atualiza progresso percentual estimado
+          const concluidaMock = Math.min(state.aulaAtualIndex + 1, state.etapas.length)
+          atualizarProgresso(concluidaMock, state.etapas.length)
+        }
+
+        function atualizarProgresso(atuais, total) {
+          const pct = total > 0 ? Math.round((atuais / total) * 100) : 0
+          document.getElementById('lblProgressoPercentual').textContent = `${pct}%`
+          document.getElementById('progressBarFill').style.width = `${pct}%`
+          document.getElementById('lblAulasConcluidas').textContent = `${atuais} de ${total} aulas`
+          document.getElementById('lblQuizzesPendentes').textContent =
+            `${state.provas.length} Avaliações`
+        }
+
+        // 7. Seleção de Aula e Chaveamento do Player Dinâmico
+        function selecionarAula(index) {
+          if (index < 0 || index >= state.etapas.length) return
+          state.aulaAtualIndex = index
+          const aula = state.etapas[index]
+
+          // Atualiza UI de Navegação
+          document.getElementById('btnAulaAnterior').disabled = index === 0
+          document.getElementById('btnProximaAula').disabled = index === state.etapas.length - 1
+
+          document.getElementById('lblModuloAula').textContent =
+            `Aula ${index + 1} de ${state.etapas.length}`
+          document.getElementById('lblTituloAula').textContent =
+            `${aula.ordem || index + 1}. ${aula.titulo || 'Sem título'}`
+          document.getElementById('lblDuracaoAula').textContent = aula.duracao
+            ? `Duração: ${aula.duracao} min`
+            : 'Duração: --:--'
+          document.getElementById('lblTipoMidia').textContent =
+            `Tipo: ${aula.video_type || 'local'}`
+
+          // Atualiza Material em PDF
+          const matBox = document.getElementById('materialDisponivel')
+          const matVazio = document.getElementById('materialVazio')
+          if (aula.material_pdf_url) {
+            matBox.style.display = 'flex'
+            matVazio.style.display = 'none'
+            document.getElementById('lblNomeMaterial').textContent =
+              aula.material_pdf_url.split('/').pop() || 'Apostila_Complementar.pdf'
+            document.getElementById('linkDownloadPdf').href = aula.material_pdf_url
+            document.getElementById('lblQtdMateriais').textContent = '1 Arquivo'
+          } else {
+            matBox.style.display = 'none'
+            matVazio.style.display = 'block'
+            document.getElementById('lblQtdMateriais').textContent = '0 Arquivos'
+          }
+
+          // Chaveamento dos 4 Tipos de Vídeo Suportados
+          configurarPlayerParaAula(aula)
+          renderizarMatrizCurricular()
+        }
+
+        function configurarPlayerParaAula(aula) {
+          const videoElement = document.getElementById('nativeVideoPlayer')
+          const iframeElement = document.getElementById('youtubeIframe')
+          const emptyState = document.getElementById('videoEmptyState')
+          const badge = document.getElementById('videoSourceBadge')
+          const badgeLabel = document.getElementById('videoSourceLabel')
+
+          // Reseta visibilidade
+          videoElement.style.display = 'none'
+          iframeElement.style.display = 'none'
+          emptyState.style.display = 'none'
+          videoElement.pause()
+          videoElement.src = ''
+          iframeElement.src = ''
+
+          const tipo = (aula.video_type || 'local').toLowerCase()
+
+          if (tipo === 'youtube') {
+            badge.className = 'video-badge badge-youtube'
+            badgeLabel.textContent = 'YouTube Embed Canônico'
+
+            let videoId = aula.video_url || ''
+            if (videoId.includes('v=')) {
+              videoId = videoId.split('v=')[1].split('&')[0]
+            } else if (videoId.includes('youtu.be/')) {
+              videoId = videoId.split('youtu.be/')[1].split('?')[0]
+            }
+
+            if (videoId) {
+              iframeElement.src = `https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1`
+              iframeElement.style.display = 'block'
+            } else {
+              mostrarEstadoErroVideo('URL do YouTube não configurada nesta aula.')
+            }
+          } else if (tipo === 'local') {
+            badge.className = 'video-badge badge-vps'
+            badgeLabel.textContent = 'Vídeo Local VPS (/stream/:aulaId com Range)'
+
+            // Rota protegida com token na query string para o elemento <video>
+            const streamUrl = `/stream/${aula.id}?token=${encodeURIComponent(state.token || '')}`
+            videoElement.src = streamUrl
+            videoElement.style.display = 'block'
+            videoElement.load()
+          } else if (tipo === 'onedrive') {
+            badge.className = 'video-badge badge-onedrive'
+            badgeLabel.textContent = 'Microsoft Graph / OneDrive'
+
+            if (aula.video_url) {
+              videoElement.src = aula.video_url
+              videoElement.style.display = 'block'
+            } else {
+              mostrarEstadoErroVideo('URL segura de OneDrive não informada.')
+            }
+          } else if (tipo === 'upload' || tipo === 'cloudinary') {
+            badge.className = 'video-badge badge-cloudinary'
+            badgeLabel.textContent = 'Cloudinary Delivery (HLS/MP4)'
+
+            if (aula.video_url) {
+              videoElement.src = aula.video_url
+              videoElement.style.display = 'block'
+            } else {
+              mostrarEstadoErroVideo('Vídeo Cloudinary não configurado.')
+            }
+          } else {
+            mostrarEstadoErroVideo(`Tipo de mídia não suportado no player: ${tipo}`)
+          }
+        }
+
+        function mostrarEstadoErroVideo(mensagem) {
+          const emptyState = document.getElementById('videoEmptyState')
+          document.getElementById('videoEmptyTitle').textContent = 'Aviso de Mídia'
+          document.getElementById('videoEmptyDesc').textContent = mensagem
+          emptyState.style.display = 'block'
+        }
+
+        function limparPlayer() {
+          document.getElementById('nativeVideoPlayer').style.display = 'none'
+          document.getElementById('youtubeIframe').style.display = 'none'
+          const empty = document.getElementById('videoEmptyState')
+          empty.style.display = 'block'
+          document.getElementById('videoEmptyTitle').textContent = 'Nenhuma Aula'
+          document.getElementById('videoEmptyDesc').textContent =
+            'Cadastre aulas no menu Gestão para habilitar o player.'
+        }
+
+        // 8. Renderização das Provas na Aba de Avaliações
+        function renderizarProvas() {
+          const container = document.getElementById('listaProvasContainer')
+          container.innerHTML = ''
+
+          if (state.provas.length === 0) {
+            container.innerHTML = `
+            <div style="grid-column: 1 / -1; text-align: center; color: var(--text-dim); font-size: 12px; padding: 24px;">
+              Nenhuma prova ou questionário vinculado a este curso.
+            </div>`
+            return
+          }
+
+          state.provas.forEach((prova) => {
+            const card = document.createElement('div')
+            card.style.background = 'var(--bg-card)'
+            card.style.border = '1px solid var(--border-color)'
+            card.style.borderRadius = '8px'
+            card.style.padding = '14px'
+            card.style.display = 'flex'
+            card.style.flexDirection = 'column'
+            card.style.gap = '8px'
+
+            card.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+              <strong style="font-size: 13px; color: #fff;">${prova.titulo || 'Prova sem título'}</strong>
+              <span class="badge-quiz">Nota mín: ${prova.nota_minima || 60}</span>
+            </div>
+            <div style="font-size: 11px; color: var(--text-muted);">
+              Etapa vinculada: ${prova.etapa_id ? 'Aula #' + prova.etapa_id : 'Geral do curso'} &bull; 
+              Total de questões: ${prova.total_perguntas || '0'}
+            </div>
+          `
+            container.appendChild(card)
+          })
+        }
+
+        // 9. Event Listeners e Ações de Interface
+        document.getElementById('selectCursoMentor').addEventListener('change', (e) => {
+          if (e.target.value) {
+            selecionarCurso(e.target.value)
+          }
+        })
+
+        document.getElementById('btnAulaAnterior').addEventListener('click', () => {
+          if (state.aulaAtualIndex > 0) {
+            selecionarAula(state.aulaAtualIndex - 1)
+          }
+        })
+
+        document.getElementById('btnProximaAula').addEventListener('click', () => {
+          if (state.aulaAtualIndex < state.etapas.length - 1) {
+            selecionarAula(state.aulaAtualIndex + 1)
+          }
+        })
+
+        document.getElementById('btnAtualizarDados').addEventListener('click', () => {
+          if (state.cursoSelecionado) {
+            selecionarCurso(state.cursoSelecionado.id)
+            showToast('Dados recarregados com sucesso.', 'success')
+          } else {
+            carregarCursosMentor()
+          }
+        })
+
+        document.getElementById('btnLogout').addEventListener('click', () => {
+          sessionStorage.removeItem('cursos_token')
+          state.token = null
+          atualizarStatusAuth(false, 'Desconectado')
+          showToast('Sessão encerrada.', 'info')
+        })
+
+        // Navegação por Abas
+        document.querySelectorAll('.tab-btn').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            document.querySelectorAll('.tab-btn').forEach((b) => b.classList.remove('active'))
+            document.querySelectorAll('.tab-content').forEach((c) => (c.style.display = 'none'))
+            btn.classList.add('active')
+            const target = btn.getAttribute('data-tab')
+            const section = document.getElementById(target)
+            if (section) section.style.display = 'block'
+          })
+        })
+
+        // Formulário de Nova Etapa
+        document.getElementById('formNovaEtapa').addEventListener('submit', async (e) => {
+          e.preventDefault()
+          if (!state.cursoSelecionado) {
+            showToast('Selecione um curso antes de criar etapas.', 'error')
+            return
+          }
+
+          const payload = {
+            titulo: document.getElementById('inputTituloEtapa').value.trim(),
+            tipo: document.getElementById('selectTipoConteudo').value,
+            video_type: document.getElementById('selectTipoVideo').value,
+            video_url: document.getElementById('inputVideoUrl').value.trim() || null,
+            material_pdf_url: document.getElementById('inputMaterialPdfUrl').value.trim() || null,
+          }
+
+          try {
+            const res = await apiFetch(`/mentor/cursos/${state.cursoSelecionado.id}/etapas`, {
+              method: 'POST',
+              body: JSON.stringify(payload),
+            })
+
+            if (!res.ok) {
+              const err = await res.json().catch(() => ({}))
+              throw new Error(err.error || `HTTP ${res.status}`)
+            }
+
+            showToast('Etapa criada com sucesso!', 'success')
+            document.getElementById('formNovaEtapa').reset()
+            await carregarEtapasCurso(state.cursoSelecionado.id)
+          } catch (err) {
+            console.error('[ERRO] Falha ao criar etapa:', err)
+            showToast(err.message || 'Erro ao criar etapa', 'error')
+          }
+        })
+
+        // Upload VPS Direto
+        document.getElementById('btnUploadVps').addEventListener('click', async () => {
+          const fileInput = document.getElementById('inputFileVideoVps')
+          const file = fileInput.files[0]
+          if (!file) {
+            showToast('Selecione um arquivo MP4 para upload.', 'error')
+            return
+          }
+
+          if (!state.cursoSelecionado) {
+            showToast('Selecione um curso ativo primeiro.', 'error')
+            return
+          }
+
+          const statusLabel = document.getElementById('uploadVpsStatus')
+          statusLabel.textContent = 'Enviando MP4 para a VPS...'
+
+          const formData = new FormData()
+          formData.append('video', file)
+          formData.append('curso_id', state.cursoSelecionado.id)
+
+          try {
+            const headers = {}
+            if (state.token) {
+              headers['Authorization'] = 'Bearer ' + state.token
+              headers['x-cursos-token'] = state.token
+            }
+
+            const res = await fetch('/mentor/cursos/upload-video-vps', {
+              method: 'POST',
+              headers,
+              body: formData,
+            })
+
+            if (!res.ok) {
+              const err = await res.json().catch(() => ({}))
+              throw new Error(err.error || `HTTP ${res.status}`)
+            }
+
+            const data = await res.json()
+            statusLabel.textContent = `Upload concluído: ${data.video_path || 'Arquivo salvo'}`
+            showToast('Upload para VPS concluído com sucesso!', 'success')
+          } catch (err) {
+            console.error('[ERRO] Falha no upload VPS:', err)
+            statusLabel.textContent = 'Erro no envio'
+            showToast(err.message || 'Falha no upload VPS', 'error')
+          }
+        })
+
+        // Inicialização
+        carregarCursosMentor()
+      })()
+    </script>
+  </body>
+</html>

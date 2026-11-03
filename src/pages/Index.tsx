@@ -34,6 +34,7 @@ import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { MANIFESTO_ARTEFATOS_FASE1 } from '@/lib/manifestHelper'
+import { HashVerificadorFase1 } from '@/components/HashVerificadorFase1'
 
 export default function Index() {
   const [activeTab, setActiveTab] = useState('inventario_real')
@@ -2800,9 +2801,12 @@ export default function Index() {
                     <p className="text-slate-300 text-[11px]">
                       <strong className="text-slate-100">Faz:</strong> baixa os artefatos da Fase 1
                       direto desta prévia (curl com fallback wget) para{' '}
-                      <code>/tmp/fase1_candidatos/</code>; confere o SHA-256 de <em>cada</em>{' '}
-                      arquivo contra hashes embutidos no próprio instalador e{' '}
-                      <strong>aborta na hora</strong> se algum divergir; valida a sintaxe do{' '}
+                      <code>/tmp/fase1_candidatos/</code>; calcula o SHA-256 real de <em>cada</em>{' '}
+                      arquivo <strong>na própria VPS</strong> (sha256sum, fallback shasum), imprime
+                      a tabela arquivo→hash e <strong>só prossegue após sua confirmação</strong>{' '}
+                      comparando com os hashes calculados de forma independente no navegador (Web
+                      Crypto, tabela acima) — ou automaticamente, se você informar{' '}
+                      <code>EFASE1_SHA256="caminho=hash;..."</code>; valida a sintaxe do{' '}
                       <code>stream.js</code> com <code>node --check</code>; e copia apenas os 2
                       scripts de teste (<code>testar-fase1-vps.sh</code> e{' '}
                       <code>aplicar-fase1-vps.sh</code>) para <code>docs/operacoes/</code> do
@@ -2818,6 +2822,9 @@ export default function Index() {
                       passo a passo, via <code>aplicar-fase1-vps.sh</code>.
                     </p>
                   </div>
+
+                  {/* SHA-256 calculado no navegador (Web Crypto) — verificação independente */}
+                  <HashVerificadorFase1 origemArtefatos={origemArtefatos} />
 
                   {/* Linha de comando única com origem detectada em runtime */}
                   <div className="space-y-2 text-xs">

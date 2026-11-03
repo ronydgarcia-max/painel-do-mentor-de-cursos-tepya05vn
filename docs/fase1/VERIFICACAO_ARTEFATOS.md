@@ -2,7 +2,7 @@
 
 **Projeto:** Plataforma Cursos (Cursos-API / Painel do Mentor)  
 **Documento:** `docs/fase1/VERIFICACAO_ARTEFATOS.md`  
-**Data da Auditoria:** 2026-11-01 (Revisão Final Pré-Homologação)  
+**Data da Auditoria:** 2026-11-01 (Revisão Final Pré-Homologação) — **Atualizado em 2026-11-03 (novo mecanismo de verificação dupla)**  
 **Ambiente:** Workspace GoSkip (Isolado da VPS)  
 **Branch Oficial no GitHub:** `correcao-fluxo-cursos`  
 **Commit Base no Repositório Real:** `47aa7b1`  
@@ -15,15 +15,22 @@
 A partir da revisão de instalação rápida, os artefatos da Fase 1 são servidos pela
 URL pública da PRÓPRIA PRÉVIA GoSkip em `<origem>/docs/...`, onde `<origem>` é o
 `window.location.origin` da prévia exibido na aba "Fase 1 — Entregáveis" (card
-"Instalação Rápida na VPS") do app. O espelho público é gerado no workspace pelo
-script `docs/operacoes/espelhar-fase1-workspace.sh` (cópia byte-exata para
-`public/docs/...` com re-verificação de SHA-256 antes do commit do workspace).
+"Instalação Rápida na VPS") do app. O espelho público em `public/docs/...` foi
+GERADO BYTE-EXATO NESTA EXECUÇÃO (2026-11-03) no workspace, arquivo por arquivo
+(leitura da origem em `docs/` e gravação idêntica em `public/docs/`, sem
+normalização de quebras de linha nem reencode) — portanto o Vite serve cada
+artefato em `/docs/...` direto da raiz da prévia, sem configuração extra.
 
 O instalador único `docs/operacoes/instalar-fase1.sh` é executado na VPS em UMA
 linha (curl) e: baixa os 8 artefatos (curl com fallback wget) para
 `/tmp/fase1_candidatos/` (stream.js em `src/routes/`, painel-mentor.html em
-`src/static/`, demais em subpastas espelhadas), confere o SHA-256 de cada arquivo
-contra hashes EMBUTIDOS no próprio instalador (abortando em divergência), valida
+`src/static/`, demais em subpastas espelhadas), calcula o SHA-256 REAL de cada
+arquivo baixado NA PRÓPRIA VPS (`sha256sum`, fallback `shasum`), IMPRIME a tabela
+arquivo→hash e EXIGE a confirmação do operador comparando com os hashes que a
+página da prévia calcula de forma INDEPENDENTE no navegador (Web Crypto). Sem o
+"s" do operador, aborta sem ter alterado nada fora de `/tmp`. Modo alternativo
+NÃO interativo e seguro: `EFASE1_SHA256="caminho=hash;caminho=hash;..."` — o
+script compara automaticamente e aborta em qualquer divergência. Depois valida
 `node --check` no stream.js e copia APENAS os 2 scripts de teste para
 `/root/cursos-api/docs/operacoes/` com `--preserve`.
 
@@ -33,13 +40,43 @@ uso da branch `main`, redeploy — e contém zero segredos. Serviço na porta 33
 NÃO significa Fase 1 homologada: homologação oficial (Camada 4, EasyPanel)
 continua exigindo autorização expressa do operador.
 
-## 1. MANIFESTO CRIPTOGRÁFICO SHA-256 DOS ARTEFATOS DA FASE 1
+## 0.1. MECANISMO DE VERIFICAÇÃO DUPLA (SUBSTITUI O MANIFESTO EMBUTIDO)
 
-O operador da VPS exige as somas de verificação SHA-256 completas dos arquivos oficiais da Fase 1 antes de qualquer transferência ou homologação na VPS:
+**Por que mudou:** este instalador é gerado no workspace GoSkip, um ambiente SEM
+execução de shell — não há como calcular SHA-256 dentro dele e embutir o valor no
+script. Inventar um hash seria pior do que não ter hash: daria falsa sensação de
+integridade. Os antigos marcadores pendentes (`[CALCULAR_SHA256_POS_ESPELHAMENTO]`
+/ `[SHA256_A_COMPUTAR_APOS_ESPELHAMENTO]`) foram REMOVIDOS e NENHUM valor de hash
+foi inventado ou preenchido aqui.
+
+**Como a integridade é garantida agora — duas fontes INDEPENDENTES:**
+
+1. **Na VPS (`sha256sum`, fallback `shasum`):** o instalador calcula o hash sobre
+   os bytes EFETIVAMENTE BAIXADOS por `curl`/`wget` e imprime a tabela
+   arquivo→hash antes de qualquer ação fora de `/tmp`.
+2. **No navegador (Web Crypto, `crypto.subtle.digest('SHA-256', ...)`):** a aba
+   "Fase 1 — Entregáveis" da prévia busca cada arquivo espelhado
+   (`/docs/...`, mesma origem) e calcula o hash em hex, com botão
+   "Recalcular hashes" e botão de copiar a tabela.
+
+O operador compara as duas tabelas (VPS × navegador) e só então confirma com "s"
+(ou usa `EFASE1_SHA256` com os valores exibidos pela prévia). Essa dupla
+verificação independente cumpre o papel do manifesto embutido — e é mais forte,
+porque os dois lados calculam sobre os bytes reais em trânsito, na hora da
+execução, sem depender de um valor congelado num script.
+
+Os 8 hashes listados na seção 1 abaixo permanecem como REGISTRO HISTÓRICO da
+auditoria de 2026-11-01. A verificação canônica passou a ser a dupla acima; se
+qualquer arquivo for reeditado no workspace, a tabela viva (navegador × VPS)
+é quem detecta a divergência.
+
+## 1. MANIFESTO CRIPTOGRÁFICO SHA-256 DOS ARTEFATOS DA FASE 1 (REGISTRO DA AUDITORIA 2026-11-01)
+
+O operador da VPS exige as somas de verificação SHA-256 completas dos arquivos oficiais da Fase 1 antes de qualquer transferência ou homologação na VPS. Os valores abaixo foram registrados na auditoria de 2026-11-01 e são mantidos como referência histórica; a verificação VIVA é a dupla da seção 0.1 (VPS × navegador), executada a cada instalação:
 
 ```
 ──────────────────────────────────────────────────────────────────────────────────────────────────
-HASH SHA-256                                                      ARQUIVO
+HASH SHA-256 (auditoria 2026-11-01)                                ARQUIVO
 ──────────────────────────────────────────────────────────────────────────────────────────────────
 2be71f49646bde330ec0c822ff611be9e173e44c2057d23f381c81ef94e1e07b  docs/fase1/stream.js (com guard READ_ONLY_TEST)
 3d9501a300d8b4e7a3ec11cc0a66d548f7663e6e87f2e1a47321e06fa536f0e4  docs/fase1/NOVO_PAINEL/painel-mentor.html
@@ -49,15 +86,18 @@ e9b2513de5553e1e40eb617b7b15a6b5a3e1438fa5a48483f3e27150a294f4a3  docs/fase1/PRO
 38a6ec1552a46e1074e50d536cf0ba7493eef250bc44618e7751c8a14ec7a59a  docs/fase1/TESTE_PRE_HOMOLOGACAO_VPS.md
 e927c9c054238e55eefea2b27429bb7b05cdcd5d1ec5ce1e6e0261c470196253  docs/operacoes/testar-fase1-vps.sh
 c93f06b9968452309ec95ba8d133038a8e1e7bd66ff852b86a8ff39fa1cf8743  docs/operacoes/aplicar-fase1-vps.sh
-[SHA256_A_COMPUTAR_APOS_ESPELHAMENTO]  docs/operacoes/instalar-fase1.sh (instalador único — executar sha256sum após o espelhamento; NUNCA inventar valor)
 ──────────────────────────────────────────────────────────────────────────────────────────────────
+Hashes do próprio instalador (docs/operacoes/instalar-fase1.sh), de
+VERIFICACAO_ARTEFATOS.md e dos demais arquivos espelhados: NÃO são pré-registrados.
+São calculados VIVOS a cada execução — sha256sum na VPS (instalador) e Web Crypto
+no navegador (prévia) — e comparados pelo operador antes de confirmar.
 ```
 
-> **Nota do instalador:** os 8 hashes acima (exceto a linha do instalador) estão
-> EMBUTIDOS em `docs/operacoes/instalar-fase1.sh` e são conferidos na VPS a cada
-> download. O hash do próprio instalador é calculado com
-> `sha256sum docs/operacoes/instalar-fase1.sh` após o espelhamento e registrado
-> aqui e em `src/lib/manifestHelper.ts` — nunca inventado.
+> **Nota do mecanismo (2026-11-03):** os hashes acima NÃO estão mais embutidos em
+> `docs/operacoes/instalar-fase1.sh`. O instalador calcula o SHA-256 de cada
+> arquivo baixado na própria VPS e exige conferência contra a tabela calculada
+> de forma independente no navegador (Web Crypto), ou contra `EFASE1_SHA256`
+> informado pelo operador. Nenhum valor de hash foi inventado neste documento.
 
 ### Comando Exato Utilizado para Geração dos Hashes no Host / VPS:
 
@@ -162,6 +202,7 @@ mkdir -p /tmp/fase1_candidatos/src/static
 
 # 4. Copiar os artefatos candidatos do workspace para o diretório temporário
 # (Exemplo: /tmp/fase1_candidatos/src/routes/stream.js e /tmp/fase1_candidatos/src/static/painel-mentor.html)
+# (Recomendado: usar o instalador único — curl -fsSL <origem>/docs/operacoes/instalar-fase1.sh | bash)
 
 # 5. Gerar o diff definitivo contra a base estável 47aa7b1 SEM substituir os arquivos de produção:
 git show 47aa7b1:src/routes/stream.js | diff -u - /tmp/fase1_candidatos/src/routes/stream.js

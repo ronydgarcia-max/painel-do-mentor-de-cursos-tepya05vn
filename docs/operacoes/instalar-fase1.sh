@@ -10,13 +10,30 @@
 # O QUE FAZ (apenas pré-homologação, NÃO é a homologação oficial):
 #   1. Baixa os 8 artefatos oficiais da Fase 1 da ORIGEM informada, via curl
 #      (com fallback wget), para /tmp/fase1_candidatos/ (isolado, nada em produção);
-#   2. Confere o SHA-256 de CADA arquivo contra hashes EMBUTIDOS neste instalador
-#      (manifesto vigente) e ABORTA com mensagem clara em caso de divergência;
-#   3. Valida a sintaxe do stream.js baixado com node --check;
-#   4. Copia APENAS os dois scripts de teste/aplicação para
+#   2. Calcula o SHA-256 REAL de cada arquivo baixado NA PRÓPRIA VPS
+#      (sha256sum, com fallback shasum) e IMPRIME a tabela arquivo→hash;
+#   3. EXIGE a confirmação do operador: os hashes exibidos aqui devem conferir
+#      com os hashes que a página da prévia calcula de forma INDEPENDENTE no
+#      navegador (Web Crypto, aba "Fase 1 — Entregáveis"). Sem o "s" do
+#      operador, aborta sem ter alterado nada fora de /tmp;
+#      Alternativa NÃO interativa e segura: exportar EFASE1_SHA256 no formato
+#      "caminho=hash;caminho=hash;..." — nesse caso o script compara
+#      automaticamente e aborta em qualquer divergência, sem perguntar;
+#   4. Valida a sintaxe do stream.js baixado com node --check;
+#   5. Copia APENAS os dois scripts de teste/aplicação para
 #      /root/cursos-api/docs/operacoes/ com cp --preserve (timestamps e modo),
 #      criando o diretório se necessário. NENHUM outro arquivo do repositório
 #      é criado, alterado ou removido.
+#
+# POR QUE A INTEGRIDADE É VERIFICADA ASSIM (e não com hashes embutidos):
+#   Este instalador é gerado no workspace GoSkip, um ambiente SEM execução de
+#   shell — não há como calcular SHA-256 lá dentro e embutir o valor aqui.
+#   Inventar um hash seria pior do que não ter hash: daria falsa sensação de
+#   integridade. Por isso o hash é calculado duas vezes, por fontes
+#   INDEPENDENTES: (a) sha256sum na VPS, sobre os bytes efetivamente baixados;
+#   (b) Web Crypto no navegador, sobre os bytes servidos pela prévia. O
+#   operador compara as duas tabelas antes de confirmar. Essa dupla
+#   verificação independente cumpre o papel do manifesto embutido.
 #
 # O QUE NUNCA FAZ:
 #   - Não executa git add / git commit / git push / git checkout (nenhum!);
@@ -50,29 +67,14 @@ fi
 # Remove barra final da origem, se houver
 ORIGEM="${ORIGEM%/}"
 
-# ==============================================================================
-# MANIFESTO DE INTEGRIDADE: hashes SHA-256 EMBUTIDOS (devem bater com
-# docs/fase1/VERIFICACAO_ARTEFATOS.md e com o app da prévia, aba Fase 1).
-# Formato: <hash>  <caminho relativo a partir de $CANDIDATOS_DIR>
-# ==============================================================================
-read -r -d '' MANIFESTO_SHA256 <<'EOF_SHA' || true
-2be71f49646bde330ec0c822ff611be9e173e44c2057d23f381c81ef94e1e07b  src/routes/stream.js
-3d9501a300d8b4e7a3ec11cc0a66d548f7663e6e87f2e1a47321e06fa536f0e4  src/static/painel-mentor.html
-168e37dc0bd59a16f272a8c3d8e578ba33cd7c768991fa9a7ffccbe5b9bc5d11  docs/fase1/INTEGRACAO_FASE1.md
-e9b2513de5553e1e40eb617b7b15a6b5a3e1438fa5a48483f3e27150a294f4a3  docs/fase1/PROPOSTA_PROVAS.md
-3312c1404c0429fec033bd2f27ddc54aa5017e2978931dc150c95029a502f664  docs/fase1/REVISAO_FASE1.md
-38a6ec1552a46e1074e50d536cf0ba7493eef250bc44618e7751c8a14ec7a59a  docs/fase1/TESTE_PRE_HOMOLOGACAO_VPS.md
-e927c9c054238e55eefea2b27429bb7b05cdcd5d1ec5ce1e6e0261c470196253  docs/operacoes/testar-fase1-vps.sh
-c93f06b9968452309ec95ba8d133038a8e1e7bd66ff852b86a8ff39fa1cf8743  docs/operacoes/aplicar-fase1-vps.sh
-EOF_SHA
-
 # Lista de downloads: <caminho do artefato na ORIGEM>|<destino relativo a $CANDIDATOS_DIR>
 # stream.js e painel-mentor.html vão para os caminhos finais (src/routes/ e src/static/)
 # para que os scripts de teste e o diff do operador os encontrem onde serão aplicados;
-# os demais ficam em subpastas espelhadas de docs/. Todos os 8 são conferidos contra
-# o MANIFESTO_SHA256 acima. VERIFICACAO_ARTEFATOS.md e o instalador em si não entram
-# na lista: o instalador é o próprio script em execução e VERIFICACAO_ARTEFATOS.md é
-# o documento que registra os hashes (ambos disponíveis para download manual na prévia).
+# os demais ficam em subpastas espelhadas de docs/. Todos os 8 têm o SHA-256
+# calculado na VPS e exibido na tabela para conferência do operador.
+# VERIFICACAO_ARTEFATOS.md e o instalador em si não entram na lista: o instalador
+# é o próprio script em execução e VERIFICACAO_ARTEFATOS.md é o documento que
+# registra o mecanismo de verificação (ambos disponíveis na prévia).
 LISTA_ARQUIVOS=(
   "docs/fase1/stream.js|src/routes/stream.js"
   "docs/fase1/NOVO_PAINEL/painel-mentor.html|src/static/painel-mentor.html"
@@ -108,31 +110,22 @@ baixar_arquivo() {
   return 1
 }
 
-# Confere o SHA-256 de UM arquivo contra o hash embutido esperado.
-verificar_hash_unico() {
+# Calcula o SHA-256 REAL de um arquivo NA VPS (sha256sum com fallback shasum).
+calcular_sha256_vps() {
   local caminho="$1"
-  local esperado="$2"
-  local nome="$3"
-  local calculado
   if command -v sha256sum >/dev/null 2>&1; then
-    calculado=$(sha256sum "$caminho" | awk '{print $1}')
+    sha256sum "$caminho" | awk '{print $1}'
   elif command -v shasum >/dev/null 2>&1; then
-    calculado=$(shasum -a 256 "$caminho" | awk '{print $1}')
+    shasum -a 256 "$caminho" | awk '{print $1}'
   else
-    log_erro "Nem sha256sum nem shasum disponíveis nesta VPS — não é possível conferir integridade."
+    log_erro "Nem sha256sum nem shasum disponíveis nesta VPS — não é possível calcular o SHA-256."
     exit 1
   fi
-  if [ "$calculado" != "$esperado" ]; then
-    log_erro "=============================================================="
-    log_erro "FALHA DE INTEGRIDADE SHA-256: $nome"
-    log_erro "  Esperado: $esperado"
-    log_erro "  Obtido:   $calculado"
-    log_erro "O arquivo baixado NÃO confere com o manifesto oficial."
-    log_erro "Instalação ABORTADA — nada foi alterado fora de /tmp."
-    log_erro "=============================================================="
-    exit 1
-  fi
-  log_ok "SHA-256 confere: $nome"
+}
+
+# Normaliza "hash" para minúsculas sem espaços (comparação canônica).
+normalizar_hash() {
+  echo "$1" | tr -d '[:space:]' | tr 'A-F' 'a-f'
 }
 
 log_info "=================================================================="
@@ -151,7 +144,7 @@ case "$CANDIDATOS_DIR" in
 esac
 
 mkdir -p "$CANDIDATOS_DIR"
-log_info "1/5. Baixando os 8 artefatos da origem informada (curl com fallback wget)..."
+log_info "1/6. Baixando os 8 artefatos da origem informada (curl com fallback wget)..."
 
 for entrada in "${LISTA_ARQUIVOS[@]}"; do
   caminho_origem="${entrada%%|*}"
@@ -169,17 +162,131 @@ for entrada in "${LISTA_ARQUIVOS[@]}"; do
   fi
 done
 
-log_info "2/5. Conferindo SHA-256 de cada arquivo contra o manifesto EMBUTIDO..."
-while IFS= read -r linha; do
-  [ -z "$linha" ] && continue
-  hash_esperado=$(echo "$linha" | awk '{print $1}')
-  caminho_rel=$(echo "$linha" | awk '{print $2}')
-  verificar_hash_unico "$CANDIDATOS_DIR/$caminho_rel" "$hash_esperado" "$caminho_rel"
-done <<EOF_SHA
-$MANIFESTO_SHA256
-EOF_SHA
+# ------------------------------------------------------------------------------
+# 2/6. Cálculo do SHA-256 REAL de cada arquivo baixado, NA VPS, e tabela final.
+#      Nenhum hash é embutido neste script: o valor vem dos bytes efetivamente
+#      baixados (fonte 1 de 2; a fonte 2 é a Web Crypto no navegador da prévia).
+# ------------------------------------------------------------------------------
+log_info "2/6. Calculando o SHA-256 real de cada arquivo NA VPS..."
 
-log_info "3/5. Validando sintaxe do stream.js com node --check..."
+TABELA_HASHES=""
+declare -A HASH_CALCULADO=()
+for entrada in "${LISTA_ARQUIVOS[@]}"; do
+  destino_rel="${entrada##*|}"
+  hash_atual=$(calcular_sha256_vps "$CANDIDATOS_DIR/$destino_rel")
+  HASH_CALCULADO["$destino_rel"]="$hash_atual"
+  if [ -z "$TABELA_HASHES" ]; then
+    TABELA_HASHES="$hash_atual  $destino_rel"
+  else
+    TABELA_HASHES="$TABELA_HASHES
+$hash_atual  $destino_rel"
+  fi
+done
+
+echo ""
+echo "================ TABELA SHA-256 CALCULADA NA VPS ================"
+echo "$TABELA_HASHES"
+echo "================================================================="
+echo ""
+log_info "Compare a tabela acima com a tabela exibida na PRÉVIA"
+log_info "(aba \"Fase 1 — Entregáveis\", card \"Instalação Rápida na VPS\","
+log_info "botão \"Recalcular hashes\" — cálculo independente via Web Crypto"
+log_info "no navegador, sobre os mesmos arquivos servidos por esta origem)."
+echo ""
+
+# ------------------------------------------------------------------------------
+# 3/6. Verificação da integridade:
+#      (a) EFASE1_SHA256="caminho=hash;..."  → comparação automática;
+#      (b) sem EFASE1_SHA256                 → confirmação interativa do operador.
+#      Em ambos os casos, divergência ou recusa ABORTA sem alterar nada
+#      fora de /tmp.
+# ------------------------------------------------------------------------------
+log_info "3/6. Verificação de integridade (VPS × navegador / EFASE1_SHA256)..."
+
+if [ -n "${EFASE1_SHA256:-}" ]; then
+  # Modo não interativo seguro: compara automaticamente cada par caminho=hash.
+  declare -A ESPERADO_OPERADOR=()
+  IFS=';' read -r -a PARES <<< "$EFASE1_SHA256"
+  for par in "${PARES[@]}"; do
+    [ -z "$par" ] && continue
+    chave="${par%%=*}"
+    valor="${par#*=}"
+    chave="$(echo "$chave" | tr -d '[:space:]')"
+    valor="$(normalizar_hash "$valor")"
+    if [ -z "$chave" ] || [ -z "$valor" ]; then
+      log_erro "EFASE1_SHA256 mal formatado (esperado 'caminho=hash;...'): entrada '$par'."
+      exit 1
+    fi
+    conhecida=0
+    for entrada in "${LISTA_ARQUIVOS[@]}"; do
+      [ "${entrada##*|}" = "$chave" ] && conhecida=1
+    done
+    if [ "$conhecida" -ne 1 ]; then
+      log_erro "EFASE1_SHA256 menciona caminho desconhecido: '$chave'."
+      log_erro "Use exatamente os caminhos relativos exibidos na tabela acima."
+      exit 1
+    fi
+    ESPERADO_OPERADOR["$chave"]="$valor"
+  done
+
+  divergencias=0
+  verificadas_auto=0
+  for entrada in "${LISTA_ARQUIVOS[@]}"; do
+    destino_rel="${entrada##*|}"
+    if [ -n "${ESPERADO_OPERADOR[$destino_rel]:-}" ]; then
+      verificadas_auto=$((verificadas_auto + 1))
+      if [ "$(normalizar_hash "${HASH_CALCULADO[$destino_rel]}")" != "${ESPERADO_OPERADOR[$destino_rel]}" ]; then
+        log_erro "=============================================================="
+        log_erro "FALHA DE INTEGRIDADE SHA-256: $destino_rel"
+        log_erro "  Informado (EFASE1_SHA256): ${ESPERADO_OPERADOR[$destino_rel]}"
+        log_erro "  Calculado na VPS:          ${HASH_CALCULADO[$destino_rel]}"
+        log_erro "O arquivo baixado NÃO confere com o valor informado pelo operador."
+        log_erro "Instalação ABORTADA — nada foi alterado fora de /tmp."
+        log_erro "=============================================================="
+        divergencias=$((divergencias + 1))
+      fi
+    fi
+  done
+  if [ "$divergencias" -gt 0 ]; then
+    exit 1
+  fi
+  if [ "$verificadas_auto" -eq "${#LISTA_ARQUIVOS[@]}" ]; then
+    log_ok "Todos os $verificadas_auto hashes conferem com EFASE1_SHA256 — prosseguindo sem confirmação interativa."
+  else
+    log_warn "EFASE1_SHA256 cobriu $verificadas_auto de ${#LISTA_ARQUIVOS[@]} entradas; as demais exigem confirmação interativa."
+    EFASE1_SHA256=""
+  fi
+fi
+
+if [ -z "${EFASE1_SHA256:-}" ]; then
+  # Confirmação interativa. IMPORTANTE: quando o script roda via pipe
+  # (curl ... | bash), o stdin é o próprio script — a leitura da resposta
+  # DEVE vir do terminal de controle (/dev/tty), nunca do stdin.
+  if [ -t 0 ]; then
+    read -r -p "Os hashes da VPS conferem com os da prévia? Digite 's' para prosseguir, qualquer outra coisa ABORTA: " resposta <&0 || resposta=""
+  elif read -r resposta </dev/tty 2>/dev/null; then
+    : # resposta lida do terminal de controle (execução via pipe)
+  else
+    resposta=""
+  fi
+  if [ "$resposta" != "s" ]; then
+    log_erro "================================================================"
+    log_erro "Confirmação NÃO obtida (resposta: '${resposta:-<vazia>}')."
+    log_erro "Instalação ABORTADA por decisão do operador ou ausência de terminal."
+    log_erro "Nada foi alterado fora de /tmp/fase1_candidatos."
+    log_erro "Alternativas: (1) executar sem pipe (bash /tmp/instalar-fase1.sh $ORIGEM);"
+    log_erro "(2) modo automático: EFASE1_SHA256=\"caminho=hash;caminho=hash\" bash instalar-fase1.sh $ORIGEM"
+    log_erro "(usando os hashes da tabela da prévia)."
+    log_erro "================================================================"
+    exit 1
+  fi
+  log_ok "Confirmação do operador recebida — hashes conferidos visualmente (VPS × navegador)."
+fi
+
+# ------------------------------------------------------------------------------
+# 4/6. Validação de sintaxe do stream.js baixado (node --check).
+# ------------------------------------------------------------------------------
+log_info "4/6. Validando sintaxe do stream.js com node --check..."
 if ! command -v node >/dev/null 2>&1; then
   log_erro "Node.js não encontrado na VPS — necessário para node --check."
   exit 1
@@ -191,7 +298,10 @@ else
   exit 1
 fi
 
-log_info "4/5. Copiando os 2 scripts de teste para $OPERACOES_DESTINO (com --preserve)..."
+# ------------------------------------------------------------------------------
+# 5/6. Cópia APENAS dos 2 scripts de teste para docs/operacoes/ do repositório.
+# ------------------------------------------------------------------------------
+log_info "5/6. Copiando os 2 scripts de teste para $OPERACOES_DESTINO (com --preserve)..."
 if [ ! -d "$REPO_DIR" ]; then
   log_erro "Repositório $REPO_DIR não encontrado nesta VPS — abortando."
   exit 1
@@ -204,7 +314,10 @@ cp --preserve=mode,timestamps \
 chmod +x "$OPERACOES_DESTINO/testar-fase1-vps.sh" "$OPERACOES_DESTINO/aplicar-fase1-vps.sh"
 log_ok "Scripts copiados com --preserve (modo e timestamps preservados)."
 
-log_info "5/5. Próximos passos para o operador (na VPS):"
+# ------------------------------------------------------------------------------
+# 6/6. Próximos passos do operador (nenhuma ação automática adicional).
+# ------------------------------------------------------------------------------
+log_info "6/6. Próximos passos para o operador (na VPS):"
 echo ""
 echo "  # 1) Camada 1 — Teste estático (zero risco):"
 echo "  ./docs/operacoes/testar-fase1-vps.sh estatico"

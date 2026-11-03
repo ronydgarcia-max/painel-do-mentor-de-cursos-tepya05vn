@@ -18,7 +18,8 @@
 #   copiar      - Passo 2: monta /tmp/fase1_candidatos/ sem substituir produção
 #   diff        - Passo 3: gera diffs unificados contra 47aa7b1 para auditoria visual
 #   substituir  - Passo 4: cria backups .bak.fase1 e copia candidatos para src/ (requer confirmação)
-#   validar     - Passo 5: node --check src/routes/stream.js + conferência SHA-256 do manifesto
+#   validar     - Passo 5: node --check src/routes/stream.js + SHA-256 calculado na VPS
+#               (conferido via EFASE1_SHA256 ou confirmação do operador — nada embutido)
 #   commit      - Passo 6: git add apenas dos 2 arquivos + commit + push origin correcao-fluxo-cursos (NUNCA main)
 #   redeploy    - Passo 7: dispara rebuild Cursos-API no EasyPanel via API com $EASYPANEL_TOKEN (mascarado)
 #   testes      - Passo 8: bateria pós-deploy dos 8 testes de negócio e segurança
@@ -43,9 +44,14 @@ PAINEL_PROD="$REPO_DIR/src/static/painel-mentor.html"
 STREAM_CANDIDATO="$CANDIDATOS_DIR/src/routes/stream.js"
 PAINEL_CANDIDATO="$CANDIDATOS_DIR/src/static/painel-mentor.html"
 
-# Hashes SHA-256 oficiais do manifesto docs/fase1/VERIFICACAO_ARTEFATOS.md
-HASH_ESPERADO_STREAM="2be71f49646bde330ec0c822ff611be9e173e44c2057d23f381c81ef94e1e07b"
-HASH_ESPERADO_PAINEL="3d9501a300d8b4e7a3ec11cc0a66d548f7663e6e87f2e1a47321e06fa536f0e4"
+# INTEGRIDADE — POR QUE NENHUM HASH ESTÁ EMBUTIDO NESTE SCRIPT:
+#   Este script é gerado no workspace GoSkip, ambiente SEM execução de shell:
+#   não há como calcular SHA-256 aqui e embutir o valor. Inventar um hash daria
+#   falsa sensação de integridade. O hash REAL é calculado NA VPS (sha256sum)
+#   sobre os bytes efetivamente presentes e conferido pelo operador com a tabela
+#   calculada de forma INDEPENDENTE no navegador da prévia (Web Crypto, aba
+#   "Fase 1 — Entregáveis"), ou automaticamente via variável EFASE1_SHA256 no
+#   formato "src/routes/stream.js=<hash>;src/static/painel-mentor.html=<hash>".
 
 # Cores para exibição amigável no terminal
 CLR_RESET="\033[0m"
@@ -314,26 +320,58 @@ etapa_validar() {
     log_abort "Erro de sintaxe detectado em $STREAM_PROD!"
   fi
 
-  log_info "5.2. Conferindo hashes SHA-256 contra o manifesto VERIFICACAO_ARTEFATOS.md..."
+  log_info "5.2. Conferência de integridade SHA-256 (calculado NA VPS; nada embutido)..."
   local hash_real_stream
   local hash_real_painel
   hash_real_stream=$(sha256sum "$STREAM_PROD" | awk '{print $1}')
   hash_real_painel=$(sha256sum "$PAINEL_PROD" | awk '{print $1}')
 
-  echo "  stream.js real:     $hash_real_stream"
-  echo "  stream.js esperado: $HASH_ESPERADO_STREAM"
-  if [ "$hash_real_stream" = "$HASH_ESPERADO_STREAM" ]; then
-    log_ok "Hash SHA-256 de stream.js confere perfeitamente com o manifesto oficial."
-  else
-    log_warn "Atenção: Hash de stream.js diverge do manifesto oficial!"
+  echo ""
+  echo "  ========== TABELA SHA-256 CALCULADA NA VPS (PÓS-SUBSTITUIÇÃO) =========="
+  echo "  $hash_real_stream  src/routes/stream.js"
+  echo "  $hash_real_painel  src/static/painel-mentor.html"
+  echo "  ========================================================================"
+  echo ""
+
+  # Modo automático opcional: EFASE1_SHA256="src/routes/stream.js=<hash>;src/static/painel-mentor.html=<hash>"
+  local esperado_stream=""
+  local esperado_painel=""
+  if [ -n "${EFASE1_SHA256:-}" ]; then
+    esperado_stream=$(echo "$EFASE1_SHA256" | tr ';' '\n' | grep '^src/routes/stream.js=' | head -n 1 | cut -d'=' -f2- | tr -d '[:space:]' | tr 'A-F' 'a-f' || true)
+    esperado_painel=$(echo "$EFASE1_SHA256" | tr ';' '\n' | grep '^src/static/painel-mentor.html=' | head -n 1 | cut -d'=' -f2- | tr -d '[:space:]' | tr 'A-F' 'a-f' || true)
   fi
 
-  echo "  painel real:        $hash_real_painel"
-  echo "  painel esperado:    $HASH_ESPERADO_PAINEL"
-  if [ "$hash_real_painel" = "$HASH_ESPERADO_PAINEL" ]; then
-    log_ok "Hash SHA-256 de painel-mentor.html confere perfeitamente com o manifesto oficial."
+  if [ -n "$esperado_stream" ] || [ -n "$esperado_painel" ]; then
+    local divergencias=0
+    if [ -n "$esperado_stream" ]; then
+      if [ "$hash_real_stream" = "$esperado_stream" ]; then
+        log_ok "SHA-256 de src/routes/stream.js confere com EFASE1_SHA256."
+      else
+        log_erro "FALHA DE INTEGRIDADE: src/routes/stream.js"
+        log_erro "  Informado (EFASE1_SHA256): $esperado_stream"
+        log_erro "  Calculado na VPS:          $hash_real_stream"
+        divergencias=$((divergencias + 1))
+      fi
+    fi
+    if [ -n "$esperado_painel" ]; then
+      if [ "$hash_real_painel" = "$esperado_painel" ]; then
+        log_ok "SHA-256 de src/static/painel-mentor.html confere com EFASE1_SHA256."
+      else
+        log_erro "FALHA DE INTEGRIDADE: src/static/painel-mentor.html"
+        log_erro "  Informado (EFASE1_SHA256): $esperado_painel"
+        log_erro "  Calculado na VPS:          $hash_real_painel"
+        divergencias=$((divergencias + 1))
+      fi
+    fi
+    if [ "$divergencias" -gt 0 ]; then
+      log_abort "Hash divergente — restaure via '$0 rollback' e reavalie os candidatos em /tmp/fase1_candidatos."
+    fi
   else
-    log_warn "Atenção: Hash de painel-mentor.html diverge do manifesto oficial!"
+    log_info "Compare os hashes acima com a tabela da prévia"
+    log_info "(aba \"Fase 1 — Entregáveis\", card \"Instalação Rápida na VPS\","
+    log_info "botão \"Recalcular hashes\" — cálculo independente via Web Crypto)."
+    confirmar_acao "Os hashes calculados na VPS conferem com a tabela da prévia (Web Crypto)?"
+    log_ok "Conferência visual do operador aceita para os dois hashes."
   fi
 
   log_ok "PASSO 5 (VALIDAR) CONCLUÍDO COM SUCESSO."
@@ -775,7 +813,8 @@ case "${1:-ajuda}" in
     echo "  copiar      - Passo 2: Monta candidatos em /tmp/fase1_candidatos/ sem tocar em produção"
     echo "  diff        - Passo 3: Gera diffs unificados contra 47aa7b1 para auditoria visual"
     echo "  substituir  - Passo 4: Backup .bak.fase1 e cópia para src/ (requer confirmação explícita s/N)"
-    echo "  validar     - Passo 5: node --check src/routes/stream.js e conferência SHA-256 do manifesto"
+    echo "  validar     - Passo 5: node --check src/routes/stream.js e SHA-256 calculado na VPS"
+    echo "                (conferido via EFASE1_SHA256 ou confirmação do operador — nada embutido)"
     echo "  commit      - Passo 6: git add dos 2 arquivos + commit + push em correcao-fluxo-cursos (NUNCA main)"
     echo "  redeploy    - Passo 7: Dispara rebuild Cursos-API no EasyPanel via API ou guia manual"
     echo "  testes      - Passo 8: Bateria dos 8 testes funcionais pós-deploy"
@@ -786,6 +825,7 @@ case "${1:-ajuda}" in
     echo "  EASYPANEL_TOKEN     Token de API do EasyPanel (mascarado nas saídas)"
     echo "  TEST_TOKEN_MENTOR   Token JWT de mentor para a bateria de testes"
     echo "  TEST_TOKEN_ESTRANHO Token JWT de usuário sem matrícula"
+    echo "  EFASE1_SHA256       Hashes esperados: \"src/routes/stream.js=<hash>;src/static/painel-mentor.html=<hash>\""
     echo "  API_URL             URL da API (Padrão: http://127.0.0.1:3333)"
     ;;
   *)
