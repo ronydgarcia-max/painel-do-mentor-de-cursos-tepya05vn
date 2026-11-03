@@ -2,8 +2,17 @@
  * src/lib/manifestHelper.ts
  *
  * Módulo consolidado de manifesto e integridade SHA-256 para os artefatos da Fase 1.
- * Fornece metadados dos 6 artefatos oficiais, hashes esperados, verificação
+ * Fornece metadados dos artefatos oficiais, hashes esperados, verificação
  * e utilitários para cálculo de hash SHA-256 de strings no navegador (Web Crypto API).
+ *
+ * ORIGEM DE DOWNLOAD (Fase 1 — Entregáveis): os artefatos são servidos pela URL
+ * pública da PRÓPRIA PRÉVIA em <window.location.origin>/docs/... (espelho em
+ * public/docs/ gerado por docs/operacoes/espelhar-fase1-workspace.sh). A origem é
+ * detectada em runtime no app (aba "Fase 1 — Entregáveis", card "Instalação Rápida
+ * na VPS"), funcionando igual na prévia e na produção do workspace. Nada é publicado
+ * no GitHub: os hashes [CALCULAR_SHA256_POS_ESPELHAMENTO: ...] abaixo são marcadores
+ * a serem preenchidos com o valor real de sha256sum após o espelhamento executado
+ * pelo operador — nunca inventar valores de hash.
  */
 
 export interface ArtefatoFase1 {
@@ -111,11 +120,22 @@ export const MANIFESTO_ARTEFATOS_FASE1: ArtefatoFase1[] = [
     tipo: 'script',
   },
   {
+    id: 'instalador',
+    nome: 'instalar-fase1.sh (Instalador Único VPS)',
+    caminhoWorkspace: 'docs/operacoes/instalar-fase1.sh',
+    destinoVps: 'docs/operacoes/instalar-fase1.sh',
+    sha256: '[CALCULAR_SHA256_POS_ESPELHAMENTO: sha256sum docs/operacoes/instalar-fase1.sh]',
+    descricao:
+      'Instalador único pré-homologação: baixa os 8 artefatos da prévia por curl/wget para /tmp/fase1_candidatos (stream.js em src/routes/ e painel-mentor.html em src/static/), confere SHA-256 embutido de cada arquivo (aborta em divergência), valida node --check no stream.js e copia apenas os 2 scripts de teste para docs/operacoes/ com --preserve. Nunca faz commit/push, nunca usa main, nunca copia para src/ do repositório e contém zero segredos.',
+    camada: 'Instalação Automatizada Pré-Homologação (Somente Teste)',
+    tipo: 'script',
+  },
+  {
     id: 'verificacao-artefatos',
     nome: 'VERIFICACAO_ARTEFATOS.md',
     caminhoWorkspace: 'docs/fase1/VERIFICACAO_ARTEFATOS.md',
     destinoVps: 'docs/fase1/VERIFICACAO_ARTEFATOS.md',
-    sha256: '25eb92ff917f692066d8b68aafe8f4a3de0724f33b1e77f0aeb5a2f5fdece3e9',
+    sha256: '[CALCULAR_SHA256_POS_ESPELHAMENTO: sha256sum docs/fase1/VERIFICACAO_ARTEFATOS.md]',
     descricao:
       'Manifesto criptográfico oficial dos artefatos da Fase 1, relatório de conformidade dos 27 itens, varredura de segredos e comandos de cópia e diff para o operador.',
     camada: 'Manifesto Criptográfico & Auditoria',

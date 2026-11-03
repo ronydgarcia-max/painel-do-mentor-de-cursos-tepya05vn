@@ -47,6 +47,8 @@ export default function Index() {
     | 'seguranca_secrets'
   >('inventario')
   const [copiedDoc, setCopiedDoc] = useState<string | null>(null)
+  // Origem dos artefatos da Fase 1: detectada em runtime, igual na prévia e na produção do workspace
+  const [origemArtefatos] = useState(() => window.location.origin)
   const [selectedVideoSource, setSelectedVideoSource] = useState<
     'vps' | 'youtube' | 'onedrive' | 'cloudinary'
   >('vps')
@@ -2758,6 +2760,135 @@ export default function Index() {
                       <Copy className="w-3.5 h-3.5 mr-1" /> Copiar Caminho
                       docs/operacoes/aplicar-fase1-vps.sh
                     </Button>
+                  </div>
+                </div>
+
+                {/* Card Especial: Instalação Rápida na VPS (instalador único) */}
+                <div className="p-4 rounded-lg bg-slate-950 border-2 border-blue-800/60 space-y-4">
+                  <div className="flex items-center justify-between flex-wrap gap-2 border-b border-slate-800 pb-3">
+                    <div className="flex items-center gap-2">
+                      <div className="p-1.5 rounded bg-blue-500/20 text-blue-400">
+                        <HardDrive className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-white text-sm flex items-center gap-2">
+                          Instalação Rápida na VPS (Instalador Único, Sem GitHub e Sem SCP)
+                        </h4>
+                        <p className="text-slate-400 text-xs mt-0.5">
+                          Uma única linha de comando na VPS: baixa os artefatos direto desta prévia,
+                          confere o SHA-256 de cada arquivo e deixa tudo pronto para o teste somente
+                          leitura.
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <Badge className="bg-blue-500/20 text-blue-300 border-blue-500/40 text-[10px]">
+                        curl &bull; Sem SCP &bull; Sem GitHub
+                      </Badge>
+                      <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/40 text-[10px]">
+                        NÃO é Homologação
+                      </Badge>
+                    </div>
+                  </div>
+
+                  {/* Aviso: teste pré-homologação, nada em produção */}
+                  <div className="p-3 rounded bg-amber-950/30 border border-amber-800/50 space-y-1.5 text-xs">
+                    <span className="font-bold text-amber-300 flex items-center gap-1.5">
+                      <ShieldCheck className="w-4 h-4 text-amber-400" />
+                      O que o instalador faz — e o que ele NUNCA faz
+                    </span>
+                    <p className="text-slate-300 text-[11px]">
+                      <strong className="text-slate-100">Faz:</strong> baixa os artefatos da Fase 1
+                      direto desta prévia (curl com fallback wget) para{' '}
+                      <code>/tmp/fase1_candidatos/</code>; confere o SHA-256 de <em>cada</em>{' '}
+                      arquivo contra hashes embutidos no próprio instalador e{' '}
+                      <strong>aborta na hora</strong> se algum divergir; valida a sintaxe do{' '}
+                      <code>stream.js</code> com <code>node --check</code>; e copia apenas os 2
+                      scripts de teste (<code>testar-fase1-vps.sh</code> e{' '}
+                      <code>aplicar-fase1-vps.sh</code>) para <code>docs/operacoes/</code> do
+                      repositório com <code>--preserve</code>.
+                    </p>
+                    <p className="text-slate-300 text-[11px]">
+                      <strong className="text-slate-100">Nunca faz:</strong> nenhum{' '}
+                      <code>git commit</code>, <code>git push</code> ou <code>git checkout</code>;{' '}
+                      <strong>não copia nada para src/</strong> do repositório (os candidatos ficam
+                      isolados em <code>/tmp</code> para o operador auditar via diff); não usa a
+                      branch <code>main</code>; não dispara redeploy; zero segredos no script. A
+                      substituição em <code>src/</code> continua sendo decisão manual do operador,
+                      passo a passo, via <code>aplicar-fase1-vps.sh</code>.
+                    </p>
+                  </div>
+
+                  {/* Linha de comando única com origem detectada em runtime */}
+                  <div className="space-y-2 text-xs">
+                    <span className="font-semibold text-white flex items-center gap-1.5">
+                      <Terminal className="w-4 h-4 text-blue-400" />
+                      Linha de comando única (copiar e colar na VPS):
+                    </span>
+                    <div className="bg-slate-900 p-3 rounded font-mono text-[11px] text-blue-200 border border-blue-900/60 space-y-2 break-all">
+                      <div className="text-slate-400 text-[10px]">
+                        # Origem detectada automaticamente em runtime:{' '}
+                        <span className="text-blue-300">{origemArtefatos}</span>
+                      </div>
+                      <div className="text-emerald-300">
+                        curl -fsSL {origemArtefatos}/docs/operacoes/instalar-fase1.sh | bash -s --{' '}
+                        {origemArtefatos}
+                      </div>
+                      <div className="text-slate-400 text-[10px]">
+                        # Alternativa sem pipe (baixar primeiro, ler, depois executar):
+                      </div>
+                      <div>
+                        curl -fsSL {origemArtefatos}/docs/operacoes/instalar-fase1.sh -o
+                        /tmp/instalar-fase1.sh &amp;&amp; bash /tmp/instalar-fase1.sh{' '}
+                        {origemArtefatos}
+                      </div>
+                    </div>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() =>
+                        handleCopyPath(
+                          `curl -fsSL ${origemArtefatos}/docs/operacoes/instalar-fase1.sh | bash -s -- ${origemArtefatos}`,
+                        )
+                      }
+                      className="text-xs border-blue-800 bg-blue-950/30 text-blue-300 hover:bg-blue-900/40"
+                    >
+                      <Copy className="w-3.5 h-3.5 mr-1" />
+                      {copiedDoc ===
+                      `curl -fsSL ${origemArtefatos}/docs/operacoes/instalar-fase1.sh | bash -s -- ${origemArtefatos}`
+                        ? 'Linha Copiada!'
+                        : 'Copiar Linha de Comando'}
+                    </Button>
+                  </div>
+
+                  {/* O que a URL desta prévia serve (download direto, sem GitHub) */}
+                  <div className="space-y-2 text-xs">
+                    <span className="font-semibold text-white">
+                      Downloads diretos desta prévia (mesmos caminhos do instalador):
+                    </span>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-1.5 text-[11px]">
+                      {MANIFESTO_ARTEFATOS_FASE1.map((item) => (
+                        <div
+                          key={item.id}
+                          className="p-2 rounded bg-slate-900 border border-slate-800 flex items-center justify-between gap-2"
+                        >
+                          <code className="text-slate-300 truncate">{item.caminhoWorkspace}</code>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() =>
+                              handleCopyPath(`${origemArtefatos}/${item.caminhoWorkspace}`)
+                            }
+                            className="h-5 px-2 text-[10px] text-slate-400 hover:text-white shrink-0"
+                          >
+                            <Copy className="w-3 h-3 mr-1" />
+                            {copiedDoc === `${origemArtefatos}/${item.caminhoWorkspace}`
+                              ? 'URL Copiada!'
+                              : 'Copiar URL'}
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
 

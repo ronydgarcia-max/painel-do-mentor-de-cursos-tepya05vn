@@ -10,6 +10,29 @@
 
 ---
 
+## 0. ORIGEM DE DOWNLOAD DOS ARTEFATOS (SEM GITHUB, SEM SCP)
+
+A partir da revisão de instalação rápida, os artefatos da Fase 1 são servidos pela
+URL pública da PRÓPRIA PRÉVIA GoSkip em `<origem>/docs/...`, onde `<origem>` é o
+`window.location.origin` da prévia exibido na aba "Fase 1 — Entregáveis" (card
+"Instalação Rápida na VPS") do app. O espelho público é gerado no workspace pelo
+script `docs/operacoes/espelhar-fase1-workspace.sh` (cópia byte-exata para
+`public/docs/...` com re-verificação de SHA-256 antes do commit do workspace).
+
+O instalador único `docs/operacoes/instalar-fase1.sh` é executado na VPS em UMA
+linha (curl) e: baixa os 8 artefatos (curl com fallback wget) para
+`/tmp/fase1_candidatos/` (stream.js em `src/routes/`, painel-mentor.html em
+`src/static/`, demais em subpastas espelhadas), confere o SHA-256 de cada arquivo
+contra hashes EMBUTIDOS no próprio instalador (abortando em divergência), valida
+`node --check` no stream.js e copia APENAS os 2 scripts de teste para
+`/root/cursos-api/docs/operacoes/` com `--preserve`.
+
+**O instalador NUNCA faz:** `git add/commit/push/checkout`, cópia para `src/` do
+repositório (candidatos ficam somente em `/tmp` para o operador auditar via diff),
+uso da branch `main`, redeploy — e contém zero segredos. Serviço na porta 3334
+NÃO significa Fase 1 homologada: homologação oficial (Camada 4, EasyPanel)
+continua exigindo autorização expressa do operador.
+
 ## 1. MANIFESTO CRIPTOGRÁFICO SHA-256 DOS ARTEFATOS DA FASE 1
 
 O operador da VPS exige as somas de verificação SHA-256 completas dos arquivos oficiais da Fase 1 antes de qualquer transferência ou homologação na VPS:
@@ -26,19 +49,28 @@ e9b2513de5553e1e40eb617b7b15a6b5a3e1438fa5a48483f3e27150a294f4a3  docs/fase1/PRO
 38a6ec1552a46e1074e50d536cf0ba7493eef250bc44618e7751c8a14ec7a59a  docs/fase1/TESTE_PRE_HOMOLOGACAO_VPS.md
 e927c9c054238e55eefea2b27429bb7b05cdcd5d1ec5ce1e6e0261c470196253  docs/operacoes/testar-fase1-vps.sh
 c93f06b9968452309ec95ba8d133038a8e1e7bd66ff852b86a8ff39fa1cf8743  docs/operacoes/aplicar-fase1-vps.sh
+[SHA256_A_COMPUTAR_APOS_ESPELHAMENTO]  docs/operacoes/instalar-fase1.sh (instalador único — executar sha256sum após o espelhamento; NUNCA inventar valor)
 ──────────────────────────────────────────────────────────────────────────────────────────────────
 ```
+
+> **Nota do instalador:** os 8 hashes acima (exceto a linha do instalador) estão
+> EMBUTIDOS em `docs/operacoes/instalar-fase1.sh` e são conferidos na VPS a cada
+> download. O hash do próprio instalador é calculado com
+> `sha256sum docs/operacoes/instalar-fase1.sh` após o espelhamento e registrado
+> aqui e em `src/lib/manifestHelper.ts` — nunca inventado.
 
 ### Comando Exato Utilizado para Geração dos Hashes no Host / VPS:
 
 ```bash
 sha256sum docs/fase1/stream.js \
           docs/fase1/NOVO_PAINEL/painel-mentor.html \
+          docs/fase1/TESTE_PRE_HOMOLOGACAO_VPS.md \
           docs/fase1/INTEGRACAO_FASE1.md \
           docs/fase1/PROPOSTA_PROVAS.md \
           docs/fase1/REVISAO_FASE1.md \
           docs/operacoes/testar-fase1-vps.sh \
           docs/operacoes/aplicar-fase1-vps.sh \
+          docs/operacoes/instalar-fase1.sh \
           docs/fase1/VERIFICACAO_ARTEFATOS.md
 ```
 
