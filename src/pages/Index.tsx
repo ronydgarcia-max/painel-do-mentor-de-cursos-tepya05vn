@@ -2830,42 +2830,66 @@ export default function Index() {
                   <div className="space-y-2 text-xs">
                     <span className="font-semibold text-white flex items-center gap-1.5">
                       <Terminal className="w-4 h-4 text-blue-400" />
-                      Linha de comando única (copiar e colar na VPS):
+                      Linha de comando única na VPS (funciona direto sem argumentos):
                     </span>
                     <div className="bg-slate-900 p-3 rounded font-mono text-[11px] text-blue-200 border border-blue-900/60 space-y-2 break-all">
                       <div className="text-slate-400 text-[10px]">
-                        # Origem detectada automaticamente em runtime:{' '}
-                        <span className="text-blue-300">{origemArtefatos}</span>
+                        # OPÇÃO A (Padrão automático — origem embutida na prévia, sem argumentos):
                       </div>
-                      <div className="text-emerald-300">
-                        curl -fsSL {origemArtefatos}/docs/operacoes/instalar-fase1.sh | bash -s --{' '}
-                        {origemArtefatos}
+                      <div className="text-emerald-300 font-bold">
+                        curl -fsSL {origemArtefatos}/docs/operacoes/instalar-fase1.sh | bash
                       </div>
-                      <div className="text-slate-400 text-[10px]">
-                        # Alternativa sem pipe (baixar primeiro, ler, depois executar):
+                      <div className="text-slate-400 text-[10px] pt-1">
+                        # OPÇÃO B (Alternativa via GitHub raw do repositório oficial dedicado):
                       </div>
-                      <div>
+                      <div className="text-cyan-300 text-[10px]">
+                        ORIGEM_FASE1="https://raw.githubusercontent.com/ronydgarcia-max/painel-do-mentor-de-cursos-tepya05vn/main"
+                        \ curl -fsSL
+                        https://raw.githubusercontent.com/ronydgarcia-max/painel-do-mentor-de-cursos-tepya05vn/main/docs/operacoes/instalar-fase1.sh
+                        | bash
+                      </div>
+                      <div className="text-slate-400 text-[10px] pt-1">
+                        # Alternativa sem pipe (salvar em /tmp, auditar antes e executar):
+                      </div>
+                      <div className="text-slate-300 text-[10px]">
                         curl -fsSL {origemArtefatos}/docs/operacoes/instalar-fase1.sh -o
-                        /tmp/instalar-fase1.sh &amp;&amp; bash /tmp/instalar-fase1.sh{' '}
-                        {origemArtefatos}
+                        /tmp/instalar-fase1.sh &amp;&amp; bash /tmp/instalar-fase1.sh
                       </div>
                     </div>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() =>
-                        handleCopyPath(
-                          `curl -fsSL ${origemArtefatos}/docs/operacoes/instalar-fase1.sh | bash -s -- ${origemArtefatos}`,
-                        )
-                      }
-                      className="text-xs border-blue-800 bg-blue-950/30 text-blue-300 hover:bg-blue-900/40"
-                    >
-                      <Copy className="w-3.5 h-3.5 mr-1" />
-                      {copiedDoc ===
-                      `curl -fsSL ${origemArtefatos}/docs/operacoes/instalar-fase1.sh | bash -s -- ${origemArtefatos}`
-                        ? 'Linha Copiada!'
-                        : 'Copiar Linha de Comando'}
-                    </Button>
+                    <div className="flex gap-2 flex-wrap">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() =>
+                          handleCopyPath(
+                            `curl -fsSL ${origemArtefatos}/docs/operacoes/instalar-fase1.sh | bash`,
+                          )
+                        }
+                        className="text-xs border-emerald-800 bg-emerald-950/30 text-emerald-300 hover:bg-emerald-900/40"
+                      >
+                        <Copy className="w-3.5 h-3.5 mr-1" />
+                        {copiedDoc ===
+                        `curl -fsSL ${origemArtefatos}/docs/operacoes/instalar-fase1.sh | bash`
+                          ? 'Comando Padrão Copiado!'
+                          : 'Copiar Comando Padrão (Sem Argumentos)'}
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() =>
+                          handleCopyPath(
+                            `ORIGEM_FASE1="https://raw.githubusercontent.com/ronydgarcia-max/painel-do-mentor-de-cursos-tepya05vn/main" curl -fsSL https://raw.githubusercontent.com/ronydgarcia-max/painel-do-mentor-de-cursos-tepya05vn/main/docs/operacoes/instalar-fase1.sh | bash`,
+                          )
+                        }
+                        className="text-xs border-cyan-800 bg-cyan-950/30 text-cyan-300 hover:bg-cyan-900/40"
+                      >
+                        <Copy className="w-3.5 h-3.5 mr-1" />
+                        {copiedDoc ===
+                        `ORIGEM_FASE1="https://raw.githubusercontent.com/ronydgarcia-max/painel-do-mentor-de-cursos-tepya05vn/main" curl -fsSL https://raw.githubusercontent.com/ronydgarcia-max/painel-do-mentor-de-cursos-tepya05vn/main/docs/operacoes/instalar-fase1.sh | bash`
+                          ? 'Comando GitHub Copiado!'
+                          : 'Copiar Opção GitHub Raw'}
+                      </Button>
+                    </div>
                   </div>
 
                   {/* O que a URL desta prévia serve (download direto, sem GitHub) */}

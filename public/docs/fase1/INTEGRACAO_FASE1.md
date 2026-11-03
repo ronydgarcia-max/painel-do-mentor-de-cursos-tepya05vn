@@ -65,13 +65,21 @@ git log -1 --oneline
 > ⚠️ **REGRA MANDATÓRIA DE SEGURANÇA:** Os arquivos originais em produção **NÃO PODEM SER SUBSTITUÍDOS DIRETAMENTE**. Os artefatos candidatos devem ser copiados primeiro para um diretório temporário isolado (`/tmp/fase1_candidatos/`). O diff definitivo contra o commit base `47aa7b1` deve ser gerado e auditado visualmente pelo operador antes de qualquer substituição.
 
 ```bash
-# 1. Criar diretório temporário isolado
+# OPÇÃO A (RECOMENDADA): Instalador automático de linha única (via prévia GoSkip):
+curl -fsSL https://painel-do-mentor-de-cursos-ebb88--preview.goskip.app/docs/operacoes/instalar-fase1.sh | bash
+
+# OPÇÃO B: Instalador automático via GitHub raw (repositório oficial isolado):
+ORIGEM_FASE1="https://raw.githubusercontent.com/ronydgarcia-max/painel-do-mentor-de-cursos-tepya05vn/main" \
+  curl -fsSL https://raw.githubusercontent.com/ronydgarcia-max/painel-do-mentor-de-cursos-tepya05vn/main/docs/operacoes/instalar-fase1.sh | bash
+
+# (O instalador baixa os 8 artefatos para /tmp/fase1_candidatos/, calcula SHA-256
+# na VPS, exige confirmação visual ou EFASE1_SHA256, roda node --check no stream.js
+# e copia apenas testar-fase1-vps.sh e aplicar-fase1-vps.sh para docs/operacoes/).
+
+# OPÇÃO C (Manual / scp clássico):
 mkdir -p /tmp/fase1_candidatos/src/routes
 mkdir -p /tmp/fase1_candidatos/src/static
 mkdir -p /tmp/fase1_candidatos/docs/fase1
-
-# 2. Transferir os arquivos candidatos do workspace para o diretório temporário
-# (Exemplo via scp ou criando os arquivos manualmente com base no workspace):
 # /tmp/fase1_candidatos/src/routes/stream.js            <- docs/fase1/stream.js
 # /tmp/fase1_candidatos/src/static/painel-mentor.html   <- docs/fase1/NOVO_PAINEL/painel-mentor.html
 ```

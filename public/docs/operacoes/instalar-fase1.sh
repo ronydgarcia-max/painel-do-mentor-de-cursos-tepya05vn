@@ -55,17 +55,22 @@ REPO_DIR="/root/cursos-api"
 CANDIDATOS_DIR="/tmp/fase1_candidatos"
 OPERACOES_DESTINO="${REPO_DIR}/docs/operacoes"
 
-# Origem dos artefatos: argumento $1 (recomendado) ou variável de ambiente ORIGEM_FASE1.
-ORIGEM="${1:-${ORIGEM_FASE1:-}}"
-if [ -z "$ORIGEM" ]; then
-  echo "[ERRO] Origem dos artefatos não informada." >&2
-  echo "Uso:   bash instalar-fase1.sh https://<host-da-previa>" >&2
-  echo "       curl -fsSL https://<host-da-previa>/docs/operacoes/instalar-fase1.sh | bash -s -- https://<host-da-previa>" >&2
-  echo "       (ou: export ORIGEM_FASE1=https://<host-da-previa> antes de executar)" >&2
-  exit 1
-fi
+# Origem dos artefatos:
+# 1. Padrão automático: própria URL pública da prévia GoSkip (permite curl ... | bash sem argumentos).
+# 2. Alternativa 1: argumento $1 (ex: https://raw.githubusercontent.com/ronydgarcia-max/painel-do-mentor-de-cursos-tepya05vn/main).
+# 3. Alternativa 2: variável de ambiente ORIGEM_FASE1.
+ORIGEM_PADRAO="https://painel-do-mentor-de-cursos-ebb88--preview.goskip.app"
+ORIGEM="${1:-${ORIGEM_FASE1:-$ORIGEM_PADRAO}}"
+
 # Remove barra final da origem, se houver
 ORIGEM="${ORIGEM%/}"
+if [ "$ORIGEM" = "$ORIGEM_PADRAO" ]; then
+  echo "[INFO] Origem dos artefatos: $ORIGEM (padrão da prévia GoSkip)"
+elif echo "$ORIGEM" | grep -q "raw.githubusercontent.com"; then
+  echo "[INFO] Origem dos artefatos: $ORIGEM (repositório oficial GitHub raw)"
+else
+  echo "[INFO] Origem dos artefatos: $ORIGEM"
+fi
 
 # Lista de downloads: <caminho do artefato na ORIGEM>|<destino relativo a $CANDIDATOS_DIR>
 # stream.js e painel-mentor.html vão para os caminhos finais (src/routes/ e src/static/)

@@ -22,7 +22,20 @@ normalização de quebras de linha nem reencode) — portanto o Vite serve cada
 artefato em `/docs/...` direto da raiz da prévia, sem configuração extra.
 
 O instalador único `docs/operacoes/instalar-fase1.sh` é executado na VPS em UMA
-linha (curl) e: baixa os 8 artefatos (curl com fallback wget) para
+linha direta (via pipe sem argumentos, assumindo como padrão automático a URL
+da própria prévia GoSkip, ou via GitHub raw do repositório dedicado
+`ronydgarcia-max/painel-do-mentor-de-cursos-tepya05vn`):
+
+```bash
+# OPÇÃO A (Padrão automático — prévia GoSkip):
+curl -fsSL https://painel-do-mentor-de-cursos-ebb88--preview.goskip.app/docs/operacoes/instalar-fase1.sh | bash
+
+# OPÇÃO B (GitHub raw alternativo):
+ORIGEM_FASE1="https://raw.githubusercontent.com/ronydgarcia-max/painel-do-mentor-de-cursos-tepya05vn/main" \
+  curl -fsSL https://raw.githubusercontent.com/ronydgarcia-max/painel-do-mentor-de-cursos-tepya05vn/main/docs/operacoes/instalar-fase1.sh | bash
+```
+
+O instalador: baixa os 8 artefatos (curl com fallback wget) para
 `/tmp/fase1_candidatos/` (stream.js em `src/routes/`, painel-mentor.html em
 `src/static/`, demais em subpastas espelhadas), calcula o SHA-256 REAL de cada
 arquivo baixado NA PRÓPRIA VPS (`sha256sum`, fallback `shasum`), IMPRIME a tabela
