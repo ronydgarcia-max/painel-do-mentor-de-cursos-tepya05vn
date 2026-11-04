@@ -96,8 +96,8 @@ b9c3c701fd9e2e5bc51b619366b79c0223372fbff854a04aacd3c3f6f34d11d8  docs/fase1/NOV
 3908e3bb777637df2e6855f2e7ec61891116d041eef56fae0b4a96c21835f7a6  docs/fase1/INTEGRACAO_FASE1.md
 16dfff6134df7caeeace571f004299fde6b27b3aebf0c2cd1772a1c04a011241  docs/fase1/PROPOSTA_PROVAS.md
 e16ce2583cfd7e123b09345bdb09f5403de3d94267a1ace66a1cb65901478666  docs/fase1/REVISAO_FASE1.md
-653969c14ae98552de58ed388b3eee788e8bba78e0e6109b6e13acb8ccc5a354  docs/fase1/TESTE_PRE_HOMOLOGACAO_VPS.md
-92d48bc9207c6f394f42436d3e190135489983520719ec95d4f440eee4d97078  docs/operacoes/testar-fase1-vps.sh
+cdff76f1149c233646b41078b1c675245fbe5901e5c8070c7e46292843a8d8d2  docs/fase1/TESTE_PRE_HOMOLOGACAO_VPS.md
+2773fcbb1121fef3a92c9144ac9adf74f9fcb23f024979f6590d9174679be96f  docs/operacoes/testar-fase1-vps.sh
 b08abe53ac5d36a5e7f7e67b34a5e8a92541f4353c5107de1898bebb1f591193  docs/operacoes/aplicar-fase1-vps.sh
 ──────────────────────────────────────────────────────────────────────────────────────────────────
 Hashes do próprio instalador (docs/operacoes/instalar-fase1.sh), de
