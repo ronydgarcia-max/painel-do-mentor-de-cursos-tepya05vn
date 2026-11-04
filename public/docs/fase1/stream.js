@@ -16,8 +16,10 @@ const express = require('express')
 const router = express.Router()
 const path = require('path')
 const fs = require('fs')
-const pool = require('../database/db')
-const auth = require('../middleware/auth')
+const db = require('../database/db')
+const pool = db.pool || db
+const authModule = require('../middleware/auth')
+const auth = typeof authModule === 'function' ? authModule : authModule.auth || authModule
 
 /**
  * GUARD DE SEGURANÇA PARA TESTE PRÉ-HOMOLOGAÇÃO (MODO B - SOMENTE LEITURA)
