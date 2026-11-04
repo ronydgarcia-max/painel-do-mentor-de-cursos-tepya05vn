@@ -252,16 +252,16 @@ iniciar_servidor_teste() {
 
   # Sobrepor os candidatos
   log_info "2/4. Sobrepondo candidatos na cópia descartável de teste..."
+  mkdir -p "$TESTE_DIR/src/routes" "$TESTE_DIR/src/static"
   cp "$stream_candidato" "$TESTE_DIR/src/routes/stream.js"
   cp "$painel_candidato" "$TESTE_DIR/src/static/painel-mentor.html"
 
-  # Link simbólico para node_modules de produção
+  # Link simbólico para node_modules de produção (se existir no repositório base)
   log_info "3/4. Reutilizando node_modules existente via link simbólico..."
   if [ -d "$REPO_DIR/node_modules" ]; then
     ln -s "$REPO_DIR/node_modules" "$TESTE_DIR/node_modules"
   else
-    log_erro "node_modules não encontrado em $REPO_DIR!"
-    exit 1
+    log_warn "node_modules não encontrado em $REPO_DIR (se a aplicação depender de pacotes externos, certifique-se de instalá-los)."
   fi
 
   # Detecção automática do ponto de entrada do Cursos-API
@@ -270,14 +270,24 @@ iniciar_servidor_teste() {
 
   local entrypoint=""
   local entrypoint_origem=""
+  local entrypoint_customizado=0
 
   # 1. Override manual via FASE1_ENTRYPOINT
   if [ -n "${FASE1_ENTRYPOINT:-}" ]; then
-    if [ -f "$TESTE_DIR/$FASE1_ENTRYPOINT" ]; then
-      entrypoint="$FASE1_ENTRYPOINT"
-      entrypoint_origem="variável FASE1_ENTRYPOINT"
+    entrypoint_customizado=1
+    local ep_limpo
+    ep_limpo=$(echo "$FASE1_ENTRYPOINT" | sed -e 's/^[ \t]*node[ \t]*//' -e 's/^\.\///')
+    if [ -f "$TESTE_DIR/$ep_limpo" ]; then
+      entrypoint="$ep_limpo"
+      entrypoint_origem="FASE1_ENTRYPOINT: $ep_limpo"
     else
-      log_erro "FASE1_ENTRYPOINT='$FASE1_ENTRYPOINT' foi fornecido, mas o arquivo não existe em $TESTE_DIR!"
+      log_erro "FASE1_ENTRYPOINT='$FASE1_ENTRYPOINT' foi fornecido, mas o arquivo '$ep_limpo' não existe em $TESTE_DIR!"
+      echo ""
+      echo "  Arquivos JavaScript (.js) encontrados em $TESTE_DIR (raiz e src/):"
+      find "$TESTE_DIR" -maxdepth 2 -not -path '*/node_modules*' -name '*.js' 2>/dev/null | sed "s|^$TESTE_DIR/|    - |" | head -n 30 || true
+      echo ""
+      echo "  Instrução: corrija FASE1_ENTRYPOINT apontando para um arquivo existente, por exemplo:"
+      echo "    FASE1_ENTRYPOINT='app.js' bash docs/operacoes/testar-fase1-vps.sh servidor"
       exit 1
     fi
   fi
@@ -290,14 +300,15 @@ iniciar_servidor_teste() {
       try {
         const p = require("./package.json");
         if (p && typeof p.main === "string" && p.main.trim()) {
-          console.log(p.main.trim());
+          const m = p.main.trim().replace(/^\.\//, "");
+          console.log(m);
         }
       } catch (e) {}
     ' 2>/dev/null || true)
 
     if [ -n "$pkg_main" ] && [ -f "$TESTE_DIR/$pkg_main" ]; then
       entrypoint="$pkg_main"
-      entrypoint_origem="package.json (campo 'main')"
+      entrypoint_origem="package.json (campo 'main': '$pkg_main')"
     fi
 
     # Se ainda não encontrou, tenta extrair de scripts.start (ex: "node server.js", "node src/index.js")
@@ -308,7 +319,7 @@ iniciar_servidor_teste() {
           const p = require("./package.json");
           if (p && p.scripts && typeof p.scripts.start === "string") {
             const cmd = p.scripts.start.trim();
-            // Procura arquivo .js no comando
+            // Procura arquivo .js no comando (após node, nodemon, pm2, etc)
             const match = cmd.match(/(?:node|nodemon|pm2[^\s]*)\s+([^\s;&]+\.js)/i);
             if (match && match[1]) {
               console.log(match[1].replace(/^\.\//, ""));
@@ -333,9 +344,9 @@ iniciar_servidor_teste() {
     fi
   fi
 
-  # 3. Candidatos comuns em ordem de prioridade
+  # 3. Candidatos comuns que EXISTAM em ordem de prioridade
   if [ -z "$entrypoint" ]; then
-    local candidatos_comuns=("server.js" "src/server.js" "src/index.js" "src/app.js" "app.js" "index.js")
+    local candidatos_comuns=("server.js" "app.js" "index.js" "src/server.js" "src/app.js" "src/index.js")
     for cand in "${candidatos_comuns[@]}"; do
       if [ -f "$TESTE_DIR/$cand" ]; then
         entrypoint="$cand"
@@ -345,19 +356,18 @@ iniciar_servidor_teste() {
     done
   fi
 
-  # 4. Falha se nenhum ponto de entrada foi localizado: instruir operador claramente
+  # 4. Falha se nenhum ponto de entrada foi localizado: NÃO invocar node, abortar com instrução clara
   if [ -z "$entrypoint" ]; then
     log_erro "Nenhum ponto de entrada Node.js detectado em $TESTE_DIR!"
     echo ""
-    echo "  Caminhos testados sem sucesso:"
-    echo "    - FASE1_ENTRYPOINT: ${FASE1_ENTRYPOINT:-[não definido]}"
-    echo "    - package.json main / scripts.start"
+    echo "  Candidatos padrão testados sem sucesso em $TESTE_DIR:"
     echo "    - server.js"
-    echo "    - src/server.js"
-    echo "    - src/index.js"
-    echo "    - src/app.js"
     echo "    - app.js"
     echo "    - index.js"
+    echo "    - src/server.js"
+    echo "    - src/app.js"
+    echo "    - src/index.js"
+    echo "    - package.json (campos 'main' e 'scripts.start')"
     echo ""
     if [ -f "$TESTE_DIR/package.json" ]; then
       echo "  Conteúdo relevante de package.json em $TESTE_DIR:"
@@ -373,18 +383,35 @@ iniciar_servidor_teste() {
       echo "  Aviso: package.json não encontrado na raiz da árvore de trabalho."
       echo ""
     fi
+    echo "  Arquivos JavaScript candidatos na raiz e em src/ de $TESTE_DIR:"
+    local achados_js
+    achados_js=$(find "$TESTE_DIR" -maxdepth 2 -not -path '*/node_modules*' -name '*.js' 2>/dev/null | sed "s|^$TESTE_DIR/|    - |" | head -n 30 || true)
+    if [ -n "$achados_js" ]; then
+      echo "$achados_js"
+    else
+      echo "    [Nenhum arquivo .js encontrado na raiz ou em src/ de $TESTE_DIR]"
+    fi
+    echo ""
     echo "  Como resolver imediatamente na VPS:"
-    echo "    1. Liste os arquivos da raiz e de src/ do repositório:"
-    echo "       ls -la $REPO_DIR"
-    echo "       ls -la $REPO_DIR/src 2>/dev/null || true"
-    echo "    2. Execute o teste informando o ponto de entrada correto via FASE1_ENTRYPOINT:"
-    echo "       FASE1_ENTRYPOINT=<arquivo.js> TEST_TOKEN_MENTOR='...' bash docs/operacoes/testar-fase1-vps.sh servidor"
-    echo "       Exemplo: FASE1_ENTRYPOINT=server.js bash docs/operacoes/testar-fase1-vps.sh servidor"
+    echo "    Execute o subcomando servidor especificando o ponto de entrada correto via FASE1_ENTRYPOINT:"
+    echo "    FASE1_ENTRYPOINT='<caminho.js>' TEST_TOKEN_MENTOR='...' bash docs/operacoes/testar-fase1-vps.sh servidor"
+    echo "    Exemplo: FASE1_ENTRYPOINT='server.js' bash docs/operacoes/testar-fase1-vps.sh servidor"
     echo ""
     exit 1
   fi
 
-  log_ok "Ponto de entrada detectado: $entrypoint (via $entrypoint_origem)"
+  # Validação explícita com [ -f ] antes de invocar node
+  if [ ! -f "$TESTE_DIR/$entrypoint" ]; then
+    log_erro "Validação falhou: o ponto de entrada '$entrypoint' não existe como arquivo em $TESTE_DIR!"
+    exit 1
+  fi
+
+  if [ "$entrypoint_customizado" -eq 1 ]; then
+    log_info "Ponto de entrada informado via FASE1_ENTRYPOINT: $entrypoint"
+  else
+    log_info "Ponto de entrada detectado: $entrypoint"
+  fi
+  log_ok "Ponto de entrada validado: $entrypoint (via $entrypoint_origem)"
   log_info "Subindo aplicação com Node.js na porta $TEST_PORT com READ_ONLY_TEST=true..."
 
   # Carrega variáveis do .env real SEM jamais exibir na saída, forçando PORT e READ_ONLY_TEST=true
@@ -441,7 +468,7 @@ iniciar_servidor_teste() {
     tail -n 25 "$LOG_FILE" 2>/dev/null || true
     echo "  --------------------------------------------------"
     echo "  Dica: Se o ponto de entrada correto for outro arquivo, execute:"
-    echo "    FASE1_ENTRYPOINT=<caminho.js> bash docs/operacoes/testar-fase1-vps.sh servidor"
+    echo "    FASE1_ENTRYPOINT='<caminho.js>' bash docs/operacoes/testar-fase1-vps.sh servidor"
     exit 1
   fi
 }

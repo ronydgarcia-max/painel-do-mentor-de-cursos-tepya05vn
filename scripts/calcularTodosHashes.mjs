@@ -21,7 +21,7 @@ const arquivos = [
   'docs/operacoes/instalar-fase1.sh',
   'public/docs/operacoes/instalar-fase1.sh',
   'docs/fase1/VERIFICACAO_ARTEFATOS.md',
-  'public/docs/fase1/VERIFICACAO_ARTEFATOS.md'
+  'public/docs/fase1/VERIFICACAO_ARTEFATOS.md',
 ]
 
 const resultados = {}
