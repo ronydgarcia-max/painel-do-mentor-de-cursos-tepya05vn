@@ -31,6 +31,11 @@ export interface ItemCalculado {
   tamanhoBytesPublic: number
 }
 
+export const HASH_STREAM_BYTES = sha256String(streamDocsRaw)
+if (HASH_STREAM_BYTES !== 'bc1f5732b6289522591b46bf639b8079e133bda736264f63b9f3c1f96c1fb062') {
+  throw new Error('Divergência de hash SHA-256 no client!')
+}
+
 export const LISTA_HASHES_REAIS: ItemCalculado[] = [
   {
     id: 'stream',

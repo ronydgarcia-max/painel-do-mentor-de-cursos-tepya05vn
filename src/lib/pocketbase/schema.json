@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-04T17:42:36.782Z",
+  "generatedAt": "2026-11-04T18:04:44.682Z",
   "collections": [
     {
       "name": "users",
@@ -37,6 +37,12 @@
           "required": false,
           "system": false,
           "autodateTriggers": ["onCreate", "onUpdate"]
+        },
+        {
+          "name": "stream_hash",
+          "type": "text",
+          "required": false,
+          "system": false
         }
       ],
       "indexes": [
