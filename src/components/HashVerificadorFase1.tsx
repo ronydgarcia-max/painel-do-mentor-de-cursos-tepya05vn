@@ -18,6 +18,7 @@ import { useState } from 'react'
 import { RefreshCw, Copy, ShieldCheck, AlertTriangle, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { MANIFESTO_ARTEFATOS_FASE1, calcularSha256Artefato } from '@/lib/manifestHelper'
+import { LISTA_HASHES_REAIS } from '@/lib/tabelaHashesReais'
 
 type EstadoHash = 'pendente' | 'calculando' | 'ok' | 'indisponivel'
 
@@ -126,6 +127,22 @@ export function HashVerificadorFase1({ origemArtefatos }: { origemArtefatos: str
             (ou após conferir a variável <code>EFASE1_SHA256</code> com os valores daqui).
           </span>
         </span>
+      </div>
+
+      {/* Exibição informativa da tabela de hashes reais calculados pelo workspace */}
+      <div className="p-2.5 rounded bg-slate-900/90 border border-slate-800 text-[10px] text-slate-300 font-mono space-y-1.5">
+        <div className="font-bold text-cyan-300 flex items-center justify-between">
+          <span>Hashes SHA-256 Calculados Deterministicamente no Workspace (docs vs public):</span>
+          <span className="text-[9px] text-slate-400">Pure SHA-256 FIPS 180-4</span>
+        </div>
+        <div className="space-y-1">
+          {LISTA_HASHES_REAIS.map((item) => (
+            <div key={item.id} className="border-b border-slate-800/50 pb-1 flex flex-col md:flex-row md:items-center md:justify-between gap-0.5">
+              <span className="text-slate-400 font-semibold">{item.caminho} ({item.tamanhoBytesPublic} B):</span>
+              <span className="text-emerald-300 break-all select-all">{item.hashPublic}</span>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Tabela arquivo → hash calculado */}
