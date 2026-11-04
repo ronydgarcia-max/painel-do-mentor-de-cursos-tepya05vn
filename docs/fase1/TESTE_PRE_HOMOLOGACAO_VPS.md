@@ -198,7 +198,8 @@ O script:
 1. Limpa `/tmp/fase1_teste/` e copia o repositório sem `.git`;
 2. Sobrepõe os candidatos em `/tmp/fase1_teste/src/`;
 3. Cria link simbólico para `node_modules` de produção;
-4. Inicia com `PORT=3334 READ_ONLY_TEST=true node src/server.js > /tmp/fase1_teste_server.log 2>&1 &`.
+4. Detecta automaticamente o ponto de entrada Node.js (via FASE1_ENTRYPOINT, package.json main/scripts.start ou candidatos server.js, src/server.js, etc.) e imprime `[INFO] Ponto de entrada detectado: ...`;
+5. Inicia com `PORT=3334 READ_ONLY_TEST=true node <entrypoint> > /tmp/fase1_teste_server.log 2>&1 &`.
 
 ### Passo B2 — Bateria Automatizada dos 13 Itens
 
@@ -290,7 +291,7 @@ DB_PASSWORD=homolog_secret \
 REDIS_PORT=6380 \
 LOCAL_VIDEO_DIR=/srv/cursos/videos-homologacao \
 READ_ONLY_TEST=false \
-node src/server.js
+node <ponto_de_entrada.js>  # detectado automaticamente pelo script ou FASE1_ENTRYPOINT
 ```
 
 ### 8.5. Testes Permitidos Exclusivamente na Camada 3:

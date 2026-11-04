@@ -16,7 +16,8 @@
 set -euo pipefail
 
 # Constantes de caminho e integridade
-REPO_DIR="/root/cursos-api"
+# FASE1_REPO_ROOT: override opcional do diretório base do repositório (para testes locais sem /root/cursos-api)
+REPO_DIR="${FASE1_REPO_ROOT:-/root/cursos-api}"
 BASE_COMMIT="47aa7b1"
 CANDIDATOS_DIR="/tmp/fase1_candidatos"
 TESTE_DIR="/tmp/fase1_teste"
@@ -263,33 +264,184 @@ iniciar_servidor_teste() {
     exit 1
   fi
 
-  # Iniciar servidor garantindo READ_ONLY_TEST=true
-  log_info "4/4. Subindo aplicação com Node.js na porta $TEST_PORT com READ_ONLY_TEST=true..."
+  # Detecção automática do ponto de entrada do Cursos-API
+  log_info "4/4. Detectando ponto de entrada do servidor Node.js..."
   cd "$TESTE_DIR"
 
-  # Carrega variáveis do .env real SEM jamais exibir na saída, forçando READ_ONLY_TEST=true
+  local entrypoint=""
+  local entrypoint_origem=""
+
+  # 1. Override manual via FASE1_ENTRYPOINT
+  if [ -n "${FASE1_ENTRYPOINT:-}" ]; then
+    if [ -f "$TESTE_DIR/$FASE1_ENTRYPOINT" ]; then
+      entrypoint="$FASE1_ENTRYPOINT"
+      entrypoint_origem="variável FASE1_ENTRYPOINT"
+    else
+      log_erro "FASE1_ENTRYPOINT='$FASE1_ENTRYPOINT' foi fornecido, mas o arquivo não existe em $TESTE_DIR!"
+      exit 1
+    fi
+  fi
+
+  # 2. Inspecionar package.json (campo main e scripts.start)
+  if [ -z "$entrypoint" ] && [ -f "$TESTE_DIR/package.json" ]; then
+    # Tenta extrair campo "main" via node
+    local pkg_main
+    pkg_main=$(node -e '
+      try {
+        const p = require("./package.json");
+        if (p && typeof p.main === "string" && p.main.trim()) {
+          console.log(p.main.trim());
+        }
+      } catch (e) {}
+    ' 2>/dev/null || true)
+
+    if [ -n "$pkg_main" ] && [ -f "$TESTE_DIR/$pkg_main" ]; then
+      entrypoint="$pkg_main"
+      entrypoint_origem="package.json (campo 'main')"
+    fi
+
+    # Se ainda não encontrou, tenta extrair de scripts.start (ex: "node server.js", "node src/index.js")
+    if [ -z "$entrypoint" ]; then
+      local pkg_start
+      pkg_start=$(node -e '
+        try {
+          const p = require("./package.json");
+          if (p && p.scripts && typeof p.scripts.start === "string") {
+            const cmd = p.scripts.start.trim();
+            // Procura arquivo .js no comando
+            const match = cmd.match(/(?:node|nodemon|pm2[^\s]*)\s+([^\s;&]+\.js)/i);
+            if (match && match[1]) {
+              console.log(match[1].replace(/^\.\//, ""));
+            } else {
+              // fallback: token com extensão .js
+              const tokens = cmd.split(/\s+/);
+              for (const t of tokens) {
+                if (t.endsWith(".js") && !t.startsWith("-")) {
+                  console.log(t.replace(/^\.\//, ""));
+                  break;
+                }
+              }
+            }
+          }
+        } catch (e) {}
+      ' 2>/dev/null || true)
+
+      if [ -n "$pkg_start" ] && [ -f "$TESTE_DIR/$pkg_start" ]; then
+        entrypoint="$pkg_start"
+        entrypoint_origem="package.json (scripts.start: '$pkg_start')"
+      fi
+    fi
+  fi
+
+  # 3. Candidatos comuns em ordem de prioridade
+  if [ -z "$entrypoint" ]; then
+    local candidatos_comuns=("server.js" "src/server.js" "src/index.js" "src/app.js" "app.js" "index.js")
+    for cand in "${candidatos_comuns[@]}"; do
+      if [ -f "$TESTE_DIR/$cand" ]; then
+        entrypoint="$cand"
+        entrypoint_origem="candidato padrão ($cand)"
+        break
+      fi
+    done
+  fi
+
+  # 4. Falha se nenhum ponto de entrada foi localizado: instruir operador claramente
+  if [ -z "$entrypoint" ]; then
+    log_erro "Nenhum ponto de entrada Node.js detectado em $TESTE_DIR!"
+    echo ""
+    echo "  Caminhos testados sem sucesso:"
+    echo "    - FASE1_ENTRYPOINT: ${FASE1_ENTRYPOINT:-[não definido]}"
+    echo "    - package.json main / scripts.start"
+    echo "    - server.js"
+    echo "    - src/server.js"
+    echo "    - src/index.js"
+    echo "    - src/app.js"
+    echo "    - app.js"
+    echo "    - index.js"
+    echo ""
+    if [ -f "$TESTE_DIR/package.json" ]; then
+      echo "  Conteúdo relevante de package.json em $TESTE_DIR:"
+      node -e '
+        try {
+          const p = require("./package.json");
+          console.log("    main:", p.main || "[ausente]");
+          console.log("    scripts.start:", (p.scripts && p.scripts.start) || "[ausente]");
+        } catch (e) { console.log("    erro ao ler package.json:", e.message); }
+      ' 2>/dev/null || true
+      echo ""
+    else
+      echo "  Aviso: package.json não encontrado na raiz da árvore de trabalho."
+      echo ""
+    fi
+    echo "  Como resolver imediatamente na VPS:"
+    echo "    1. Liste os arquivos da raiz e de src/ do repositório:"
+    echo "       ls -la $REPO_DIR"
+    echo "       ls -la $REPO_DIR/src 2>/dev/null || true"
+    echo "    2. Execute o teste informando o ponto de entrada correto via FASE1_ENTRYPOINT:"
+    echo "       FASE1_ENTRYPOINT=<arquivo.js> TEST_TOKEN_MENTOR='...' bash docs/operacoes/testar-fase1-vps.sh servidor"
+    echo "       Exemplo: FASE1_ENTRYPOINT=server.js bash docs/operacoes/testar-fase1-vps.sh servidor"
+    echo ""
+    exit 1
+  fi
+
+  log_ok "Ponto de entrada detectado: $entrypoint (via $entrypoint_origem)"
+  log_info "Subindo aplicação com Node.js na porta $TEST_PORT com READ_ONLY_TEST=true..."
+
+  # Carrega variáveis do .env real SEM jamais exibir na saída, forçando PORT e READ_ONLY_TEST=true
   if [ -f "$REPO_DIR/.env" ]; then
-    PORT="$TEST_PORT" READ_ONLY_TEST="true" env $(grep -v '^#' "$REPO_DIR/.env" | xargs -d '\n') PORT="$TEST_PORT" READ_ONLY_TEST="true" node src/server.js > "$LOG_FILE" 2>&1 &
+    PORT="$TEST_PORT" READ_ONLY_TEST="true" env $(grep -v '^#' "$REPO_DIR/.env" | xargs -d '\n') PORT="$TEST_PORT" READ_ONLY_TEST="true" node "$entrypoint" > "$LOG_FILE" 2>&1 &
   else
-    PORT="$TEST_PORT" READ_ONLY_TEST="true" node src/server.js > "$LOG_FILE" 2>&1 &
+    PORT="$TEST_PORT" READ_ONLY_TEST="true" node "$entrypoint" > "$LOG_FILE" 2>&1 &
   fi
 
   local server_pid=$!
   echo "$server_pid" > "$PID_FILE"
-  log_info "Processo iniciado com PID $server_pid em background. Aguardando inicialização..."
+  log_info "Processo iniciado com PID $server_pid em background (ponto de entrada: $entrypoint). Aguardando inicialização..."
 
-  sleep 3
+  # Loop de espera ativa pela subida da porta ou término do processo (até 6 segundos)
+  local max_tentativas=6
+  local tentativa=0
+  local subiu_ok=0
+
+  while [ "$tentativa" -lt "$max_tentativas" ]; do
+    sleep 1
+    tentativa=$((tentativa + 1))
+
+    # Se o processo morreu, sai do loop imediatamente
+    if ! kill -0 "$server_pid" 2>/dev/null; then
+      break
+    fi
+
+    # Testa se a porta está respondendo (ou ao menos aberta)
+    if curl -s -m 1 "http://localhost:$TEST_PORT/health" >/dev/null 2>&1 || curl -s -m 1 "http://localhost:$TEST_PORT/" >/dev/null 2>&1; then
+      subiu_ok=1
+      break
+    fi
+  done
 
   if kill -0 "$server_pid" 2>/dev/null; then
-    log_ok "Servidor de teste ISOLADO rodando com sucesso (PID $server_pid) na porta $TEST_PORT!"
+    log_ok "Servidor de teste ISOLADO rodando com sucesso (PID $server_pid, entrypoint: $entrypoint) na porta $TEST_PORT!"
     log_ok "Proteção READ_ONLY_TEST=true ATIVA: PostgreSQL real e volumes protegidos contra mutações."
+    if [ "$subiu_ok" -eq 1 ]; then
+      log_ok "Verificação de bind na porta $TEST_PORT respondeu positivamente."
+    else
+      log_warn "O processo PID $server_pid está vivo, mas http://localhost:$TEST_PORT ainda não respondeu a GET /health."
+      log_warn "Se o app escutar em porta diferente da definida por process.env.PORT, confira o log abaixo:"
+      tail -n 10 "$LOG_FILE" || true
+    fi
     echo "  Logs em tempo real: tail -f $LOG_FILE"
     echo "  Para testar no navegador local via túnel SSH:"
     echo "    ssh -L $TEST_PORT:localhost:$TEST_PORT root@<IP_DA_VPS>"
     echo "    http://localhost:$TEST_PORT/static/painel-mentor.html"
   else
-    log_erro "Falha ao iniciar o servidor de teste! Verifique o log em $LOG_FILE:"
-    tail -n 20 "$LOG_FILE" || true
+    log_erro "Falha ao iniciar o servidor de teste! O processo encerrou prematuramente."
+    echo "  Ponto de entrada tentado: $entrypoint ($entrypoint_origem)"
+    echo "  Últimas linhas de $LOG_FILE:"
+    echo "  --------------------------------------------------"
+    tail -n 25 "$LOG_FILE" 2>/dev/null || true
+    echo "  --------------------------------------------------"
+    echo "  Dica: Se o ponto de entrada correto for outro arquivo, execute:"
+    echo "    FASE1_ENTRYPOINT=<caminho.js> bash docs/operacoes/testar-fase1-vps.sh servidor"
     exit 1
   fi
 }
@@ -658,7 +810,7 @@ exibir_guia_homologacao() {
   echo "   REDIS_PORT=6380 \\"
   echo "   LOCAL_VIDEO_DIR=/srv/cursos/videos-homologacao \\"
   echo "   READ_ONLY_TEST=false \\"
-  echo "   node src/server.js"
+  echo "   node <ponto_de_entrada.js>  # detectado automaticamente pelo script ou FASE1_ENTRYPOINT"
   echo ""
   echo "Com essa separação total, testes de criação de curso, edição de etapa, upload de"
   echo "vídeo e alteração de provas podem ser realizados sem NENHUM risco ao banco real."
@@ -713,6 +865,8 @@ case "${1:-ajuda}" in
     echo "  tudo        - Executa a sequência estático -> servidor (read-only) -> bateria"
     echo ""
     echo "Variáveis de ambiente opcionais:"
+    echo "  FASE1_ENTRYPOINT    (Caminho relativo do ponto de entrada Node.js, ex.: server.js, src/app.js)"
+    echo "  FASE1_REPO_ROOT     (Caminho alternativo do repositório base para testes, padrão: /root/cursos-api)"
     echo "  TEST_PORT           (Padrão: 3334)"
     echo "  TEST_AULA_ID        (Padrão: 27)"
     echo "  TEST_TOKEN_MENTOR   (Token JWT de mentor proprietário)"
