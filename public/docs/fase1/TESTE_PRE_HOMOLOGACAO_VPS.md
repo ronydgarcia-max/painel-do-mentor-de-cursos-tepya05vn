@@ -144,7 +144,7 @@ Ou execute manualmente os 5 passos:
 
 ```bash
 sha256sum /tmp/fase1_candidatos/src/routes/stream.js
-# Esperado: 6caf954f02dc65623d6eaeb3e73866dec3147bd0d94e8d2e5c027cc291802fd2
+# Esperado: bc1f5732b6289522591b46bf639b8079e133bda736264f63b9f3c1f96c1fb062
 
 sha256sum /tmp/fase1_candidatos/src/static/painel-mentor.html
 # Esperado: b9c3c701fd9e2e5bc51b619366b79c0223372fbff854a04aacd3c3f6f34d11d8

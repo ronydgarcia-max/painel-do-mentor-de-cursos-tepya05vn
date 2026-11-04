@@ -27,7 +27,7 @@ LOG_FILE="/tmp/fase1_teste_server.log"
 
 # Hashes SHA-256 oficiais do manifesto docs/fase1/VERIFICACAO_ARTEFATOS.md
 # (atualizado para refletir o stream.js com guard READ_ONLY_TEST)
-HASH_ESPERADO_STREAM="6caf954f02dc65623d6eaeb3e73866dec3147bd0d94e8d2e5c027cc291802fd2"
+HASH_ESPERADO_STREAM="bc1f5732b6289522591b46bf639b8079e133bda736264f63b9f3c1f96c1fb062"
 HASH_ESPERADO_PAINEL="b9c3c701fd9e2e5bc51b619366b79c0223372fbff854a04aacd3c3f6f34d11d8"
 
 # Cores para exibição amigável

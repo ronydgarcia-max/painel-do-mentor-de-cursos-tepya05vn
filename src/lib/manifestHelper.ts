@@ -31,6 +31,7 @@ export interface ArtefatoFase1 {
   caminhoEspelho: string
   destinoVps: string
   sha256: string
+  sha256Esperado?: string
   descricao: string
   camada: string
   tipo: 'codigo' | 'html' | 'documentacao' | 'script'
@@ -53,6 +54,7 @@ export const MANIFESTO_ARTEFATOS_FASE1: ArtefatoFase1[] = [
     caminhoEspelho: 'docs/fase1/stream.js',
     destinoVps: 'src/routes/stream.js',
     sha256: MARCADOR_HASH_VERIFICADO,
+    sha256Esperado: 'bc1f5732b6289522591b46bf639b8079e133bda736264f63b9f3c1f96c1fb062',
     descricao:
       'Streaming dinâmico com HTTP Range 206, trava contra path traversal, autorização ampla (aluno/mentor-dono/admin), fallback restrito à aula 27 e guard READ_ONLY_TEST=true para porta 3334.',
     camada: 'Camada 2 (Leitura) & Camada 4 (Produção)',
@@ -65,6 +67,7 @@ export const MANIFESTO_ARTEFATOS_FASE1: ArtefatoFase1[] = [
     caminhoEspelho: 'docs/fase1/NOVO_PAINEL/painel-mentor.html',
     destinoVps: 'src/static/painel-mentor.html',
     sha256: MARCADOR_HASH_VERIFICADO,
+    sha256Esperado: 'b9c3c701fd9e2e5bc51b619366b79c0223372fbff854a04aacd3c3f6f34d11d8',
     descricao:
       'Arquivo estático autônomo com player 16:9, matriz curricular lateral, suporte aos 4 formatos de vídeo e tratamento seguro de token em query string (validação JWT + replaceState + sessionStorage exclusivo).',
     camada: 'Camada 1 (Estático) & Camada 4 (Produção)',
@@ -77,6 +80,7 @@ export const MANIFESTO_ARTEFATOS_FASE1: ArtefatoFase1[] = [
     caminhoEspelho: 'docs/fase1/INTEGRACAO_FASE1.md',
     destinoVps: 'docs/fase1/INTEGRACAO_FASE1.md',
     sha256: MARCADOR_HASH_VERIFICADO,
+    sha256Esperado: '3908e3bb777637df2e6855f2e7ec61891116d041eef56fae0b4a96c21835f7a6',
     descricao:
       'Manual operacional completo: backup /root/backups/cursos/20261031_195147, cópia para /tmp/fase1_candidatos, diff contra 47aa7b1, node --check, rebuild EasyPanel, health check e rollback.',
     camada: 'Documentação / Procedimento Operacional',
@@ -89,6 +93,7 @@ export const MANIFESTO_ARTEFATOS_FASE1: ArtefatoFase1[] = [
     caminhoEspelho: 'docs/fase1/PROPOSTA_PROVAS.md',
     destinoVps: 'docs/fase1/PROPOSTA_PROVAS.md',
     sha256: MARCADOR_HASH_VERIFICADO,
+    sha256Esperado: '16dfff6134df7caeeace571f004299fde6b27b3aebf0c2cd1772a1c04a011241',
     descricao:
       'Documentação dos 4 achados de provas.js sem aplicar no código de produção (permanece protegido e inalterado).',
     camada: 'Documentação Pura',
@@ -101,6 +106,7 @@ export const MANIFESTO_ARTEFATOS_FASE1: ArtefatoFase1[] = [
     caminhoEspelho: 'docs/fase1/REVISAO_FASE1.md',
     destinoVps: 'docs/fase1/REVISAO_FASE1.md',
     sha256: MARCADOR_HASH_VERIFICADO,
+    sha256Esperado: 'e16ce2583cfd7e123b09345bdb09f5403de3d94267a1ace66a1cb65901478666',
     descricao:
       'Revisão ponto a ponto dos 27 itens de conformidade com veredito, evidências com arquivo e linha, eliminação de localStorage para sessionStorage e rotas reais.',
     camada: 'Auditoria de Conformidade (27 Pontos)',
@@ -113,6 +119,7 @@ export const MANIFESTO_ARTEFATOS_FASE1: ArtefatoFase1[] = [
     caminhoEspelho: 'docs/fase1/TESTE_PRE_HOMOLOGACAO_VPS.md',
     destinoVps: 'docs/fase1/TESTE_PRE_HOMOLOGACAO_VPS.md',
     sha256: MARCADOR_HASH_VERIFICADO,
+    sha256Esperado: '089bbab9d5e305d045d62637254e4443ee1f99c23949f57ebbf7fc63b2eb2ca9',
     descricao:
       'Guia do caminho seguro não invasivo: isolamento em /tmp, as 4 camadas de validação, guard READ_ONLY_TEST=true obrigatório na porta 3334 e ambiente de escrita separado via backup 20261031_195147.',
     camada: 'Manual de Homologação Não Invasiva',
@@ -125,6 +132,7 @@ export const MANIFESTO_ARTEFATOS_FASE1: ArtefatoFase1[] = [
     caminhoEspelho: 'docs/operacoes/testar-fase1-vps.sh',
     destinoVps: 'docs/operacoes/testar-fase1-vps.sh',
     sha256: MARCADOR_HASH_VERIFICADO,
+    sha256Esperado: '44063fbc1735a29be6058f9fc2994086ad377f0a8f81e370a2f4da898e4f1a23',
     descricao:
       'Script automatizado com 13 itens de teste com curl, 4 camadas (estatico, servidor, bateria, homologacao), guard READ_ONLY_TEST obrigatório e zero vazamento de tokens.',
     camada: 'Automação de Testes VPS',
@@ -137,6 +145,7 @@ export const MANIFESTO_ARTEFATOS_FASE1: ArtefatoFase1[] = [
     caminhoEspelho: 'docs/operacoes/aplicar-fase1-vps.sh',
     destinoVps: 'docs/operacoes/aplicar-fase1-vps.sh',
     sha256: MARCADOR_HASH_VERIFICADO,
+    sha256Esperado: 'b08abe53ac5d36a5e7f7e67b34a5e8a92541f4353c5107de1898bebb1f591193',
     descricao:
       'Script interativo único com 9 passos: verificar, copiar, diff (auditoria visual), substituir (confirmação s/N), validar sintaxe, commit/push exclusivo correcao-fluxo-cursos (nunca main), redeploy EasyPanel (token só por env var mascarado), testes pós-deploy e rollback medido em menos de 3 minutos.',
     camada: 'Operações e Aplicação VPS (Interativo)',

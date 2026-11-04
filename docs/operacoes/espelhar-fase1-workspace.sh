@@ -21,14 +21,14 @@ set -euo pipefail
 # Manifesto de integridade (devem bater com docs/fase1/VERIFICACAO_ARTEFATOS.md
 # e com src/lib/manifestHelper.ts do app).
 read -r -d '' MANIFESTO_SHA256 <<'EOF_SHA' || true
-6caf954f02dc65623d6eaeb3e73866dec3147bd0d94e8d2e5c027cc291802fd2  docs/fase1/stream.js
+bc1f5732b6289522591b46bf639b8079e133bda736264f63b9f3c1f96c1fb062  docs/fase1/stream.js
 b9c3c701fd9e2e5bc51b619366b79c0223372fbff854a04aacd3c3f6f34d11d8  docs/fase1/NOVO_PAINEL/painel-mentor.html
-168e37dc0bd59a16f272a8c3d8e578ba33cd7c768991fa9a7ffccbe5b9bc5d11  docs/fase1/INTEGRACAO_FASE1.md
-e9b2513de5553e1e40eb617b7b15a6b5a3e1438fa5a48483f3e27150a294f4a3  docs/fase1/PROPOSTA_PROVAS.md
-3312c1404c0429fec033bd2f27ddc54aa5017e2978931dc150c95029a502f664  docs/fase1/REVISAO_FASE1.md
-38a6ec1552a46e1074e50d536cf0ba7493eef250bc44618e7751c8a14ec7a59a  docs/fase1/TESTE_PRE_HOMOLOGACAO_VPS.md
-e927c9c054238e55eefea2b27429bb7b05cdcd5d1ec5ce1e6e0261c470196253  docs/operacoes/testar-fase1-vps.sh
-c93f06b9968452309ec95ba8d133038a8e1e7bd66ff852b86a8ff39fa1cf8743  docs/operacoes/aplicar-fase1-vps.sh
+3908e3bb777637df2e6855f2e7ec61891116d041eef56fae0b4a96c21835f7a6  docs/fase1/INTEGRACAO_FASE1.md
+16dfff6134df7caeeace571f004299fde6b27b3aebf0c2cd1772a1c04a011241  docs/fase1/PROPOSTA_PROVAS.md
+e16ce2583cfd7e123b09345bdb09f5403de3d94267a1ace66a1cb65901478666  docs/fase1/REVISAO_FASE1.md
+089bbab9d5e305d045d62637254e4443ee1f99c23949f57ebbf7fc63b2eb2ca9  docs/fase1/TESTE_PRE_HOMOLOGACAO_VPS.md
+44063fbc1735a29be6058f9fc2994086ad377f0a8f81e370a2f4da898e4f1a23  docs/operacoes/testar-fase1-vps.sh
+b08abe53ac5d36a5e7f7e67b34a5e8a92541f4353c5107de1898bebb1f591193  docs/operacoes/aplicar-fase1-vps.sh
 EOF_SHA
 
 log_ok()   { echo -e "\033[1;32m[OK]\033[0m $1"; }

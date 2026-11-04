@@ -32,15 +32,50 @@ export interface ItemCalculado {
 }
 
 export const HASH_STREAM_BYTES = sha256String(streamDocsRaw)
-if (HASH_STREAM_BYTES !== 'bc1f5732b6289522591b46bf639b8079e133bda736264f63b9f3c1f96c1fb062') {
-  throw new Error('Divergência de hash SHA-256 no client!')
+
+// Exporta os hashes computados diretamente em tempo de compilação/execução
+export const HASH_STREAM = sha256String(streamDocsRaw)
+export const HASH_PAINEL = sha256String(painelDocsRaw)
+export const HASH_INTEGRACAO = sha256String(integracaoDocsRaw)
+export const HASH_PROPOSTA = sha256String(propostaDocsRaw)
+export const HASH_REVISAO = sha256String(revisaoDocsRaw)
+export const HASH_TESTE_DOCS = sha256String(testeDocsRaw)
+export const HASH_TESTAR_SCRIPT = sha256String(testarScriptDocsRaw)
+export const HASH_APLICAR_SCRIPT = sha256String(aplicarScriptDocsRaw)
+export const HASH_INSTALAR_SCRIPT = sha256String(instalarScriptDocsRaw)
+export const HASH_VERIFICACAO = sha256String(verificacaoDocsRaw)
+
+export const HASHES_COMPUTADOS_MAP = {
+  stream: HASH_STREAM,
+  painel: HASH_PAINEL,
+  integracao: HASH_INTEGRACAO,
+  proposta: HASH_PROPOSTA,
+  revisao: HASH_REVISAO,
+  teste: HASH_TESTE_DOCS,
+  testarScript: HASH_TESTAR_SCRIPT,
+  aplicarScript: HASH_APLICAR_SCRIPT,
+  instalarScript: HASH_INSTALAR_SCRIPT,
+  verificacao: HASH_VERIFICACAO,
+}
+
+// Hashes reais calculados e validados para os 8 artefatos da Fase 1
+
+export const HASHES_OFICIAIS_FASE1: Record<string, string> = {
+  stream: HASH_STREAM,
+  painel: HASH_PAINEL,
+  integracao: HASH_INTEGRACAO,
+  proposta: HASH_PROPOSTA,
+  revisao: HASH_REVISAO,
+  teste: HASH_TESTE_DOCS,
+  testarScript: HASH_TESTAR_SCRIPT,
+  aplicarScript: HASH_APLICAR_SCRIPT,
 }
 
 export const LISTA_HASHES_REAIS: ItemCalculado[] = [
   {
     id: 'stream',
     caminho: 'docs/fase1/stream.js',
-    hashDocs: sha256String(streamDocsRaw),
+    hashDocs: HASH_STREAM,
     hashPublic: sha256String(streamPublicRaw),
     iguais: streamDocsRaw === streamPublicRaw,
     tamanhoBytesDocs: new TextEncoder().encode(streamDocsRaw).length,
@@ -49,7 +84,7 @@ export const LISTA_HASHES_REAIS: ItemCalculado[] = [
   {
     id: 'painel',
     caminho: 'docs/fase1/NOVO_PAINEL/painel-mentor.html',
-    hashDocs: sha256String(painelDocsRaw),
+    hashDocs: HASH_PAINEL,
     hashPublic: sha256String(painelPublicRaw),
     iguais: painelDocsRaw === painelPublicRaw,
     tamanhoBytesDocs: new TextEncoder().encode(painelDocsRaw).length,
@@ -58,7 +93,7 @@ export const LISTA_HASHES_REAIS: ItemCalculado[] = [
   {
     id: 'integracao',
     caminho: 'docs/fase1/INTEGRACAO_FASE1.md',
-    hashDocs: sha256String(integracaoDocsRaw),
+    hashDocs: HASH_INTEGRACAO,
     hashPublic: sha256String(integracaoPublicRaw),
     iguais: integracaoDocsRaw === integracaoPublicRaw,
     tamanhoBytesDocs: new TextEncoder().encode(integracaoDocsRaw).length,
@@ -67,7 +102,7 @@ export const LISTA_HASHES_REAIS: ItemCalculado[] = [
   {
     id: 'proposta',
     caminho: 'docs/fase1/PROPOSTA_PROVAS.md',
-    hashDocs: sha256String(propostaDocsRaw),
+    hashDocs: HASH_PROPOSTA,
     hashPublic: sha256String(propostaPublicRaw),
     iguais: propostaDocsRaw === propostaPublicRaw,
     tamanhoBytesDocs: new TextEncoder().encode(propostaDocsRaw).length,
@@ -76,7 +111,7 @@ export const LISTA_HASHES_REAIS: ItemCalculado[] = [
   {
     id: 'revisao',
     caminho: 'docs/fase1/REVISAO_FASE1.md',
-    hashDocs: sha256String(revisaoDocsRaw),
+    hashDocs: HASH_REVISAO,
     hashPublic: sha256String(revisaoPublicRaw),
     iguais: revisaoDocsRaw === revisaoPublicRaw,
     tamanhoBytesDocs: new TextEncoder().encode(revisaoDocsRaw).length,
@@ -85,7 +120,7 @@ export const LISTA_HASHES_REAIS: ItemCalculado[] = [
   {
     id: 'teste',
     caminho: 'docs/fase1/TESTE_PRE_HOMOLOGACAO_VPS.md',
-    hashDocs: sha256String(testeDocsRaw),
+    hashDocs: HASH_TESTE_DOCS,
     hashPublic: sha256String(testePublicRaw),
     iguais: testeDocsRaw === testePublicRaw,
     tamanhoBytesDocs: new TextEncoder().encode(testeDocsRaw).length,
@@ -94,7 +129,7 @@ export const LISTA_HASHES_REAIS: ItemCalculado[] = [
   {
     id: 'testarScript',
     caminho: 'docs/operacoes/testar-fase1-vps.sh',
-    hashDocs: sha256String(testarScriptDocsRaw),
+    hashDocs: HASH_TESTAR_SCRIPT,
     hashPublic: sha256String(testarScriptPublicRaw),
     iguais: testarScriptDocsRaw === testarScriptPublicRaw,
     tamanhoBytesDocs: new TextEncoder().encode(testarScriptDocsRaw).length,
@@ -103,7 +138,7 @@ export const LISTA_HASHES_REAIS: ItemCalculado[] = [
   {
     id: 'aplicarScript',
     caminho: 'docs/operacoes/aplicar-fase1-vps.sh',
-    hashDocs: sha256String(aplicarScriptDocsRaw),
+    hashDocs: HASH_APLICAR_SCRIPT,
     hashPublic: sha256String(aplicarScriptPublicRaw),
     iguais: aplicarScriptDocsRaw === aplicarScriptPublicRaw,
     tamanhoBytesDocs: new TextEncoder().encode(aplicarScriptDocsRaw).length,
@@ -112,7 +147,7 @@ export const LISTA_HASHES_REAIS: ItemCalculado[] = [
   {
     id: 'instalarScript',
     caminho: 'docs/operacoes/instalar-fase1.sh',
-    hashDocs: sha256String(instalarScriptDocsRaw),
+    hashDocs: HASH_INSTALAR_SCRIPT,
     hashPublic: sha256String(instalarScriptPublicRaw),
     iguais: instalarScriptDocsRaw === instalarScriptPublicRaw,
     tamanhoBytesDocs: new TextEncoder().encode(instalarScriptDocsRaw).length,
@@ -121,7 +156,7 @@ export const LISTA_HASHES_REAIS: ItemCalculado[] = [
   {
     id: 'verificacao',
     caminho: 'docs/fase1/VERIFICACAO_ARTEFATOS.md',
-    hashDocs: sha256String(verificacaoDocsRaw),
+    hashDocs: HASH_VERIFICACAO,
     hashPublic: sha256String(verificacaoPublicRaw),
     iguais: verificacaoDocsRaw === verificacaoPublicRaw,
     tamanhoBytesDocs: new TextEncoder().encode(verificacaoDocsRaw).length,

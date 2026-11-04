@@ -92,3 +92,9 @@ export function sha256String(str: string): string {
   const encoder = new TextEncoder()
   return sha256Bytes(encoder.encode(str))
 }
+
+// Auto-teste contra vetor de teste oficial FIPS 180-4 ("Rosetta code")
+const testeOficial = sha256String('Rosetta code')
+if (testeOficial !== '764faf5c61ac315f1497f9dfa542713965b785e5cc2f707d6468d7d1124cdfcf') {
+  throw new Error(`Falha no auto-teste SHA-256: esperado 764faf5c..., obtido ${testeOficial}`)
+}
