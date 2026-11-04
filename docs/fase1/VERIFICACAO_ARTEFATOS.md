@@ -89,16 +89,16 @@ O operador da VPS exige as somas de verificação SHA-256 completas dos arquivos
 
 ```
 ──────────────────────────────────────────────────────────────────────────────────────────────────
-HASH SHA-256 (auditoria 2026-11-01)                                ARQUIVO
+HASH SHA-256 (auditoria confirmada na VPS)                         ARQUIVO
 ──────────────────────────────────────────────────────────────────────────────────────────────────
-2be71f49646bde330ec0c822ff611be9e173e44c2057d23f381c81ef94e1e07b  docs/fase1/stream.js (com guard READ_ONLY_TEST)
-3d9501a300d8b4e7a3ec11cc0a66d548f7663e6e87f2e1a47321e06fa536f0e4  docs/fase1/NOVO_PAINEL/painel-mentor.html
-168e37dc0bd59a16f272a8c3d8e578ba33cd7c768991fa9a7ffccbe5b9bc5d11  docs/fase1/INTEGRACAO_FASE1.md
-e9b2513de5553e1e40eb617b7b15a6b5a3e1438fa5a48483f3e27150a294f4a3  docs/fase1/PROPOSTA_PROVAS.md
-3312c1404c0429fec033bd2f27ddc54aa5017e2978931dc150c95029a502f664  docs/fase1/REVISAO_FASE1.md
-38a6ec1552a46e1074e50d536cf0ba7493eef250bc44618e7751c8a14ec7a59a  docs/fase1/TESTE_PRE_HOMOLOGACAO_VPS.md
-e927c9c054238e55eefea2b27429bb7b05cdcd5d1ec5ce1e6e0261c470196253  docs/operacoes/testar-fase1-vps.sh
-c93f06b9968452309ec95ba8d133038a8e1e7bd66ff852b86a8ff39fa1cf8743  docs/operacoes/aplicar-fase1-vps.sh
+6caf954f02dc65623d6eaeb3e73866dec3147bd0d94e8d2e5c027cc291802fd2  docs/fase1/stream.js (com guard READ_ONLY_TEST)
+b9c3c701fd9e2e5bc51b619366b79c0223372fbff854a04aacd3c3f6f34d11d8  docs/fase1/NOVO_PAINEL/painel-mentor.html
+3908e3bb777637df2e6855f2e7ec61891116d041eef56fae0b4a96c21835f7a6  docs/fase1/INTEGRACAO_FASE1.md
+16dfff6134df7caeeace571f004299fde6b27b3aebf0c2cd1772a1c04a011241  docs/fase1/PROPOSTA_PROVAS.md
+e16ce2583cfd7e123b09345bdb09f5403de3d94267a1ace66a1cb65901478666  docs/fase1/REVISAO_FASE1.md
+653969c14ae98552de58ed388b3eee788e8bba78e0e6109b6e13acb8ccc5a354  docs/fase1/TESTE_PRE_HOMOLOGACAO_VPS.md
+92d48bc9207c6f394f42436d3e190135489983520719ec95d4f440eee4d97078  docs/operacoes/testar-fase1-vps.sh
+b08abe53ac5d36a5e7f7e67b34a5e8a92541f4353c5107de1898bebb1f591193  docs/operacoes/aplicar-fase1-vps.sh
 ──────────────────────────────────────────────────────────────────────────────────────────────────
 Hashes do próprio instalador (docs/operacoes/instalar-fase1.sh), de
 VERIFICACAO_ARTEFATOS.md e dos demais arquivos espelhados: NÃO são pré-registrados.

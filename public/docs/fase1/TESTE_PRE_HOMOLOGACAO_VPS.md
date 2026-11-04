@@ -144,10 +144,10 @@ Ou execute manualmente os 5 passos:
 
 ```bash
 sha256sum /tmp/fase1_candidatos/src/routes/stream.js
-# Esperado: 2be71f49646bde330ec0c822ff611be9e173e44c2057d23f381c81ef94e1e07b
+# Esperado: 6caf954f02dc65623d6eaeb3e73866dec3147bd0d94e8d2e5c027cc291802fd2
 
 sha256sum /tmp/fase1_candidatos/src/static/painel-mentor.html
-# Esperado: 3d9501a300d8b4e7a3ec11cc0a66d548f7663e6e87f2e1a47321e06fa536f0e4
+# Esperado: b9c3c701fd9e2e5bc51b619366b79c0223372fbff854a04aacd3c3f6f34d11d8
 ```
 
 ### Passo A2 — Checagem Sintática no Node.js (`node --check`)

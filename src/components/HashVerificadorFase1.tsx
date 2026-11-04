@@ -137,8 +137,13 @@ export function HashVerificadorFase1({ origemArtefatos }: { origemArtefatos: str
         </div>
         <div className="space-y-1">
           {LISTA_HASHES_REAIS.map((item) => (
-            <div key={item.id} className="border-b border-slate-800/50 pb-1 flex flex-col md:flex-row md:items-center md:justify-between gap-0.5">
-              <span className="text-slate-400 font-semibold">{item.caminho} ({item.tamanhoBytesPublic} B):</span>
+            <div
+              key={item.id}
+              className="border-b border-slate-800/50 pb-1 flex flex-col md:flex-row md:items-center md:justify-between gap-0.5"
+            >
+              <span className="text-slate-400 font-semibold">
+                {item.caminho} ({item.tamanhoBytesPublic} B):
+              </span>
               <span className="text-emerald-300 break-all select-all">{item.hashPublic}</span>
             </div>
           ))}

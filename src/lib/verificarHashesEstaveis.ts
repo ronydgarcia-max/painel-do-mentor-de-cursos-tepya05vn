@@ -10,13 +10,21 @@ import instalarScriptDocsRaw from '../../docs/operacoes/instalar-fase1.sh?raw'
 // Inspeciona os hashes
 export function verificarHash(nome: string, valorEsperado: string): boolean {
   switch (nome) {
-    case 'painel': return sha256String(painelDocsRaw) === valorEsperado
-    case 'integracao': return sha256String(integracaoDocsRaw) === valorEsperado
-    case 'proposta': return sha256String(propostaDocsRaw) === valorEsperado
-    case 'revisao': return sha256String(revisaoDocsRaw) === valorEsperado
-    case 'teste': return sha256String(testeDocsRaw) === valorEsperado
-    case 'aplicar': return sha256String(aplicarScriptDocsRaw) === valorEsperado
-    case 'instalar': return sha256String(instalarScriptDocsRaw) === valorEsperado
-    default: return false
+    case 'painel':
+      return sha256String(painelDocsRaw) === valorEsperado
+    case 'integracao':
+      return sha256String(integracaoDocsRaw) === valorEsperado
+    case 'proposta':
+      return sha256String(propostaDocsRaw) === valorEsperado
+    case 'revisao':
+      return sha256String(revisaoDocsRaw) === valorEsperado
+    case 'teste':
+      return sha256String(testeDocsRaw) === valorEsperado
+    case 'aplicar':
+      return sha256String(aplicarScriptDocsRaw) === valorEsperado
+    case 'instalar':
+      return sha256String(instalarScriptDocsRaw) === valorEsperado
+    default:
+      return false
   }
 }
